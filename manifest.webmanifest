@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "Paper Sniper",
+  "short_name": "Paper Sniper",
+  "description": "Identifier. Confirmer. Un seul tir. Enquête et tir de précision dans une ville en papier.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "portrait",
+  "background_color": "#151726",
+  "theme_color": "#151726",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
