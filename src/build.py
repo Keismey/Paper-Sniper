@@ -10,6 +10,9 @@ SRC = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(SRC)
 JS_FILES = ['assets.js', 'engine.js', 'puppet.js', 'maps.js', 'nav.js', 'game.js', 'minigames.js']
 
+# Suivi Cloudflare Web Analytics (version publiée uniquement, pas l'aperçu de test)
+CF_ANALYTICS = """<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cdb82226cd1b401d9e4f4e899f9b8425"}'></script><!-- End Cloudflare Web Analytics -->"""
+
 def read(name): return open(os.path.join(SRC, name), encoding='utf-8').read()
 
 PWA = """<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -43,7 +46,7 @@ def page(test, site):
 def site():
     html = page(test=False, site=True)
     head, body = html.split('<style>', 1)
-    out = '<!doctype html>\n<html lang="fr"><head><meta charset="utf-8">\n' + head + '<style>' + body.replace('</style>', '</style>\n</head><body>', 1) + '\n</body></html>\n'
+    out = '<!doctype html>\n<html lang="fr"><head><meta charset="utf-8">\n' + head + '<style>' + body.replace('</style>', '</style>\n</head><body>', 1) + '\n' + CF_ANALYTICS + '\n</body></html>\n'
     open(os.path.join(ROOT, 'index.html'), 'w', encoding='utf-8').write(out)
     h = hashlib.sha1(out.encode()).hexdigest()[:8]
     files = ['./', './index.html', './manifest.webmanifest']
