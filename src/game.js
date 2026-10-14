@@ -211,7 +211,7 @@ function nextStep(n){
   let li;do{li=ri(0,4)}while(li===n.li);goLoc(n,li);
 }
 function startSniper(){
-  MODE='sniper';MUS.play('tir');useContractMap(C);nid=0;
+  MODE='sniper';MUS.play('tir');useContractMap(C);nid=0;sprClear();
   const st=C.st,T=C.T;
   const crowd=[];
   const others=[0,1,2,3,4].filter(l=>l!==C.rdv);shuffle(others);
@@ -378,7 +378,7 @@ function showResult(){
     <div class="total"><span>${tr('Prime versée','Fee paid')}</span><span class="money">${prime} F</span></div>
     ${unlocked?`<p class="notice">${tr('Nouveau secteur accessible : ','New sector available: ')}<b>${MAPS[unlocked].name}</b>.</p>`:''}
     <div class="btns"><button class="pb red big wide" id="bHQ">${tr('Retour au Bureau','Back to the Bureau')}</button></div>`);
-  $('bHQ').onclick=()=>{SFX.page();S=null;C=null;showHQ()};
+  $('bHQ').onclick=()=>{SFX.page();S=null;C=null;sprClear();showHQ()};
 }
 
 /* =========================================================
@@ -456,11 +456,13 @@ function renderSniper2(){
 }
 function drawSceneWithHoles(){
   const opts=TEST&&SAVE.seeTarget?{mark:n=>n.isTarget}:{};
+  SPR_ON=S.Z[S.z].w>=700;SPR_LEFT=2;   // ×1 et ×2 : pantins mis en cache (voir sprDraw)
   bgDraw(S.t);
   for(const h of S.holes){ctx.fillStyle='#2b2233';ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.beginPath();for(let i=0;i<9;i++){const an=i/9*Math.PI*2,r2=h.r*(i%2?.6:1.2);ctx.lineTo(h.x+Math.cos(an)*r2,h.y+Math.sin(an)*r2)}ctx.closePath();ctx.stroke();ctx.fill()}
   const list=S.crowd.filter(n=>n.state!=='gone').sort((a,b)=>a.y-b.y);let i=0;
   for(const g of M.props){while(i<list.length&&list[i].y<=g.z){drawNpc(list[i],S.t,opts);i++}if(vis(g.bb))drawItems(g.items,true)}
   while(i<list.length){drawNpc(list[i],S.t,opts);i++}
+  SPR_ON=false;
   drawFx();drawStage(S.t);
 }
 function renderAttract(dt){

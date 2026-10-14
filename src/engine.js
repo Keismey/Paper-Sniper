@@ -284,9 +284,58 @@ function drawNpc(n,t,opts){
   const s=scaleAt(n.y);
   let rot=0,pop=1;if(n.dead){const k=ease(n.dead/.55);rot=-k*1.45*Math.sign(n.flip||1);pop=1-k*.15}
   if(opts.mark&&opts.mark(n)){ctx.save();ctx.fillStyle='rgba(227,180,74,.55)';ctx.beginPath();ctx.ellipse(n.x,n.y,34*s,9*s,0,0,7);ctx.fill();ctx.restore()}
-  drawPerson(ctx,n.look,n.x,n.y,s,n.dead?NEUTRAL:(n.po||NEUTRAL),n.flip,{rot,pop,mask:n.mask});
+  if(!(SPR_ON&&!n.dead&&sprDraw(n,s)))drawPerson(ctx,n.look,n.x,n.y,s,n.dead?NEUTRAL:(n.po||NEUTRAL),n.flip,{rot,pop,mask:n.mask});
   if(n.birds)for(const b of n.birds)drawBird(n.x+b.dx*s,n.y+b.dy*s,s*.9,t*7+b.ph,b.fl);
 }
+/* ---------- Pantins vus de loin (×1, ×2) : une image par pose, réutilisée ----------
+   Un pantin, c'est 3 passes (ombre, liseré, couleurs) de 10 à 15 calques chacune : 30 à 45 dessins.
+   Vu de loin, on dessine une fois la pose de ses membres (jambes, bras, tête, chapeau, arrondis)
+   dans une petite image recadrée, et on la recolle tant qu'ils ne bougent pas. Les mouvements du corps
+   entier (rebond, inclinaison, tassement, demi-tour) sont appliqués au collage, exactement comme
+   drawPerson les applique : ils ne créent pas de nouvelle image. Un seul dessin par passant et par image. */
+let SPR_ON=false,SPR_LEFT=0;     // SPR_LEFT : nouvelles poses qu'on peut encore préparer pendant cette image
+const SPRC=new Map();let SPR_BYTES=0,SPR_UID=0;
+const SPR_BUDGET=32*1048576;          // mémoire maximale des images de pantins (octets)
+const SPR_BOX=[-120,-166,105,16];     // encombrement maximal d'un pantin à l'échelle 1 (bras levés, objets, chapeau soulevé)
+// membres arrondis : [champ, pas]
+const SPR_Q=[['arm',.15],['head',.06],['hat',2],['stride',.25],['tap',.05],['swing',.06]];
+let SPR_SCR=null;
+function sprClear(){SPRC.clear();SPR_BYTES=0}
+function sprReady(n){if(n._rdy)return true;if(!charReady())return false;const L=n.look,g=L.genre==='femme'?'f':'h',co=coiffOf(L);
+  const ok=(co==='chauve'||L.chapeau==='aucun'||!!SPR.img['yu_'+g+'_'+co+'_'+L.chapeau])&&(L.acc==='rien'||!OBJ[L.acc]||hasImg('o_'+L.acc));
+  if(ok)n._rdy=true;return ok}
+function sprDraw(n,s){
+  if(n.mask||!sprReady(n))return false;
+  const T=ctx.getTransform(),sc=Math.hypot(T.a,T.b),Rp=sc*s;if(Rp<.05)return true;
+  const ri=Math.ceil(Math.log2(Rp)*3-.05),R=Math.pow(2,ri/3);   // résolution arrondie au palier supérieur (paliers de 26 %) : net, et stable quand le passant avance
+  const po=n.po||NEUTRAL,q={bob:0,lean:0,sq:1,prop:po.prop};let key=(n._u||(n._u=++SPR_UID))+'|'+ri+'|'+(po.prop||'');
+  for(const[f,k]of SPR_Q){const v=Math.round((po[f]||0)/k);key+='|'+v;q[f]=v*k}
+  let e=SPRC.get(key);
+  if(e){SPRC.delete(key);SPRC.set(key,e)}   // le plus récent en dernier
+  else{if(SPR_LEFT<=0)return false;SPR_LEFT--;   // assez de nouvelles poses pour cette image : celui-ci est dessiné normalement
+    e=sprMake(n.look,q,R);SPRC.set(key,e);SPR_BYTES+=e.b;
+    for(const[k,o]of SPRC){if(SPR_BYTES<=SPR_BUDGET)break;SPRC.delete(k);SPR_BYTES-=o.b}}
+  // même chaîne de transformations que drawPerson
+  ctx.save();ctx.translate(n.x,n.y);groundShadow(ctx,s);
+  ctx.scale(s,s*(po.sq||1));ctx.translate(0,-(po.bob||0));ctx.rotate(po.lean||0);
+  let fx=n.flip===undefined?1:n.flip;if(Math.abs(fx)<.07)fx=fx<0?-.07:.07;ctx.scale(fx,1);
+  if(e.cv){ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='low';ctx.drawImage(e.cv,e.x,e.y,e.w,e.h)}
+  ctx.restore();return true}
+function sprMake(L,q,R){
+  const B=SPR_BOX,W0=Math.ceil((B[2]-B[0])*R)+2,H0=Math.ceil((B[3]-B[1])*R)+2;
+  if(!SPR_SCR||SPR_SCR.width<W0||SPR_SCR.height<H0){const w=Math.max(W0,SPR_SCR?SPR_SCR.width:0),h=Math.max(H0,SPR_SCR?SPR_SCR.height:0);
+    SPR_SCR=document.createElement('canvas');SPR_SCR.width=w;SPR_SCR.height=h;SPR_SCR.x=SPR_SCR.getContext('2d',{willReadFrequently:true})}
+  const x=SPR_SCR.x;x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,SPR_SCR.width,SPR_SCR.height);
+  x.setTransform(R,0,0,R,-B[0]*R+1,-B[1]*R+1);
+  drawPerson(x,L,0,0,1,q,1,{noShadow:1});
+  // recadrage sur les pixels dessinés
+  // (un pixel sur deux suffit : on élargit ensuite de 2 px ; alpha = octet de poids fort, ordre des octets little-endian)
+  const d=new Uint32Array(x.getImageData(0,0,W0,H0).data.buffer);let x0=W0,y0=H0,x1=-1,y1=-1;
+  for(let j=0;j<H0;j+=2){const r=j*W0;for(let i=0;i<W0;i+=2)if(d[r+i]>>>24){if(i<x0)x0=i;if(i>x1)x1=i;if(j<y0)y0=j;y1=j}}
+  if(x1<0)return{cv:null,b:64};
+  x0=Math.max(0,x0-2);y0=Math.max(0,y0-2);x1=Math.min(W0-1,x1+2);y1=Math.min(H0-1,y1+2);
+  const w=x1-x0+1,h=y1-y0+1,cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(SPR_SCR,x0,y0,w,h,0,0,w,h);
+  return{cv,x:B[0]+(x0-1)/R,y:B[1]+(y0-1)/R,w:w/R,h:h/R,b:w*h*4+256}}
 function drawBird(x,y,s,ph,fl){
   if(typeof hasImg==='function'&&hasImg('o_pigeon')){const O=OBJ.pigeon,A=ASSETS.o_pigeon,peck=Math.max(0,Math.sin(ph))*.35;ctx.save();ctx.translate(x,y);ctx.scale(s*(fl||1),s);ctx.rotate(peck);ctx.fillStyle='rgba(40,25,10,.2)';ctx.beginPath();ctx.ellipse(0,0,9,2.5,0,0,7);ctx.fill();for(const m of['ol','fill'])layImg(ctx,'o_pigeon',-O.gx*O.s,-O.gy*O.s,A.w*O.s,A.h*O.s,m);ctx.restore();return}
   ctx.save();ctx.translate(x,y);ctx.scale(s*(fl||1),s);

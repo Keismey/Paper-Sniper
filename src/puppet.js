@@ -291,10 +291,12 @@ function vecParts(c,list,mode){for(const q of list){
   if(mode==='sh'){if(q.o){c.save();c.fillStyle='rgba(40,22,10,.17)';c.fill(q.p);c.restore()}}else if(mode==='ol'){if(q.o){c.save();c.strokeStyle='#fff';c.lineWidth=4.6;c.stroke(q.p);c.restore()}}
   else{c.fillStyle=q.f;c.fill(q.p);if(q.k){c.strokeStyle=INK;c.lineWidth=1.35;c.stroke(q.p)}}}}
 
+/* ombre au sol d'un pantin (repère : ses pieds) */
+function groundShadow(c,s){c.save();c.translate(-9*s,0);c.scale(1,.24);const g=c.createRadialGradient(4*s,0,1,0,0,30*s);g.addColorStop(0,'rgba(45,28,12,.34)');g.addColorStop(1,'rgba(45,28,12,0)');c.fillStyle=g;c.beginPath();c.arc(0,0,30*s,0,7);c.fill();c.restore()}
 function drawPerson(c,L,x,y,s,po,flip,ex){
   ex=ex||{};po=po||NEUTRAL;const Rg=rig(L);
   c.save();c.translate(x,y);
-  if(!ex.noShadow){c.save();c.translate(-9*s,0);c.scale(1,.24);const g=c.createRadialGradient(4*s,0,1,0,0,30*s);g.addColorStop(0,'rgba(45,28,12,.34)');g.addColorStop(1,'rgba(45,28,12,0)');c.fillStyle=g;c.beginPath();c.arc(0,0,30*s,0,7);c.fill();c.restore()}
+  if(!ex.noShadow)groundShadow(c,s);
   c.scale(s,s*(po.sq||1)*(ex.pop===undefined?1:ex.pop));
   if(ex.rot)c.rotate(ex.rot);
   c.translate(0,-(po.bob||0));c.rotate(po.lean||0);
