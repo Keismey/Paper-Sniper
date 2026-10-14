@@ -20,6 +20,7 @@ Le jeu est en français et en anglais (détection automatique, bouton sur l'écr
   - `engine.js` données, langue, sauvegarde, sons et musique, outils de dessin
   - `puppet.js` pantins en papier (pièces, recoloration, animation, coiffures sous les chapeaux)
   - `maps.js` les trois cartes, leurs décors et leur placement
+  - `career.js` carrière (v1.1) : grades, dossiers rouges de la Volière, épilogue, notes de mise à jour
   - `nav.js` déplacements des passants autour des décors
   - `game.js` Bureau, briefing, tir, rapport
   - `minigames.js` les trois épreuves d'enquête et la synthèse

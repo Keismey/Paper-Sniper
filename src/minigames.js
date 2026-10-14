@@ -60,7 +60,7 @@ function mgScreenToWorld(cam,sx,sy){const V=mgView(),k=V.w/cam.w;return{x:cam.x+
 function mgTenue(){
   MODE='desk';
   const ph=C.photos[0];if(!ph.base)renderPhotoBase(ph);
-  const T=C.T,st=C.st,showT=[4.2,3.2,2.4][st-1];
+  const T=C.T,st=C.st,showT=[4.2,3.2,2.4][st-1]*(1-.05*(C.lv||0));  // le cliché s'efface plus vite quand le grade monte
   const others=ph.people.filter(p=>!p.isT).map(p=>p.look);
   const opts=(val,pool,all,n)=>{const s=[val];for(const v of shuffle(pool.slice()))if(!s.includes(v)&&s.length<n)s.push(v);for(const v of shuffle(all.slice()))if(!s.includes(v)&&s.length<n)s.push(v);return shuffle(s)};
   const n=[4,5,5][st-1];
@@ -263,13 +263,15 @@ function showDebrief(){
   C.good=MG_ORDER.filter(id=>C.res[id]).length;
   const draw=()=>{
     const v=UI.querySelector('.veil .sheet');
+    const mute=!!(C.tw&&C.tw.noInfo);
     const T=C.T,has={tenue:!C.mask||C.bought.tenue,tic:C.res.tic||C.bought.tic,lieu:C.res.lieu||C.bought.lieu};
     const val={tenue:lookText(T),tic:TICS[C.tic].n,lieu:tr('Rendez-vous ','Meeting ')+M.locs[C.rdv].a};
     v.innerHTML=`${dh(fileNo(C.of),tr('Fonds : ','Funds: ')+SAVE.francs+' F')}<span class="tag">${tr(`Synthèse : ${C.good} ${plural(C.good,'information acquise','informations acquises')} sur 3`,`Summary: ${C.good} of 3 intel secured`)}</span><h2>${tr('Ce que nous savons','What we know')}</h2>
-      ${MG_ORDER.map(id=>`<div class="offer ${has[id]?'':'miss'}"><b>${MG_INFO[id].k}</b><small>${has[id]?val[id]+'.':id==='tenue'?lookTextMasked(T,C.mask)+tr('. Un indicateur peut compléter.','. An informant can fill in the gaps.'):tr('Inconnu. Un indicateur peut vous le vendre.','Unknown. An informant can sell it to you.')}</small>${has[id]?`<span class="ok">${C.bought[id]?tr('Acheté','Bought'):tr('Acquis','Secured')}</span>`:`<button class="pb sm" data-b="${id}" ${SAVE.francs<priceOf(id)?'disabled':''}>${priceOf(id)} F</button>`}</div>`).join('')}
-      ${nBought()&&nBought()<3?`<p class="small">${tr('Les indicateurs ont senti votre intérêt : leurs prix montent.','The informants sense your interest: their prices are going up.')}</p>`:''}
+      ${MG_ORDER.map(id=>`<div class="offer ${has[id]?'':'miss'}"><b>${MG_INFO[id].k}</b><small>${has[id]?val[id]+'.':id==='tenue'?lookTextMasked(T,C.mask)+(mute?'.':tr('. Un indicateur peut compléter.','. An informant can fill in the gaps.')):mute?tr('Inconnu.','Unknown.'):tr('Inconnu. Un indicateur peut vous le vendre.','Unknown. An informant can sell it to you.')}</small>${has[id]?`<span class="ok">${C.bought[id]?tr('Acheté','Bought'):tr('Acquis','Secured')}</span>`:mute?`<span class="ok mute">${tr('Muet','Silent')}</span>`:`<button class="pb sm" data-b="${id}" ${SAVE.francs<priceOf(id)?'disabled':''}>${priceOf(id)} F</button>`}</div>`).join('')}
+      ${mute?`<p class="notice">${tr('Les indicateurs ont été payés par la Volière : aucun ne vous vendra quoi que ce soit.','The Aviary has paid off the informants: none of them will sell you anything.')}</p>`:''}
+      ${!mute&&nBought()&&nBought()<3?`<p class="small">${tr('Les indicateurs ont senti votre intérêt : leurs prix montent.','The informants sense your interest: their prices are going up.')}</p>`:''}
       <h3>${tr('Services','Services')}</h3>
-      ${['cafe','pot'].filter(id=>id!=='pot'||C.st>1).map(id=>{const o=EXTRAS[id],p=Array.isArray(o.p)?o.p[C.st-1]:o.p,b=C.bought[id];return`<div class="offer"><b>${o.n}</b><small>${o.d}</small>${b?`<span class="ok">${tr('Acheté','Bought')}</span>`:`<button class="pb sm" data-x="${id}" ${SAVE.francs<p?'disabled':''}>${p} F</button>`}</div>`}).join('')}
+      ${['cafe','pot'].filter(id=>id!=='pot'||(C.st>1&&!mute)).map(id=>{const o=EXTRAS[id],p=Array.isArray(o.p)?o.p[C.st-1]:o.p,b=C.bought[id];return`<div class="offer"><b>${o.n}</b><small>${o.d}</small>${b?`<span class="ok">${tr('Acheté','Bought')}</span>`:`<button class="pb sm" data-x="${id}" ${SAVE.francs<p?'disabled':''}>${p} F</button>`}</div>`}).join('')}
       <div class="btns"><button class="pb red big wide" id="bFi">${tr('Établir la fiche de tir','Prepare the target sheet')}</button></div>`;
     v.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{const id=b.dataset.b,p=priceOf(id);if(SAVE.francs<p)return;SAVE.francs-=p;C.bought[id]=1;persist();SFX.coin();draw()});
     v.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{const id=b.dataset.x,o=EXTRAS[id],p=Array.isArray(o.p)?o.p[C.st-1]:o.p;if(SAVE.francs<p)return;SAVE.francs-=p;C.bought[id]=1;persist();SFX.coin();draw()});

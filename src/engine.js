@@ -199,7 +199,7 @@ const OFFERS={
 const ALIASES=['Le Corbeau','La Fouine','Monsieur Gris','La Pie','Le Renard','L\'Horloger','La Belette','Le Hibou','Le Chat Noir','La Mouette','Le Furet','La Vipère','Le Colporteur','La Marquise'];
 const ALIASES_EN=['The Raven','The Stoat','Mister Grey','The Magpie','The Fox','The Watchmaker','The Weasel','The Owl','Black Cat','The Gull','The Ferret','The Viper','The Peddler','The Marquise'];
 /* nom de code d'un contrat (stocké par index, pour suivre la langue) */
-function aliasOf(o){let i=o.ai;if(i===undefined)i=ALIASES.indexOf(o.alias);return i>=0?tr(ALIASES[i],ALIASES_EN[i]):o.alias}
+function aliasOf(o){if(o.red!==undefined&&typeof RED!=='undefined')return redName(o.red);let i=o.ai;if(i===undefined)i=ALIASES.indexOf(o.alias);return i>=0?tr(ALIASES[i],ALIASES_EN[i]):o.alias}
 
 /* =========================================================
    PANTINS EN PAPIER : pièces séparées (corps, bras, tête, chapeau)

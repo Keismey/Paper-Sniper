@@ -158,6 +158,27 @@ button:focus-visible{outline:2px solid var(--manila);outline-offset:3px}
 .ccard .pr{font:700 18px var(--f-type)}
 .ccard .dt{display:block;font:400 12.5px var(--f-type);color:#4d4228;margin-top:4px}
 .locked{margin-top:20px;font:400 12.5px var(--f-type);color:var(--paper);opacity:.75}
+.career{margin-top:14px;background:var(--paper);padding:9px 12px 9px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 10px;box-shadow:0 2px 0 rgba(0,0,0,.45)}
+.career small{display:block;font:600 10.5px var(--f-ui);letter-spacing:.1em;color:var(--graphite);text-transform:uppercase}
+.career b{font:700 21px/1.05 var(--f-sten);color:var(--ink)}
+.career p{grid-column:1 / -1;margin:5px 0 0;padding-top:6px;border-top:1px dashed var(--rule);font:400 13px/1.4 var(--f-type);color:var(--carbon)}
+.rpips{display:flex;gap:6px}
+.rpips i{width:13px;height:17px;box-shadow:inset 0 0 0 1.5px var(--stamp);transform:rotate(-4deg)}
+.rpips i.on{background:var(--stamp)}
+.ccard.red{background-color:#b23b2e;color:#fbf0e2}
+.ccard.red:before{background:#b23b2e;color:#fbe6d2}
+.ccard.red .mp,.ccard.red .dt{color:#f6d8c2}
+.ccard.red .ln{border-top-color:rgba(255,235,215,.45)}
+.ccard.red .sil{background:#2b1512;color:#ec6a5c}
+.ccard.red .risk i{box-shadow:inset 0 0 0 1.5px #fbf0e2}
+.ccard.red .risk i.on{background:#fbf0e2}
+.sheet.redbrief,.sheet.ending{box-shadow:inset 0 5px 0 var(--stamp),0 3px 6px rgba(0,0,0,.35),0 22px 48px rgba(0,0,0,.55)}
+.sheet p.quote{background:#f7f2e4;padding:10px 12px;box-shadow:inset 0 0 0 1px var(--rule);color:var(--ink)}
+ul.notes{margin:4px 0 0;padding-left:18px;font:400 14px/1.45 var(--f-type);color:var(--carbon)}
+ul.notes li{margin:5px 0}
+ul.notes b{color:var(--ink)}
+.offer .ok.mute{color:var(--stamp)}
+.lnk.light{color:inherit;font:inherit;letter-spacing:.08em;text-transform:none;padding:0}
 .hqbtns{display:flex;gap:10px;justify-content:flex-start;align-items:center;margin-top:22px;flex-wrap:wrap}
 .upg{display:grid;grid-template-columns:1fr auto;gap:3px 12px;align-items:center;padding:11px 0;border-top:1px dashed var(--rule)}
 .upg b{font:600 15px var(--f-ui);color:var(--ink)}
@@ -448,7 +469,7 @@ const OFFERS={
 const ALIASES=['Le Corbeau','La Fouine','Monsieur Gris','La Pie','Le Renard','L\'Horloger','La Belette','Le Hibou','Le Chat Noir','La Mouette','Le Furet','La Vipère','Le Colporteur','La Marquise'];
 const ALIASES_EN=['The Raven','The Stoat','Mister Grey','The Magpie','The Fox','The Watchmaker','The Weasel','The Owl','Black Cat','The Gull','The Ferret','The Viper','The Peddler','The Marquise'];
 /* nom de code d'un contrat (stocké par index, pour suivre la langue) */
-function aliasOf(o){let i=o.ai;if(i===undefined)i=ALIASES.indexOf(o.alias);return i>=0?tr(ALIASES[i],ALIASES_EN[i]):o.alias}
+function aliasOf(o){if(o.red!==undefined&&typeof RED!=='undefined')return redName(o.red);let i=o.ai;if(i===undefined)i=ALIASES.indexOf(o.alias);return i>=0?tr(ALIASES[i],ALIASES_EN[i]):o.alias}
 
 /* =========================================================
    PANTINS EN PAPIER : pièces séparées (corps, bras, tête, chapeau)
@@ -1382,9 +1403,10 @@ function showTitle(){
   MODE='title';MUS.play('planque');useMap('tilleuls');attract.map='tilleuls';closeModals();
   ui(`<div id="title"><div class="logo"><span class="cls">${tr('Très secret','Top secret')}</span><h1>Paper<br>Sniper</h1><p>${tr('Identifier. Confirmer. Un seul tir.','Identify. Confirm. One shot.')}</p>
     <div class="tgo"><button class="pb red big" id="bPlay">${tr('Prendre le service','Report for duty')}</button>
-    <div class="tstats">${SAVE.contrats?tr(`${SAVE.reussis} ${plural(SAVE.reussis,'contrat exécuté','contrats exécutés')} sur ${SAVE.contrats}. Fonds : ${SAVE.francs} F.`,`${SAVE.reussis} of ${SAVE.contrats} contracts completed. Funds: ${SAVE.francs} F.`):tr('Le Bureau recrute. Discrétion exigée.','The Bureau is hiring. Discretion required.')}</div></div></div>
+    <div class="tstats">${SAVE.contrats?tr(`${gradeName(SAVE.grade)}. ${SAVE.reussis} ${plural(SAVE.reussis,'contrat exécuté','contrats exécutés')} sur ${SAVE.contrats}. Fonds : ${SAVE.francs} F.`,`${gradeName(SAVE.grade)}. ${SAVE.reussis} of ${SAVE.contrats} contracts completed. Funds: ${SAVE.francs} F.`):tr('Le Bureau recrute. Discrétion exigée.','The Bureau is hiring. Discretion required.')}</div></div></div>
     <div class="tfoot"><div class="trow"><button class="pb sm ghost light" id="bLang">${tr('English','Français')}</button><button class="pb sm ghost light" id="bMus">${tr('Son','Sound')} : ${SAVE.music?tr('oui','on'):tr('non','off')}</button></div>
-    <div class="studio">Keismey Studio</div></div></div>`);
+    <div class="studio"><button class="lnk light" id="bVer">v${VERSION}</button> · Keismey Studio</div></div></div>`);
+  $('bVer').onclick=()=>{SFX.page();showNotes()};
   $('bPlay').onclick=()=>{ac();SFX.page();showHQ()};
   $('bLang').onclick=()=>{SAVE.lang=SAVE.lang==='en'?'fr':'en';persist();SFX.tap();document.documentElement.lang=SAVE.lang;showTitle()};
   $('bMus').onclick=()=>{ac();MUS.toggle();showTitle()};
@@ -1394,34 +1416,42 @@ function showTitle(){
    LA PLANQUE : contrats + armurerie
    ========================================================= */
 function genOffers(){
-  const maps=MAPK.filter(k=>SAVE.rep>=MAPS[k].unlock);
-  const al=shuffle(ALIASES.map((_,i)=>i));
-  const st=[SAVE.rep>=5?2:1,2,SAVE.rep>=1?3:2];
-  return st.map((s,i)=>({id:Date.now()+i,seed:Math.floor(Math.random()*1e9),stars:s,map:i===2&&maps.length>1?maps[maps.length-1]:pick(maps),ai:al[i],prime:[220,330,480][s-1]+ri(0,6)*10}));
+  const maps=MAPK.filter(k=>SAVE.maps.includes(k));
+  const al=shuffle(ALIASES.map((_,i)=>i).filter(i=>!BIRD_ALIASES.includes(ALIASES[i])));
+  const g=careerLv(),st=g>=3?[2,3,3]:g>=2?[2,2,3]:g>=1?[1,2,3]:[1,2,SAVE.rep>=1?3:2];
+  const bonus=1+.15*g;  // les primes montent avec le grade
+  return st.map((s,i)=>({id:Date.now()+i,seed:Math.floor(Math.random()*1e9),stars:s,map:i===2&&maps.length>1?maps[maps.length-1]:pick(maps),ai:al[i],prime:Math.round(([220,330,480][s-1]+ri(0,6)*10)*bonus/10)*10}));
 }
 function showHQ(){
   MODE='hq';MUS.play('planque');closeModals();S=null;
   if(!SAVE.offers){SAVE.offers=genOffers();persist()}
-  attract.map=SAVE.offers[0].map;
-  const next=MAPK.find(k=>SAVE.rep<MAPS[k].unlock);
+  const red=redOffer();
+  attract.map=red?red.map:SAVE.offers[0].map;
+  const next=MAPK.find(k=>!SAVE.maps.includes(k));
   ui(`<div id="hq"><div class="hqtop"><h2>${tr('Le Bureau','The Bureau')}</h2><div class="purse"><small>${tr('Fonds','Funds')}</small><span class="money">${SAVE.francs} F</span></div></div>
-    <p class="hqsub">${tr('Trois dossiers sont ouverts. Choisissez votre cible.','Three files are open. Choose your target.')}${SAVE.rep?tr(` Contrats exécutés : ${SAVE.rep}.`,` Contracts completed: ${SAVE.rep}.`):''}</p>
-    <div class="board">${SAVE.offers.map((o,i)=>`<button class="ccard" data-o="${i}" data-n="${fileNo(o)}"><span class="sil" aria-hidden="true">?</span><span>
+    ${careerHTML()}
+    <p class="hqsub">${red?tr('Un dossier rouge et trois dossiers ordinaires sont ouverts.','One red file and three ordinary files are open.'):tr('Trois dossiers sont ouverts. Choisissez votre cible.','Three files are open. Choose your target.')}${SAVE.rep?tr(` Contrats exécutés : ${SAVE.rep}.`,` Contracts completed: ${SAVE.rep}.`):''}</p>
+    <div class="board">${red?redCardHTML(red):''}${SAVE.offers.map((o,i)=>`<button class="ccard" data-o="${i}" data-n="${fileNo(o)}"><span class="sil" aria-hidden="true">?</span><span>
       <span class="al">${q(aliasOf(o))}</span><span class="mp">${MAPS[o.map].name}</span>
       <span class="ln"><span>${tr('Risque','Risk')} ${risk(o.stars)}</span><span class="pr">${o.prime} F</span></span>
       <span class="dt">${tr(`${o.stars} ${plural(o.stars,'sosie','sosies')}. ${['4','5','6'][o.stars-1]} suspects par cliché.`,`${o.stars} ${plural(o.stars,'double','doubles')}. ${['4','5','6'][o.stars-1]} suspects per photo.`)}</span></span></button>`).join('')}</div>
-    ${next?`<div class="locked">${tr(`${MAPS[next].name} : accès après ${MAPS[next].unlock} contrats exécutés.`,`${MAPS[next].name}: unlocked after ${MAPS[next].unlock} completed contracts.`)}</div>`:''}
-    <div class="hqbtns"><button class="pb paper" id="bArm">${tr('Armurerie','Armoury')}</button><button class="pb sm ghost light" id="bMus">${tr('Son','Sound')} : ${SAVE.music?tr('oui','on'):tr('non','off')}</button><button class="pb sm ghost light" id="bTitle">${tr('Quitter','Exit')}</button></div>
-    ${TEST?`<div class="testp"><b>Mode test</b><button class="pb sm" id="tMoney">+1000 F</button><button class="pb sm" id="tMaps">Toutes les cartes</button><button class="pb sm" id="tSee">Voir la cible : ${SAVE.seeTarget?'oui':'non'}</button><button class="pb sm" id="tReset">Remise à zéro</button></div>`:''}</div>`);
+    ${next?`<div class="locked">${tr(`${MAPS[next].name} : accès au grade ${gradeName(MAP_GRADE[next])}.`,`${MAPS[next].name}: opens at the rank of ${gradeName(MAP_GRADE[next])}.`)}</div>`:''}
+    <div class="hqbtns"><button class="pb paper" id="bArm">${tr('Armurerie','Armoury')}</button><button class="pb sm ghost light" id="bNotesH">${tr('Nouveautés','What\'s new')}</button><button class="pb sm ghost light" id="bMus">${tr('Son','Sound')} : ${SAVE.music?tr('oui','on'):tr('non','off')}</button><button class="pb sm ghost light" id="bTitle">${tr('Quitter','Exit')}</button></div>
+    ${TEST?`<div class="testp"><b>Mode test</b><button class="pb sm" id="tMoney">+1000 F</button><button class="pb sm" id="tMaps">Toutes les cartes</button><button class="pb sm" id="tSee">Voir la cible : ${SAVE.seeTarget?'oui':'non'}</button><button class="pb sm" id="tRed">Dossier rouge suivant</button><button class="pb sm" id="tReset">Remise à zéro</button></div>`:''}</div>`);
   UI.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{SFX.page();openContract(SAVE.offers[+b.dataset.o])});
+  if(red)$('bRed').onclick=()=>{SFX.page();openContract(red)};
+  $('bNotesH').onclick=()=>{SFX.page();showNotes()};
+  // notes de mise à jour : une fois, pour les joueurs qui avaient déjà une partie
+  if(SAVE.oldPlayer&&SAVE.seenV!==VERSION)showNotes();
   $('bArm').onclick=()=>{SFX.page();showArmory()};
   $('bMus').onclick=()=>{ac();MUS.toggle();$('bMus').textContent=tr('Son','Sound')+' : '+(SAVE.music?tr('oui','on'):tr('non','off'))};
   $('bTitle').onclick=()=>{SFX.page();showTitle()};
   if(TEST){
     $('tMoney').onclick=()=>{SAVE.francs+=1000;persist();showHQ()};
-    $('tMaps').onclick=()=>{SAVE.rep=Math.max(SAVE.rep,5);SAVE.offers=null;persist();showHQ()};
+    $('tMaps').onclick=()=>{SAVE.maps=MAPK.slice();SAVE.offers=null;persist();showHQ()};
+    $('tRed').onclick=()=>{const i=SAVE.dr||0;if(i<RED.length){SAVE.rep=Math.max(SAVE.rep,RED[i].rep);persist();showHQ()}};
     $('tSee').onclick=()=>{SAVE.seeTarget=SAVE.seeTarget?0:1;persist();showHQ()};
-    $('tReset').onclick=()=>{SAVE={francs:150,rep:0,contrats:0,reussis:0,upg:{},seed:1,offers:null,tutoP:0,tutoS:0,seeTarget:0,lang:SAVE.lang,music:SAVE.music};persist();showHQ()};
+    $('tReset').onclick=()=>{SAVE={francs:150,rep:0,contrats:0,reussis:0,upg:{},seed:1,offers:null,tutoP:0,tutoS:0,seeTarget:0,lang:SAVE.lang,music:SAVE.music,seenV:VERSION};careerInit();showHQ()};
   }
 }
 function showArmory(){
@@ -1455,8 +1485,9 @@ function baseDesc(T,st){
 }
 function makeContract(of){
   useMap(of.map);applyLayout(M,of.seed%100000,of.stars);R=mulberry(of.seed);
-  const st=of.stars;
-  const T=genLook();
+  const st=of.stars,rd=of.red!==undefined?RED[of.red]:null;
+  const T=genLook(rd&&rd.look.genre);
+  if(rd){Object.assign(T,rd.look);if(T.genre!=='femme'&&T.chapeau==='cloche')T.chapeau='melon'}
   const tic=pickTic([1,2,3][st-1],st===3?2:1,T);
   const morning=shuffle([0,1,2,3,4]).slice(0,3);
   const rdv=ri(0,4);
@@ -1476,23 +1507,29 @@ function makeContract(of){
   // la loupe écarte un faux suspect par photo
   photos.forEach(ph=>{const wrong=ph.people.filter(p=>!p.isT);ph.loupe=pick(wrong)});
   R=Math.random;
-  return{of,st,map:of.map,T,tic,rdv,morning,photos,base:st,bought:{},picks:[null,null,null],cur:0,clues:null,offerIds:null};
+  // lv : difficulté selon le grade (dossier rouge : selon son rang) ; tw : complication du dossier rouge
+  return{of,st,map:of.map,T,tic,rdv,morning,photos,base:st,bought:{},picks:[null,null,null],cur:0,clues:null,offerIds:null,
+    red:rd?of.red:-1,lv:rd?Math.min(4,of.red):careerLv(),tw:rd?rd.tw:{}};
 }
+
+/* sosies sur le terrain (avant achat du figurant soudoyé) */
+const nSosies=()=>C.st+(C.tw&&C.tw.extra?1:0);
 
 /* ---------- Briefing ---------- */
 function openContract(of){
   if(!SAVE.tutoP){showProcedure(()=>openContract(of));return}
   C=makeContract(of);attract.map=of.map;
   MODE='brief';closeModals();ui('');
-  const mp=MAPS[of.map];
-  modal(`${dh(fileNo(of))}<span class="tag">${tr('Contrat de neutralisation','Neutralisation contract')}</span>
+  const mp=MAPS[of.map],rd=C.red>=0?RED[C.red]:null,nS=nSosies(),twx=rd&&redTwistText(rd.tw);
+  modal(`${dh(rd?`${tr('Dossier rouge','Red file')} ${C.red+1}/5`:fileNo(of),rd&&rd.from?tr('Hors procédure','Off the record'):tr('Confidentiel','Confidential'))}<span class="tag">${rd?tr('La Volière','The Aviary'):tr('Contrat de neutralisation','Neutralisation contract')}</span>
     <h2>${q(aliasOf(of))}</h2>
-    <p>${tr(`La cible est un agent double. Nos guetteurs l'ont photographiée ce matin ${mp.at}. À midi, elle retrouve son contact. Ensuite, nous perdons sa trace.`,`The target is a double agent. Our spotters photographed them this morning ${mp.at}. At noon, they meet their contact. After that, we lose them.`)}</p>
+    ${rd?tr(rd.brief,rd.briefEn).map(t=>`<p>${t}</p>`).join(''):`<p>${tr(`La cible est un agent double. Nos guetteurs l'ont photographiée ce matin ${mp.at}. À midi, elle retrouve son contact. Ensuite, nous perdons sa trace.`,`The target is a double agent. Our spotters photographed them this morning ${mp.at}. At noon, they meet their contact. After that, we lose them.`)}</p>`}
     <div class="clue"><b class="k">${tr('Signalement','Description')}</b><span>${baseDesc(C.T,C.st)}</span></div>
-    <div class="clue"><b class="k">${tr('Complication','Complication')}</b><span>${tr(`${['Un figurant porte','Deux figurants portent','Trois figurants portent'][of.stars-1]} exactement la même tenue. Seule son habitude la trahira.`,`${['One extra wears','Two extras wear','Three extras wear'][of.stars-1]} the exact same outfit. Only the target's habit will give them away.`)}</span></div>
+    <div class="clue"><b class="k">${tr('Complication','Complication')}</b><span>${tr(`${['Un figurant porte','Deux figurants portent','Trois figurants portent','Quatre figurants portent'][nS-1]} exactement la même tenue. Seule son habitude la trahira.`,`${['One extra wears','Two extras wear','Three extras wear','Four extras wear'][nS-1]} the exact same outfit. Only the target's habit will give them away.`)}</span></div>
+    ${twx?`<div class="clue"><b class="k">${tr('Attention','Warning')}</b><span>${twx}</span></div>`:''}
     <div class="clue"><b class="k">${tr('Risque','Risk')}</b><span>${risk(of.stars)}</span></div>
     <div class="clue"><b class="k">${tr('Rémunération','Fee')}</b><span class="money">${of.prime} F</span></div>
-    <div class="btns col"><button class="pb red big" id="bMk">${tr('Accepter le contrat','Accept the contract')}</button><button class="lnk" id="bX">${tr('Refuser et revenir au Bureau','Decline and return to the Bureau')}</button></div>`);
+    <div class="btns col"><button class="pb red big" id="bMk">${tr('Accepter le contrat','Accept the contract')}</button><button class="lnk" id="bX">${rd?tr('Revenir au Bureau','Back to the Bureau'):tr('Refuser et revenir au Bureau','Decline and return to the Bureau')}</button></div>`,rd?'redbrief':'');
   $('bX').onclick=()=>{SFX.page();showHQ()};
   $('bMk').onclick=()=>{SFX.page();startInvestigation()};
 }
@@ -1531,7 +1568,7 @@ function worldToPhoto(ph,x,y){const cam=photoCam(ph);return{x:(x-cam.cx+PVW/2)*c
 /* ---------- Fiche cible ---------- */
 function ficheHTML(){
   const T=C.T,cl=C.clues,tic=TICS[C.tic],rdv=M.locs[C.rdv];
-  const n=Math.max(0,C.st-(C.bought.pot?1:0));
+  const n=Math.max(0,nSosies()-(C.bought.pot?1:0));
   return`<div class="fiche"><span id="fp"></span><div style="min-width:0">
       <div class="clue"><b class="k">${tr('Signalement','Description')}</b><span>${cl.sig?lookText(T):lookTextMasked(T,C.mask)}</span></div>
       <div class="clue"><b class="k">${tr('Habitude','Habit')}</b><span>${cl.tic?`<b>${tic.n}.</b> ${tr('La cible','The target')} ${tic.d}.`:`<span class="no">${tr('Inconnue.','Unknown.')}</span>`}</span></div>
@@ -1568,16 +1605,18 @@ function startSniper(){
   const st=C.st,T=C.T;
   const crowd=[];
   const others=[0,1,2,3,4].filter(l=>l!==C.rdv);shuffle(others);
-  const tg=mkNpc(T,C.tic,{kind:'target',isTarget:true,after:'leave',plan:[{li:others[0],d:7},{li:others[1],d:7},{li:C.rdv,d:22}]});
+  // le rendez-vous de midi raccourcit avec le grade ; « rendez-vous éclair » : encore plus court
+  const rdvD=Math.max(9,(22-1.5*C.lv)*(C.tw.short?.55:1));
+  const tg=mkNpc(T,C.tic,{kind:'target',isTarget:true,after:'leave',plan:[{li:others[0],d:7},{li:others[1],d:7},{li:C.rdv,d:rdvD}]});
   placeAt(tg,others[2]);tg.timer=2.5;crowd.push(tg);
-  const nS=Math.max(0,st-(C.bought.pot?1:0));const used=[C.tic];
+  const nS=Math.max(0,nSosies()-(C.bought.pot?1:0));const used=[C.tic];
   for(let i=0;i<nS;i++){const tic=pickTic(3,1,T,used);used.push(tic);const so=mkNpc(T,tic,{kind:'sosie'});
     if(i===0)so.plan=[{li:others[1],d:6},{li:C.rdv,d:16}];
     placeAt(so,ri(0,4));crowd.push(so)}
   // gens qui collent à la description de base
   const nb=[3,3,4][st-1];
   for(let i=0;i<nb;i++){const L=genLook(T.genre);L.manteau=T.manteau;if(st===1)L.chapeau=T.chapeau;if(sig(L)===sig(T))L.acc=pick(ACC.filter(a=>a!==T.acc));crowd.push(mkNpc(L,Math.random()<.55?pickTic(3,1,L):null))}
-  const total=[13,16,19][st-1];
+  const total=[13,16,19][st-1]+C.lv;  // la foule s'épaissit avec le grade
   while(crowd.length<total){let L;do{L=genLook()}while(sig(L)===sig(T));crowd.push(mkNpc(L,Math.random()<.55?pickTic(3,1,L):null))}
   crowd.forEach(n=>{if(n.kind!=='target'&&!(n.kind==='sosie'&&n.plan))placeAt(n,ri(0,4));else if(n.kind==='sosie'&&n.plan&&!n.x)placeAt(n,ri(0,4))});
   const Z=zooms();
@@ -1715,7 +1754,12 @@ function showResult(){
   const win=S.end==='win';
   const st=[[C.good===3,tr('Renseignement complet','Full intelligence')],[win,tr('Cible neutralisée','Target neutralised')],[win&&S.misses===0,tr('Aucun tir manqué','No missed shot')],[win&&S.head,tr('Tir à la tête','Head shot')]];
   const n=st.filter(s=>s[0]).length;const prime=win?C.of.prime+(n-1)*40:0;
-  SAVE.contrats++;if(win){SAVE.reussis++;SAVE.rep++}SAVE.francs+=prime;SAVE.offers=null;persist();
+  const rd=C.red>=0?RED[C.red]:null;
+  SAVE.contrats++;if(win){SAVE.reussis++;SAVE.rep++}SAVE.francs+=prime;
+  if(rd){if(!win)SAVE.redOffer=null}   // dossier rouge raté : il reste ouvert, avec une nouvelle situation
+  else SAVE.offers=null;
+  const gradeBefore=SAVE.grade,opened=rd&&win?redSucceeded(C.red):[];
+  persist();
   MUS.fadeOut();win?SFX.win():SFX.fail();
   let why='';
   if(S.end==='innocent'){const v=S.victim;why=v.kind==='sosie'?tr('Vous avez abattu un sosie. La cible a profité de la confusion pour disparaître.','You shot a double. The target used the confusion to vanish.'):tr('Vous avez abattu un civil. Le contrat est annulé.','You shot a civilian. The contract is void.')}
@@ -1723,15 +1767,18 @@ function showResult(){
   if(S.end==='abandon')why=tr('Vous avez quitté votre position. Le contrat est annulé.','You left your position. The contract is void.');
   const hm=`${gameClock.h}:${String(gameClock.m).padStart(2,'0')}`;
   if(win)why=tr(`${q(aliasOf(C.of))} a été neutralisé${C.T.genre==='femme'?'e':''} à ${gameClock.h}\u00a0h\u00a0${String(gameClock.m).padStart(2,'0')}. Le Bureau prend acte.`,`${q(aliasOf(C.of))} was neutralised at ${hm}. The Bureau takes note.`);
-  const unlocked=win&&MAPK.find(k=>MAPS[k].unlock===SAVE.rep);
+  if(rd&&win)why+=' '+tr(rd.win,rd.winEn);
+  if(rd&&!win)why+=' '+tr('Le dossier rouge reste ouvert : vous pourrez le reprendre depuis le Bureau.','The red file stays open: you can take it up again from the Bureau.');
+  const promo=rd&&win&&C.red<RED.length-1?SAVE.grade:0;
   modal(`<span class="stamp ${win?'ok':''}">${win?tr('Exécuté','Done'):tr('Échec','Failed')}</span>${dh(fileNo(C.of),tr('Rapport de mission','Mission report'))}<h2>${win?tr('Contrat exécuté','Contract completed'):tr('Contrat perdu','Contract lost')}</h2>
     <p>${why}</p>${win?'':`<p class="small">${tr('Pour mémoire, la cible','For the record, the target')} ${TICS[C.tic].d}.</p>`}
     <h3>${tr('Évaluation','Assessment')}</h3>
     <div class="eval">${st.map(s=>`<div class="${s[0]?'ok':''}"><i></i>${s[1]}</div>`).join('')}</div>
     <div class="total"><span>${tr('Prime versée','Fee paid')}</span><span class="money">${prime} F</span></div>
-    ${unlocked?`<p class="notice">${tr('Nouveau secteur accessible : ','New sector available: ')}<b>${MAPS[unlocked].name}</b>.</p>`:''}
-    <div class="btns"><button class="pb red big wide" id="bHQ">${tr('Retour au Bureau','Back to the Bureau')}</button></div>`);
-  $('bHQ').onclick=()=>{SFX.page();S=null;C=null;sprClear();showHQ()};
+    ${promo&&promo>gradeBefore?`<p class="notice">${tr('Promotion : vous passez au grade ','Promotion: you are now ')}<b>${gradeName(promo)}</b>.${opened.length?tr(' Nouveau secteur accessible : ',' New sector available: ')+`<b>${opened.map(k=>MAPS[k].name).join(', ')}</b>.`:''}</p>`:''}
+    <div class="btns"><button class="pb red big wide" id="bHQ">${rd&&win&&SAVE.fin&&C.red===RED.length-1?tr('Lire la suite','Read on'):tr('Retour au Bureau','Back to the Bureau')}</button></div>`,rd?'redbrief':'');
+  const ending=rd&&win&&C.red===RED.length-1;
+  $('bHQ').onclick=()=>{SFX.page();S=null;C=null;sprClear();if(ending)showEnding(showHQ);else showHQ()};
 }
 
 /* =========================================================
@@ -1909,7 +1956,7 @@ function mgScreenToWorld(cam,sx,sy){const V=mgView(),k=V.w/cam.w;return{x:cam.x+
 function mgTenue(){
   MODE='desk';
   const ph=C.photos[0];if(!ph.base)renderPhotoBase(ph);
-  const T=C.T,st=C.st,showT=[4.2,3.2,2.4][st-1];
+  const T=C.T,st=C.st,showT=[4.2,3.2,2.4][st-1]*(1-.05*(C.lv||0));  // le cliché s'efface plus vite quand le grade monte
   const others=ph.people.filter(p=>!p.isT).map(p=>p.look);
   const opts=(val,pool,all,n)=>{const s=[val];for(const v of shuffle(pool.slice()))if(!s.includes(v)&&s.length<n)s.push(v);for(const v of shuffle(all.slice()))if(!s.includes(v)&&s.length<n)s.push(v);return shuffle(s)};
   const n=[4,5,5][st-1];
@@ -2112,13 +2159,15 @@ function showDebrief(){
   C.good=MG_ORDER.filter(id=>C.res[id]).length;
   const draw=()=>{
     const v=UI.querySelector('.veil .sheet');
+    const mute=!!(C.tw&&C.tw.noInfo);
     const T=C.T,has={tenue:!C.mask||C.bought.tenue,tic:C.res.tic||C.bought.tic,lieu:C.res.lieu||C.bought.lieu};
     const val={tenue:lookText(T),tic:TICS[C.tic].n,lieu:tr('Rendez-vous ','Meeting ')+M.locs[C.rdv].a};
     v.innerHTML=`${dh(fileNo(C.of),tr('Fonds : ','Funds: ')+SAVE.francs+' F')}<span class="tag">${tr(`Synthèse : ${C.good} ${plural(C.good,'information acquise','informations acquises')} sur 3`,`Summary: ${C.good} of 3 intel secured`)}</span><h2>${tr('Ce que nous savons','What we know')}</h2>
-      ${MG_ORDER.map(id=>`<div class="offer ${has[id]?'':'miss'}"><b>${MG_INFO[id].k}</b><small>${has[id]?val[id]+'.':id==='tenue'?lookTextMasked(T,C.mask)+tr('. Un indicateur peut compléter.','. An informant can fill in the gaps.'):tr('Inconnu. Un indicateur peut vous le vendre.','Unknown. An informant can sell it to you.')}</small>${has[id]?`<span class="ok">${C.bought[id]?tr('Acheté','Bought'):tr('Acquis','Secured')}</span>`:`<button class="pb sm" data-b="${id}" ${SAVE.francs<priceOf(id)?'disabled':''}>${priceOf(id)} F</button>`}</div>`).join('')}
-      ${nBought()&&nBought()<3?`<p class="small">${tr('Les indicateurs ont senti votre intérêt : leurs prix montent.','The informants sense your interest: their prices are going up.')}</p>`:''}
+      ${MG_ORDER.map(id=>`<div class="offer ${has[id]?'':'miss'}"><b>${MG_INFO[id].k}</b><small>${has[id]?val[id]+'.':id==='tenue'?lookTextMasked(T,C.mask)+(mute?'.':tr('. Un indicateur peut compléter.','. An informant can fill in the gaps.')):mute?tr('Inconnu.','Unknown.'):tr('Inconnu. Un indicateur peut vous le vendre.','Unknown. An informant can sell it to you.')}</small>${has[id]?`<span class="ok">${C.bought[id]?tr('Acheté','Bought'):tr('Acquis','Secured')}</span>`:mute?`<span class="ok mute">${tr('Muet','Silent')}</span>`:`<button class="pb sm" data-b="${id}" ${SAVE.francs<priceOf(id)?'disabled':''}>${priceOf(id)} F</button>`}</div>`).join('')}
+      ${mute?`<p class="notice">${tr('Les indicateurs ont été payés par la Volière : aucun ne vous vendra quoi que ce soit.','The Aviary has paid off the informants: none of them will sell you anything.')}</p>`:''}
+      ${!mute&&nBought()&&nBought()<3?`<p class="small">${tr('Les indicateurs ont senti votre intérêt : leurs prix montent.','The informants sense your interest: their prices are going up.')}</p>`:''}
       <h3>${tr('Services','Services')}</h3>
-      ${['cafe','pot'].filter(id=>id!=='pot'||C.st>1).map(id=>{const o=EXTRAS[id],p=Array.isArray(o.p)?o.p[C.st-1]:o.p,b=C.bought[id];return`<div class="offer"><b>${o.n}</b><small>${o.d}</small>${b?`<span class="ok">${tr('Acheté','Bought')}</span>`:`<button class="pb sm" data-x="${id}" ${SAVE.francs<p?'disabled':''}>${p} F</button>`}</div>`}).join('')}
+      ${['cafe','pot'].filter(id=>id!=='pot'||(C.st>1&&!mute)).map(id=>{const o=EXTRAS[id],p=Array.isArray(o.p)?o.p[C.st-1]:o.p,b=C.bought[id];return`<div class="offer"><b>${o.n}</b><small>${o.d}</small>${b?`<span class="ok">${tr('Acheté','Bought')}</span>`:`<button class="pb sm" data-x="${id}" ${SAVE.francs<p?'disabled':''}>${p} F</button>`}</div>`}).join('')}
       <div class="btns"><button class="pb red big wide" id="bFi">${tr('Établir la fiche de tir','Prepare the target sheet')}</button></div>`;
     v.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{const id=b.dataset.b,p=priceOf(id);if(SAVE.francs<p)return;SAVE.francs-=p;C.bought[id]=1;persist();SFX.coin();draw()});
     v.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{const id=b.dataset.x,o=EXTRAS[id],p=Array.isArray(o.p)?o.p[C.st-1]:o.p;if(SAVE.francs<p)return;SAVE.francs-=p;C.bought[id]=1;persist();SFX.coin();draw()});
@@ -2127,6 +2176,162 @@ function showDebrief(){
       C.clues={sig:!C.mask,tic:!!(C.res.tic||C.bought.tic),rdv:!!(C.res.lieu||C.bought.lieu)};showFiche(true)};
   };
   modal('');draw();
+}
+
+/* =========================================================
+   CARRIÈRE (v1.1) : grades, dossiers rouges, fin, notes de mise à jour
+   ---------------------------------------------------------
+   - Chaque contrat réussi rapporte 1 point de réputation (SAVE.rep).
+   - À certains seuils, un dossier rouge apparaît au Bureau. Le réussir fait monter
+     d'un grade (SAVE.grade = nombre de dossiers rouges réussis) et ouvre de nouvelles cartes.
+   - Le cinquième dossier rouge clôt l'histoire (SAVE.fin) ; les contrats continuent ensuite.
+   - Le grade règle aussi la difficulté des contrats ordinaires (voir careerLv et ses usages).
+   ========================================================= */
+const VERSION='1.1';
+
+const GRADES=[
+  {fr:'Recrue',en:'Recruit'},
+  {fr:'Agent',en:'Agent'},
+  {fr:'Agent confirmé',en:'Senior agent'},
+  {fr:'Spécialiste',en:'Specialist'},
+  {fr:'As du Bureau',en:'Bureau ace'},
+  {fr:'Le Fantôme',en:'The Ghost'},
+];
+const gradeName=g=>tr(GRADES[g].fr,GRADES[g].en);
+
+/* Les cinq dossiers rouges : la Volière, un réseau dont les membres portent des noms d'oiseaux.
+   rep : contrats réussis nécessaires pour que le dossier apparaisse.
+   look : traits imposés à la cible. tw : complication (noInfo : indicateurs muets ;
+   short : rendez-vous éclair ; extra : un sosie de plus). */
+const RED=[
+  {rep:2,map:'tilleuls',stars:1,prime:420,n:'La Pie',en:'The Magpie',look:{genre:'femme'},tw:{},
+   brief:["Trois de nos agents sont tombés ce mois-ci. Chaque fois, l'adversaire savait où les attendre. Quelqu'un vend nos dossiers.","Nous soupçonnons un réseau : la Volière. Ses membres portent des noms d'oiseaux. La Pie relève leur courrier. Elle passe ce matin sur la place des Tilleuls. — A."],
+   briefEn:["Three of our agents fell this month. Each time, the enemy knew where to wait for them. Someone is selling our files.","We suspect a network: the Aviary. Its members go by the names of birds. The Magpie collects their mail. She crosses Lindens Square this morning. — A."],
+   win:"Dans la doublure du manteau de la Pie : une plume de geai, et un reçu de consigne du port aux Mouettes. Quelqu'un y a déposé un paquet pour la Volière.",
+   winEn:"In the lining of the Magpie's coat: a jay's feather, and a left-luggage ticket from Gull Harbour. Someone has dropped off a parcel there for the Aviary."},
+  {rep:5,map:'port',stars:2,prime:560,n:'Le Hibou',en:'The Owl',look:{genre:'homme'},tw:{noInfo:1},
+   brief:["Le paquet de la consigne contenait des photographies : nos propres planques, prises de l'intérieur. Le Hibou est le photographe de la Volière.","Il travaille la nuit et traîne le jour sur le port. Les indicateurs du quai ont été payés avant nous : cette fois, personne ne vous vendra rien. — A."],
+   briefEn:["The parcel at the left-luggage office held photographs: our own safe houses, taken from the inside. The Owl is the Aviary's photographer.","He works at night and idles on the harbour by day. The dockside informants were paid before we got to them: this time, nobody will sell you anything. — A."],
+   win:"Le Hibou portait un appareil chargé. Sur la dernière photo : un couloir du Bureau, et une porte que seuls les cadres peuvent ouvrir. La taupe est chez nous.",
+   winEn:"The Owl carried a loaded camera. On the last frame: a corridor inside the Bureau, and a door only senior staff can open. The mole is one of us."},
+  {rep:9,map:'foire',stars:3,prime:700,n:'La Mouette',en:'The Gull',look:{genre:'femme'},tw:{short:1},
+   brief:["La Volière se retrouve à la fête foraine, entre les manèges. La Mouette porte les messages d'un oiseau à l'autre.","Elle ne s'attarde jamais : à son rendez-vous de midi, vous n'aurez que quelques secondes. — A."],
+   briefEn:["The Aviary meets at the funfair, between the rides. The Gull carries messages from one bird to the next.","She never lingers: at her noon meeting, you will have only a few seconds. — A."],
+   win:"Le message de la Mouette n'avait qu'un destinataire : « Au Coucou ». Le coucou pond ses œufs dans le nid des autres. Notre taupe a un nom.",
+   winEn:"The Gull's message had a single addressee: “To the Cuckoo”. The cuckoo lays its eggs in other birds' nests. Our mole has a name."},
+  {rep:13,map:'port',stars:3,prime:850,n:'Le Corbeau',en:'The Raven',look:{genre:'homme'},tw:{extra:1},
+   brief:["Le Corbeau dirige la Volière. Il sait que nous approchons : il a fait habiller un figurant de plus à son image.","Abattez-le, et la Volière n'a plus de tête. Le Coucou, lui, devra sortir du nid. — A."],
+   briefEn:["The Raven runs the Aviary. He knows we are closing in: he has had one more extra dressed in his likeness.","Take him down, and the Aviary loses its head. The Cuckoo will have to leave the nest. — A."],
+   win:"Dans la poche du Corbeau, une seule clé, en laiton, numérotée. C'est une clé des archives du Bureau. Le Chef vous félicite par écrit, et signe comme toujours d'une seule lettre : « A. »",
+   winEn:"In the Raven's pocket, a single numbered brass key. It opens the Bureau's archives. The Chief congratulates you in writing, and signs, as always, with a single letter: “A.”"},
+  {rep:17,map:'tilleuls',stars:3,prime:1000,n:'Le Coucou',en:'The Cuckoo',look:{genre:'homme',chapeau:'haut',acc:'canne'},tw:{extra:1},from:'odette',
+   brief:["Ce dossier ne vient pas du Bureau. Je suis l'archiviste. La clé du Corbeau ouvre mon armoire, et une seule autre personne en possède le double : le Chef.","Il ne démantelait pas la Volière. Il effaçait, par votre main, les seuls témoins qui connaissaient son visage. À midi, place des Tilleuls, il rencontre son acheteur. Là où tout a commencé. — Odette"],
+   briefEn:["This file does not come from the Bureau. I am the archivist. The Raven's key opens my cabinet, and only one other person holds a copy: the Chief.","He was not dismantling the Aviary. Through your hand, he was erasing the only witnesses who knew his face. At noon, on Lindens Square, he meets his buyer. Where it all began. — Odette"],
+   win:"Le Coucou est tombé au pied de la fontaine. Son acheteur s'est fondu dans la foule, sa mallette à la main, vide.",
+   winEn:"The Cuckoo fell at the foot of the fountain. His buyer slipped into the crowd, briefcase in hand, empty."},
+];
+const redName=i=>tr(RED[i].n,RED[i].en);
+/* oiseaux de la Volière : jamais utilisés comme alias de contrats ordinaires */
+const BIRD_ALIASES=['Le Corbeau','La Pie','Le Hibou','La Mouette'];
+
+/* cartes ouvertes à chaque grade */
+const MAP_GRADE={tilleuls:0,port:1,foire:2};
+
+/* ---------- sauvegarde : champs de carrière, reprise des anciennes parties ---------- */
+function careerInit(){
+  if(SAVE.grade===undefined){
+    SAVE.grade=0;SAVE.dr=0;SAVE.fin=0;
+    // une partie d'avant la v1.1 garde les cartes qu'elle avait déjà (ouvertes à 2 et 4 contrats)
+    SAVE.maps=['tilleuls'];if(SAVE.rep>=2)SAVE.maps.push('port');if(SAVE.rep>=4)SAVE.maps.push('foire');
+    if(SAVE.contrats)SAVE.oldPlayer=1;
+  }
+  if(!Array.isArray(SAVE.maps))SAVE.maps=['tilleuls'];
+  for(const k in MAP_GRADE)if(SAVE.grade>=MAP_GRADE[k]&&!SAVE.maps.includes(k))SAVE.maps.push(k);
+  SAVE.redOffer=SAVE.redOffer||null;
+  persist();
+}
+careerInit();
+
+/* difficulté des contrats ordinaires : 0 (recrue) à 4 (as du Bureau et au-delà) */
+const careerLv=()=>Math.min(4,SAVE.grade||0);
+/* dossier rouge en attente (index), ou -1 */
+function redAvailable(){const i=SAVE.dr||0;return i<RED.length&&SAVE.rep>=RED[i].rep?i:-1}
+function redOffer(){
+  const i=redAvailable();if(i<0)return null;
+  if(!SAVE.redOffer||SAVE.redOffer.red!==i){SAVE.redOffer={id:Date.now(),red:i,seed:Math.floor(Math.random()*1e9),stars:RED[i].stars,map:RED[i].map,prime:RED[i].prime};persist()}
+  return SAVE.redOffer;
+}
+/* contrats encore nécessaires avant le prochain dossier rouge (0 s'il est ouvert, -1 si l'histoire est finie) */
+function contractsToRed(){const i=SAVE.dr||0;if(i>=RED.length)return-1;return Math.max(0,RED[i].rep-SAVE.rep)}
+
+/* ---------- réussite d'un dossier rouge : promotion ---------- */
+function redSucceeded(i){
+  SAVE.dr=i+1;SAVE.grade=Math.max(SAVE.grade,i+1);SAVE.redOffer=null;
+  SAVE.offers=null;   // nouvelles offres au niveau du nouveau grade (et sur les cartes qui viennent d'ouvrir)
+  const opened=[];for(const k in MAP_GRADE)if(SAVE.grade>=MAP_GRADE[k]&&!SAVE.maps.includes(k)){SAVE.maps.push(k);opened.push(k)}
+  if(i===RED.length-1)SAVE.fin=1;
+  persist();return opened;
+}
+
+/* ---------- bloc carrière du Bureau ---------- */
+function careerHTML(){
+  const g=SAVE.grade||0,left=contractsToRed();
+  const pips=RED.map((_,i)=>`<i class="${i<(SAVE.dr||0)?'on':''}" title="${redName(i)}"></i>`).join('');
+  const line=SAVE.fin?tr('Dossier clos. Les contrats continuent d\'arriver.','Case closed. Contracts keep coming in.')
+    :left===0?tr('Un dossier rouge vous attend.','A red file is waiting for you.')
+    :tr(`Prochain dossier rouge dans ${left} ${plural(left,'contrat exécuté','contrats exécutés')}.`,`Next red file in ${left} completed ${plural(left,'contract','contracts')}.`);
+  return`<div class="career"><div><small>${tr('Grade','Rank')}</small><b>${gradeName(g)}</b></div><div class="rpips" aria-label="${tr('Dossiers rouges','Red files')} ${SAVE.dr||0}/5">${pips}</div><p>${line}</p></div>`;
+}
+/* carte du dossier rouge au Bureau */
+function redCardHTML(o){
+  const R0=RED[o.red],tw=R0.tw;
+  const twist=tw.noInfo?tr('Indicateurs muets.','Informants silenced.'):tw.short?tr('Rendez-vous éclair.','Brief meeting.'):tw.extra?tr('Un sosie de plus.','One extra double.'):tr('Première piste.','First lead.');
+  return`<button class="ccard red" id="bRed" data-n="${tr('Dossier rouge','Red file')} ${o.red+1}/5"><span class="sil" aria-hidden="true">!</span><span>
+    <span class="al">${q(redName(o.red))}</span><span class="mp">${MAPS[o.map].name}</span>
+    <span class="ln"><span>${tr('Risque','Risk')} ${risk(o.stars)}</span><span class="pr">${o.prime} F</span></span>
+    <span class="dt">${twist} ${tr('Promotion à la clé.','Promotion on success.')}</span></span></button>`;
+}
+/* texte de complication d'un dossier rouge (briefing) */
+function redTwistText(tw){
+  if(tw.noInfo)return tr('Les indicateurs ont été payés pour se taire : rien ne s\'achète pendant l\'enquête.','The informants were paid to keep quiet: nothing can be bought during the investigation.');
+  if(tw.short)return tr('La cible ne reste que quelques secondes à son rendez-vous de midi.','The target stays only a few seconds at the noon meeting.');
+  if(tw.extra)return tr('Un sosie de plus que d\'habitude sera sur le terrain.','One more double than usual will be in the field.');
+  return null;
+}
+
+/* ---------- l'épilogue (après le cinquième dossier rouge) ---------- */
+function showEnding(then){
+  MODE='brief';closeModals();ui('');MUS.play('planque');
+  const v=modal(`<span class="stamp">${tr('Classé','Closed')}</span>${dh(tr('Sans en-tête','No letterhead'),tr('Lendemain matin','The next morning'))}<span class="tag">${tr('Épilogue','Epilogue')}</span><h2>${tr('Le Fantôme','The Ghost')}</h2>
+    <p>${tr('Le lendemain, une note tapée à la machine attend sur votre bureau. Pas de signature, pas de tampon.','The next morning, a typewritten note waits on your desk. No signature, no stamp.')}</p>
+    <p class="quote">${tr('« Le Bureau n\'a jamais eu de chef nommé A. Il n\'a jamais employé d\'agent à votre nom. Odette a pris sa retraite hier soir. Continuez. »','“The Bureau never had a chief named A. It never employed an agent by your name. Odette retired last night. Carry on.”')}</p>
+    <p>${tr('Vous n\'existez plus sur le papier. Pour le Bureau, vous êtes désormais le Fantôme.','You no longer exist on paper. To the Bureau, you are now the Ghost.')}</p>
+    <div class="notice">${tr('Titre obtenu : <b>Le Fantôme</b>. Les contrats continuent, au niveau de risque le plus élevé.','Title earned: <b>The Ghost</b>. Contracts keep coming, at the highest risk level.')}</div>
+    <div class="btns"><button class="pb red big wide" id="bEnd">${tr('Retour au Bureau','Back to the Bureau')}</button></div>`,'ending');
+  $('bEnd').onclick=()=>{SFX.page();SAVE.grade=5;persist();then()};
+}
+
+/* ---------- notes de mise à jour ---------- */
+const NOTES=[
+  {v:'1.1',d:['14 octobre 2026','14 October 2026'],fr:[
+    '<b>Carrière au Bureau.</b> Cinq grades, de Recrue à As du Bureau. Les cartes s\'ouvrent avec les promotions.',
+    '<b>Dossiers rouges.</b> Cinq contrats scénarisés contre la Volière, chacun avec sa complication. Le dernier clôt l\'histoire.',
+    '<b>Difficulté progressive.</b> Plus vous montez en grade, plus la foule est dense et le rendez-vous de midi court. Les primes suivent.',
+    'Lunette ×1 et ×2 beaucoup plus fluides sur téléphone.',
+    'Votre partie en cours est conservée, avec les cartes déjà ouvertes.'],
+   en:[
+    '<b>A career at the Bureau.</b> Five ranks, from Recruit to Bureau ace. Promotions open up new maps.',
+    '<b>Red files.</b> Five story contracts against the Aviary, each with its own complication. The last one closes the story.',
+    '<b>Rising difficulty.</b> The higher your rank, the denser the crowd and the shorter the noon meeting. Fees rise to match.',
+    'Much smoother ×1 and ×2 scope on phones.',
+    'Your current game is kept, along with the maps already open.']},
+  {v:'1.0',d:['10 octobre 2026','10 October 2026'],fr:['Première version jouable : trois cartes, trois épreuves d\'enquête, l\'armurerie.'],en:['First playable version: three maps, three investigation trials, the armoury.']},
+];
+function showNotes(then){
+  const v=modal(`${dh(tr('Notes de mise à jour','Release notes'),'v'+VERSION)}<h2>${tr('Quoi de neuf','What\'s new')}</h2>
+    ${NOTES.map(n=>`<h3>${tr('Version','Version')} ${n.v} · ${tr(n.d[0],n.d[1])}</h3><ul class="notes">${tr(n.fr,n.en).map(l=>`<li>${l}</li>`).join('')}</ul>`).join('')}
+    <div class="btns"><button class="pb red big wide" id="bNotes">${tr('Fermer','Close')}</button></div>`);
+  $('bNotes').onclick=()=>{SFX.page();v.remove();SAVE.seenV=VERSION;persist();then&&then()};
 }
 
 

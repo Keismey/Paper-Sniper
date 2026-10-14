@@ -29,9 +29,10 @@ function showTitle(){
   MODE='title';MUS.play('planque');useMap('tilleuls');attract.map='tilleuls';closeModals();
   ui(`<div id="title"><div class="logo"><span class="cls">${tr('Très secret','Top secret')}</span><h1>Paper<br>Sniper</h1><p>${tr('Identifier. Confirmer. Un seul tir.','Identify. Confirm. One shot.')}</p>
     <div class="tgo"><button class="pb red big" id="bPlay">${tr('Prendre le service','Report for duty')}</button>
-    <div class="tstats">${SAVE.contrats?tr(`${SAVE.reussis} ${plural(SAVE.reussis,'contrat exécuté','contrats exécutés')} sur ${SAVE.contrats}. Fonds : ${SAVE.francs} F.`,`${SAVE.reussis} of ${SAVE.contrats} contracts completed. Funds: ${SAVE.francs} F.`):tr('Le Bureau recrute. Discrétion exigée.','The Bureau is hiring. Discretion required.')}</div></div></div>
+    <div class="tstats">${SAVE.contrats?tr(`${gradeName(SAVE.grade)}. ${SAVE.reussis} ${plural(SAVE.reussis,'contrat exécuté','contrats exécutés')} sur ${SAVE.contrats}. Fonds : ${SAVE.francs} F.`,`${gradeName(SAVE.grade)}. ${SAVE.reussis} of ${SAVE.contrats} contracts completed. Funds: ${SAVE.francs} F.`):tr('Le Bureau recrute. Discrétion exigée.','The Bureau is hiring. Discretion required.')}</div></div></div>
     <div class="tfoot"><div class="trow"><button class="pb sm ghost light" id="bLang">${tr('English','Français')}</button><button class="pb sm ghost light" id="bMus">${tr('Son','Sound')} : ${SAVE.music?tr('oui','on'):tr('non','off')}</button></div>
-    <div class="studio">Keismey Studio</div></div></div>`);
+    <div class="studio"><button class="lnk light" id="bVer">v${VERSION}</button> · Keismey Studio</div></div></div>`);
+  $('bVer').onclick=()=>{SFX.page();showNotes()};
   $('bPlay').onclick=()=>{ac();SFX.page();showHQ()};
   $('bLang').onclick=()=>{SAVE.lang=SAVE.lang==='en'?'fr':'en';persist();SFX.tap();document.documentElement.lang=SAVE.lang;showTitle()};
   $('bMus').onclick=()=>{ac();MUS.toggle();showTitle()};
@@ -41,34 +42,42 @@ function showTitle(){
    LA PLANQUE : contrats + armurerie
    ========================================================= */
 function genOffers(){
-  const maps=MAPK.filter(k=>SAVE.rep>=MAPS[k].unlock);
-  const al=shuffle(ALIASES.map((_,i)=>i));
-  const st=[SAVE.rep>=5?2:1,2,SAVE.rep>=1?3:2];
-  return st.map((s,i)=>({id:Date.now()+i,seed:Math.floor(Math.random()*1e9),stars:s,map:i===2&&maps.length>1?maps[maps.length-1]:pick(maps),ai:al[i],prime:[220,330,480][s-1]+ri(0,6)*10}));
+  const maps=MAPK.filter(k=>SAVE.maps.includes(k));
+  const al=shuffle(ALIASES.map((_,i)=>i).filter(i=>!BIRD_ALIASES.includes(ALIASES[i])));
+  const g=careerLv(),st=g>=3?[2,3,3]:g>=2?[2,2,3]:g>=1?[1,2,3]:[1,2,SAVE.rep>=1?3:2];
+  const bonus=1+.15*g;  // les primes montent avec le grade
+  return st.map((s,i)=>({id:Date.now()+i,seed:Math.floor(Math.random()*1e9),stars:s,map:i===2&&maps.length>1?maps[maps.length-1]:pick(maps),ai:al[i],prime:Math.round(([220,330,480][s-1]+ri(0,6)*10)*bonus/10)*10}));
 }
 function showHQ(){
   MODE='hq';MUS.play('planque');closeModals();S=null;
   if(!SAVE.offers){SAVE.offers=genOffers();persist()}
-  attract.map=SAVE.offers[0].map;
-  const next=MAPK.find(k=>SAVE.rep<MAPS[k].unlock);
+  const red=redOffer();
+  attract.map=red?red.map:SAVE.offers[0].map;
+  const next=MAPK.find(k=>!SAVE.maps.includes(k));
   ui(`<div id="hq"><div class="hqtop"><h2>${tr('Le Bureau','The Bureau')}</h2><div class="purse"><small>${tr('Fonds','Funds')}</small><span class="money">${SAVE.francs} F</span></div></div>
-    <p class="hqsub">${tr('Trois dossiers sont ouverts. Choisissez votre cible.','Three files are open. Choose your target.')}${SAVE.rep?tr(` Contrats exécutés : ${SAVE.rep}.`,` Contracts completed: ${SAVE.rep}.`):''}</p>
-    <div class="board">${SAVE.offers.map((o,i)=>`<button class="ccard" data-o="${i}" data-n="${fileNo(o)}"><span class="sil" aria-hidden="true">?</span><span>
+    ${careerHTML()}
+    <p class="hqsub">${red?tr('Un dossier rouge et trois dossiers ordinaires sont ouverts.','One red file and three ordinary files are open.'):tr('Trois dossiers sont ouverts. Choisissez votre cible.','Three files are open. Choose your target.')}${SAVE.rep?tr(` Contrats exécutés : ${SAVE.rep}.`,` Contracts completed: ${SAVE.rep}.`):''}</p>
+    <div class="board">${red?redCardHTML(red):''}${SAVE.offers.map((o,i)=>`<button class="ccard" data-o="${i}" data-n="${fileNo(o)}"><span class="sil" aria-hidden="true">?</span><span>
       <span class="al">${q(aliasOf(o))}</span><span class="mp">${MAPS[o.map].name}</span>
       <span class="ln"><span>${tr('Risque','Risk')} ${risk(o.stars)}</span><span class="pr">${o.prime} F</span></span>
       <span class="dt">${tr(`${o.stars} ${plural(o.stars,'sosie','sosies')}. ${['4','5','6'][o.stars-1]} suspects par cliché.`,`${o.stars} ${plural(o.stars,'double','doubles')}. ${['4','5','6'][o.stars-1]} suspects per photo.`)}</span></span></button>`).join('')}</div>
-    ${next?`<div class="locked">${tr(`${MAPS[next].name} : accès après ${MAPS[next].unlock} contrats exécutés.`,`${MAPS[next].name}: unlocked after ${MAPS[next].unlock} completed contracts.`)}</div>`:''}
-    <div class="hqbtns"><button class="pb paper" id="bArm">${tr('Armurerie','Armoury')}</button><button class="pb sm ghost light" id="bMus">${tr('Son','Sound')} : ${SAVE.music?tr('oui','on'):tr('non','off')}</button><button class="pb sm ghost light" id="bTitle">${tr('Quitter','Exit')}</button></div>
-    ${TEST?`<div class="testp"><b>Mode test</b><button class="pb sm" id="tMoney">+1000 F</button><button class="pb sm" id="tMaps">Toutes les cartes</button><button class="pb sm" id="tSee">Voir la cible : ${SAVE.seeTarget?'oui':'non'}</button><button class="pb sm" id="tReset">Remise à zéro</button></div>`:''}</div>`);
+    ${next?`<div class="locked">${tr(`${MAPS[next].name} : accès au grade ${gradeName(MAP_GRADE[next])}.`,`${MAPS[next].name}: opens at the rank of ${gradeName(MAP_GRADE[next])}.`)}</div>`:''}
+    <div class="hqbtns"><button class="pb paper" id="bArm">${tr('Armurerie','Armoury')}</button><button class="pb sm ghost light" id="bNotesH">${tr('Nouveautés','What\'s new')}</button><button class="pb sm ghost light" id="bMus">${tr('Son','Sound')} : ${SAVE.music?tr('oui','on'):tr('non','off')}</button><button class="pb sm ghost light" id="bTitle">${tr('Quitter','Exit')}</button></div>
+    ${TEST?`<div class="testp"><b>Mode test</b><button class="pb sm" id="tMoney">+1000 F</button><button class="pb sm" id="tMaps">Toutes les cartes</button><button class="pb sm" id="tSee">Voir la cible : ${SAVE.seeTarget?'oui':'non'}</button><button class="pb sm" id="tRed">Dossier rouge suivant</button><button class="pb sm" id="tReset">Remise à zéro</button></div>`:''}</div>`);
   UI.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{SFX.page();openContract(SAVE.offers[+b.dataset.o])});
+  if(red)$('bRed').onclick=()=>{SFX.page();openContract(red)};
+  $('bNotesH').onclick=()=>{SFX.page();showNotes()};
+  // notes de mise à jour : une fois, pour les joueurs qui avaient déjà une partie
+  if(SAVE.oldPlayer&&SAVE.seenV!==VERSION)showNotes();
   $('bArm').onclick=()=>{SFX.page();showArmory()};
   $('bMus').onclick=()=>{ac();MUS.toggle();$('bMus').textContent=tr('Son','Sound')+' : '+(SAVE.music?tr('oui','on'):tr('non','off'))};
   $('bTitle').onclick=()=>{SFX.page();showTitle()};
   if(TEST){
     $('tMoney').onclick=()=>{SAVE.francs+=1000;persist();showHQ()};
-    $('tMaps').onclick=()=>{SAVE.rep=Math.max(SAVE.rep,5);SAVE.offers=null;persist();showHQ()};
+    $('tMaps').onclick=()=>{SAVE.maps=MAPK.slice();SAVE.offers=null;persist();showHQ()};
+    $('tRed').onclick=()=>{const i=SAVE.dr||0;if(i<RED.length){SAVE.rep=Math.max(SAVE.rep,RED[i].rep);persist();showHQ()}};
     $('tSee').onclick=()=>{SAVE.seeTarget=SAVE.seeTarget?0:1;persist();showHQ()};
-    $('tReset').onclick=()=>{SAVE={francs:150,rep:0,contrats:0,reussis:0,upg:{},seed:1,offers:null,tutoP:0,tutoS:0,seeTarget:0,lang:SAVE.lang,music:SAVE.music};persist();showHQ()};
+    $('tReset').onclick=()=>{SAVE={francs:150,rep:0,contrats:0,reussis:0,upg:{},seed:1,offers:null,tutoP:0,tutoS:0,seeTarget:0,lang:SAVE.lang,music:SAVE.music,seenV:VERSION};careerInit();showHQ()};
   }
 }
 function showArmory(){
@@ -102,8 +111,9 @@ function baseDesc(T,st){
 }
 function makeContract(of){
   useMap(of.map);applyLayout(M,of.seed%100000,of.stars);R=mulberry(of.seed);
-  const st=of.stars;
-  const T=genLook();
+  const st=of.stars,rd=of.red!==undefined?RED[of.red]:null;
+  const T=genLook(rd&&rd.look.genre);
+  if(rd){Object.assign(T,rd.look);if(T.genre!=='femme'&&T.chapeau==='cloche')T.chapeau='melon'}
   const tic=pickTic([1,2,3][st-1],st===3?2:1,T);
   const morning=shuffle([0,1,2,3,4]).slice(0,3);
   const rdv=ri(0,4);
@@ -123,23 +133,29 @@ function makeContract(of){
   // la loupe écarte un faux suspect par photo
   photos.forEach(ph=>{const wrong=ph.people.filter(p=>!p.isT);ph.loupe=pick(wrong)});
   R=Math.random;
-  return{of,st,map:of.map,T,tic,rdv,morning,photos,base:st,bought:{},picks:[null,null,null],cur:0,clues:null,offerIds:null};
+  // lv : difficulté selon le grade (dossier rouge : selon son rang) ; tw : complication du dossier rouge
+  return{of,st,map:of.map,T,tic,rdv,morning,photos,base:st,bought:{},picks:[null,null,null],cur:0,clues:null,offerIds:null,
+    red:rd?of.red:-1,lv:rd?Math.min(4,of.red):careerLv(),tw:rd?rd.tw:{}};
 }
+
+/* sosies sur le terrain (avant achat du figurant soudoyé) */
+const nSosies=()=>C.st+(C.tw&&C.tw.extra?1:0);
 
 /* ---------- Briefing ---------- */
 function openContract(of){
   if(!SAVE.tutoP){showProcedure(()=>openContract(of));return}
   C=makeContract(of);attract.map=of.map;
   MODE='brief';closeModals();ui('');
-  const mp=MAPS[of.map];
-  modal(`${dh(fileNo(of))}<span class="tag">${tr('Contrat de neutralisation','Neutralisation contract')}</span>
+  const mp=MAPS[of.map],rd=C.red>=0?RED[C.red]:null,nS=nSosies(),twx=rd&&redTwistText(rd.tw);
+  modal(`${dh(rd?`${tr('Dossier rouge','Red file')} ${C.red+1}/5`:fileNo(of),rd&&rd.from?tr('Hors procédure','Off the record'):tr('Confidentiel','Confidential'))}<span class="tag">${rd?tr('La Volière','The Aviary'):tr('Contrat de neutralisation','Neutralisation contract')}</span>
     <h2>${q(aliasOf(of))}</h2>
-    <p>${tr(`La cible est un agent double. Nos guetteurs l'ont photographiée ce matin ${mp.at}. À midi, elle retrouve son contact. Ensuite, nous perdons sa trace.`,`The target is a double agent. Our spotters photographed them this morning ${mp.at}. At noon, they meet their contact. After that, we lose them.`)}</p>
+    ${rd?tr(rd.brief,rd.briefEn).map(t=>`<p>${t}</p>`).join(''):`<p>${tr(`La cible est un agent double. Nos guetteurs l'ont photographiée ce matin ${mp.at}. À midi, elle retrouve son contact. Ensuite, nous perdons sa trace.`,`The target is a double agent. Our spotters photographed them this morning ${mp.at}. At noon, they meet their contact. After that, we lose them.`)}</p>`}
     <div class="clue"><b class="k">${tr('Signalement','Description')}</b><span>${baseDesc(C.T,C.st)}</span></div>
-    <div class="clue"><b class="k">${tr('Complication','Complication')}</b><span>${tr(`${['Un figurant porte','Deux figurants portent','Trois figurants portent'][of.stars-1]} exactement la même tenue. Seule son habitude la trahira.`,`${['One extra wears','Two extras wear','Three extras wear'][of.stars-1]} the exact same outfit. Only the target's habit will give them away.`)}</span></div>
+    <div class="clue"><b class="k">${tr('Complication','Complication')}</b><span>${tr(`${['Un figurant porte','Deux figurants portent','Trois figurants portent','Quatre figurants portent'][nS-1]} exactement la même tenue. Seule son habitude la trahira.`,`${['One extra wears','Two extras wear','Three extras wear','Four extras wear'][nS-1]} the exact same outfit. Only the target's habit will give them away.`)}</span></div>
+    ${twx?`<div class="clue"><b class="k">${tr('Attention','Warning')}</b><span>${twx}</span></div>`:''}
     <div class="clue"><b class="k">${tr('Risque','Risk')}</b><span>${risk(of.stars)}</span></div>
     <div class="clue"><b class="k">${tr('Rémunération','Fee')}</b><span class="money">${of.prime} F</span></div>
-    <div class="btns col"><button class="pb red big" id="bMk">${tr('Accepter le contrat','Accept the contract')}</button><button class="lnk" id="bX">${tr('Refuser et revenir au Bureau','Decline and return to the Bureau')}</button></div>`);
+    <div class="btns col"><button class="pb red big" id="bMk">${tr('Accepter le contrat','Accept the contract')}</button><button class="lnk" id="bX">${rd?tr('Revenir au Bureau','Back to the Bureau'):tr('Refuser et revenir au Bureau','Decline and return to the Bureau')}</button></div>`,rd?'redbrief':'');
   $('bX').onclick=()=>{SFX.page();showHQ()};
   $('bMk').onclick=()=>{SFX.page();startInvestigation()};
 }
@@ -178,7 +194,7 @@ function worldToPhoto(ph,x,y){const cam=photoCam(ph);return{x:(x-cam.cx+PVW/2)*c
 /* ---------- Fiche cible ---------- */
 function ficheHTML(){
   const T=C.T,cl=C.clues,tic=TICS[C.tic],rdv=M.locs[C.rdv];
-  const n=Math.max(0,C.st-(C.bought.pot?1:0));
+  const n=Math.max(0,nSosies()-(C.bought.pot?1:0));
   return`<div class="fiche"><span id="fp"></span><div style="min-width:0">
       <div class="clue"><b class="k">${tr('Signalement','Description')}</b><span>${cl.sig?lookText(T):lookTextMasked(T,C.mask)}</span></div>
       <div class="clue"><b class="k">${tr('Habitude','Habit')}</b><span>${cl.tic?`<b>${tic.n}.</b> ${tr('La cible','The target')} ${tic.d}.`:`<span class="no">${tr('Inconnue.','Unknown.')}</span>`}</span></div>
@@ -215,16 +231,18 @@ function startSniper(){
   const st=C.st,T=C.T;
   const crowd=[];
   const others=[0,1,2,3,4].filter(l=>l!==C.rdv);shuffle(others);
-  const tg=mkNpc(T,C.tic,{kind:'target',isTarget:true,after:'leave',plan:[{li:others[0],d:7},{li:others[1],d:7},{li:C.rdv,d:22}]});
+  // le rendez-vous de midi raccourcit avec le grade ; « rendez-vous éclair » : encore plus court
+  const rdvD=Math.max(9,(22-1.5*C.lv)*(C.tw.short?.55:1));
+  const tg=mkNpc(T,C.tic,{kind:'target',isTarget:true,after:'leave',plan:[{li:others[0],d:7},{li:others[1],d:7},{li:C.rdv,d:rdvD}]});
   placeAt(tg,others[2]);tg.timer=2.5;crowd.push(tg);
-  const nS=Math.max(0,st-(C.bought.pot?1:0));const used=[C.tic];
+  const nS=Math.max(0,nSosies()-(C.bought.pot?1:0));const used=[C.tic];
   for(let i=0;i<nS;i++){const tic=pickTic(3,1,T,used);used.push(tic);const so=mkNpc(T,tic,{kind:'sosie'});
     if(i===0)so.plan=[{li:others[1],d:6},{li:C.rdv,d:16}];
     placeAt(so,ri(0,4));crowd.push(so)}
   // gens qui collent à la description de base
   const nb=[3,3,4][st-1];
   for(let i=0;i<nb;i++){const L=genLook(T.genre);L.manteau=T.manteau;if(st===1)L.chapeau=T.chapeau;if(sig(L)===sig(T))L.acc=pick(ACC.filter(a=>a!==T.acc));crowd.push(mkNpc(L,Math.random()<.55?pickTic(3,1,L):null))}
-  const total=[13,16,19][st-1];
+  const total=[13,16,19][st-1]+C.lv;  // la foule s'épaissit avec le grade
   while(crowd.length<total){let L;do{L=genLook()}while(sig(L)===sig(T));crowd.push(mkNpc(L,Math.random()<.55?pickTic(3,1,L):null))}
   crowd.forEach(n=>{if(n.kind!=='target'&&!(n.kind==='sosie'&&n.plan))placeAt(n,ri(0,4));else if(n.kind==='sosie'&&n.plan&&!n.x)placeAt(n,ri(0,4))});
   const Z=zooms();
@@ -362,7 +380,12 @@ function showResult(){
   const win=S.end==='win';
   const st=[[C.good===3,tr('Renseignement complet','Full intelligence')],[win,tr('Cible neutralisée','Target neutralised')],[win&&S.misses===0,tr('Aucun tir manqué','No missed shot')],[win&&S.head,tr('Tir à la tête','Head shot')]];
   const n=st.filter(s=>s[0]).length;const prime=win?C.of.prime+(n-1)*40:0;
-  SAVE.contrats++;if(win){SAVE.reussis++;SAVE.rep++}SAVE.francs+=prime;SAVE.offers=null;persist();
+  const rd=C.red>=0?RED[C.red]:null;
+  SAVE.contrats++;if(win){SAVE.reussis++;SAVE.rep++}SAVE.francs+=prime;
+  if(rd){if(!win)SAVE.redOffer=null}   // dossier rouge raté : il reste ouvert, avec une nouvelle situation
+  else SAVE.offers=null;
+  const gradeBefore=SAVE.grade,opened=rd&&win?redSucceeded(C.red):[];
+  persist();
   MUS.fadeOut();win?SFX.win():SFX.fail();
   let why='';
   if(S.end==='innocent'){const v=S.victim;why=v.kind==='sosie'?tr('Vous avez abattu un sosie. La cible a profité de la confusion pour disparaître.','You shot a double. The target used the confusion to vanish.'):tr('Vous avez abattu un civil. Le contrat est annulé.','You shot a civilian. The contract is void.')}
@@ -370,15 +393,18 @@ function showResult(){
   if(S.end==='abandon')why=tr('Vous avez quitté votre position. Le contrat est annulé.','You left your position. The contract is void.');
   const hm=`${gameClock.h}:${String(gameClock.m).padStart(2,'0')}`;
   if(win)why=tr(`${q(aliasOf(C.of))} a été neutralisé${C.T.genre==='femme'?'e':''} à ${gameClock.h}\u00a0h\u00a0${String(gameClock.m).padStart(2,'0')}. Le Bureau prend acte.`,`${q(aliasOf(C.of))} was neutralised at ${hm}. The Bureau takes note.`);
-  const unlocked=win&&MAPK.find(k=>MAPS[k].unlock===SAVE.rep);
+  if(rd&&win)why+=' '+tr(rd.win,rd.winEn);
+  if(rd&&!win)why+=' '+tr('Le dossier rouge reste ouvert : vous pourrez le reprendre depuis le Bureau.','The red file stays open: you can take it up again from the Bureau.');
+  const promo=rd&&win&&C.red<RED.length-1?SAVE.grade:0;
   modal(`<span class="stamp ${win?'ok':''}">${win?tr('Exécuté','Done'):tr('Échec','Failed')}</span>${dh(fileNo(C.of),tr('Rapport de mission','Mission report'))}<h2>${win?tr('Contrat exécuté','Contract completed'):tr('Contrat perdu','Contract lost')}</h2>
     <p>${why}</p>${win?'':`<p class="small">${tr('Pour mémoire, la cible','For the record, the target')} ${TICS[C.tic].d}.</p>`}
     <h3>${tr('Évaluation','Assessment')}</h3>
     <div class="eval">${st.map(s=>`<div class="${s[0]?'ok':''}"><i></i>${s[1]}</div>`).join('')}</div>
     <div class="total"><span>${tr('Prime versée','Fee paid')}</span><span class="money">${prime} F</span></div>
-    ${unlocked?`<p class="notice">${tr('Nouveau secteur accessible : ','New sector available: ')}<b>${MAPS[unlocked].name}</b>.</p>`:''}
-    <div class="btns"><button class="pb red big wide" id="bHQ">${tr('Retour au Bureau','Back to the Bureau')}</button></div>`);
-  $('bHQ').onclick=()=>{SFX.page();S=null;C=null;sprClear();showHQ()};
+    ${promo&&promo>gradeBefore?`<p class="notice">${tr('Promotion : vous passez au grade ','Promotion: you are now ')}<b>${gradeName(promo)}</b>.${opened.length?tr(' Nouveau secteur accessible : ',' New sector available: ')+`<b>${opened.map(k=>MAPS[k].name).join(', ')}</b>.`:''}</p>`:''}
+    <div class="btns"><button class="pb red big wide" id="bHQ">${rd&&win&&SAVE.fin&&C.red===RED.length-1?tr('Lire la suite','Read on'):tr('Retour au Bureau','Back to the Bureau')}</button></div>`,rd?'redbrief':'');
+  const ending=rd&&win&&C.red===RED.length-1;
+  $('bHQ').onclick=()=>{SFX.page();S=null;C=null;sprClear();if(ending)showEnding(showHQ);else showHQ()};
 }
 
 /* =========================================================
