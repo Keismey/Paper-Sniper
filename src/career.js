@@ -7,7 +7,7 @@
    - Le cinquième dossier rouge clôt l'histoire (SAVE.fin) ; les contrats continuent ensuite.
    - Le grade règle aussi la difficulté des contrats ordinaires (voir careerLv et ses usages).
    ========================================================= */
-const VERSION='1.1';
+const VERSION='1.1.1';
 
 const GRADES=[
   {fr:'Recrue',en:'Recruit'},
@@ -133,6 +133,7 @@ function showEnding(then){
 
 /* ---------- notes de mise à jour ---------- */
 const NOTES=[
+  {v:'1.1.1',d:['16 octobre 2026','16 October 2026'],fr:['Nouveau bouton « Recommencer » sur l\'écran titre pour effacer votre carrière et repartir de zéro (avec confirmation).'],en:['New “Start over” button on the title screen to erase your career and start from scratch (with confirmation).']},
   {v:'1.1',d:['14 octobre 2026','14 October 2026'],fr:[
     '<b>Carrière au Bureau.</b> Cinq grades, de Recrue à As du Bureau. Les cartes s\'ouvrent avec les promotions.',
     '<b>Dossiers rouges.</b> Cinq contrats scénarisés contre la Volière, chacun avec sa complication. Le dernier clôt l\'histoire.',

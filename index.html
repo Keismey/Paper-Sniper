@@ -1405,11 +1405,21 @@ function showTitle(){
     <div class="tgo"><button class="pb red big" id="bPlay">${tr('Prendre le service','Report for duty')}</button>
     <div class="tstats">${SAVE.contrats?tr(`${gradeName(SAVE.grade)}. ${SAVE.reussis} ${plural(SAVE.reussis,'contrat exécuté','contrats exécutés')} sur ${SAVE.contrats}. Fonds : ${SAVE.francs} F.`,`${gradeName(SAVE.grade)}. ${SAVE.reussis} of ${SAVE.contrats} contracts completed. Funds: ${SAVE.francs} F.`):tr('Le Bureau recrute. Discrétion exigée.','The Bureau is hiring. Discretion required.')}</div></div></div>
     <div class="tfoot"><div class="trow"><button class="pb sm ghost light" id="bLang">${tr('English','Français')}</button><button class="pb sm ghost light" id="bMus">${tr('Son','Sound')} : ${SAVE.music?tr('oui','on'):tr('non','off')}</button></div>
-    <div class="studio"><button class="lnk light" id="bVer">v${VERSION}</button> · Keismey Studio</div></div></div>`);
+    <div class="studio"><button class="lnk light" id="bVer">v${VERSION}</button>${SAVE.contrats?` · <button class="lnk light" id="bReset">${tr('Recommencer','Start over')}</button>`:''} · Keismey Studio</div></div></div>`);
   $('bVer').onclick=()=>{SFX.page();showNotes()};
   $('bPlay').onclick=()=>{ac();SFX.page();showHQ()};
   $('bLang').onclick=()=>{SAVE.lang=SAVE.lang==='en'?'fr':'en';persist();SFX.tap();document.documentElement.lang=SAVE.lang;showTitle()};
   $('bMus').onclick=()=>{ac();MUS.toggle();showTitle()};
+  if($('bReset'))$('bReset').onclick=()=>{SFX.tap();confirmReset()};
+}
+
+/* ---------- Recommencer à zéro (garde la langue et le son) ---------- */
+function confirmReset(){
+  const v=modal(`${dh(tr('Effacer la carrière','Erase career'))}<h2>${tr('Tout recommencer ?','Start over?')}</h2>
+    <p>${tr('Grade, fonds, équipement, cartes ouvertes et dossiers rouges seront effacés. Impossible de revenir en arrière.','Rank, funds, equipment, open maps and red files will be erased. This cannot be undone.')}</p>
+    <div class="btns"><button class="pb big wide" id="rNo">${tr('Annuler','Cancel')}</button><button class="pb red big wide" id="rYes">${tr('Tout effacer','Erase everything')}</button></div>`);
+  $('rNo').onclick=()=>{SFX.tap();v.remove()};
+  $('rYes').onclick=()=>{SFX.page();SAVE={francs:150,rep:0,contrats:0,reussis:0,upg:{},seed:1,offers:null,tutoP:0,tutoS:0,seeTarget:0,lang:SAVE.lang,music:SAVE.music,seenV:VERSION};careerInit();persist();showTitle()};
 }
 
 /* =========================================================
@@ -2187,7 +2197,7 @@ function showDebrief(){
    - Le cinquième dossier rouge clôt l'histoire (SAVE.fin) ; les contrats continuent ensuite.
    - Le grade règle aussi la difficulté des contrats ordinaires (voir careerLv et ses usages).
    ========================================================= */
-const VERSION='1.1';
+const VERSION='1.1.1';
 
 const GRADES=[
   {fr:'Recrue',en:'Recruit'},
@@ -2313,6 +2323,7 @@ function showEnding(then){
 
 /* ---------- notes de mise à jour ---------- */
 const NOTES=[
+  {v:'1.1.1',d:['16 octobre 2026','16 October 2026'],fr:['Nouveau bouton « Recommencer » sur l\'écran titre pour effacer votre carrière et repartir de zéro (avec confirmation).'],en:['New “Start over” button on the title screen to erase your career and start from scratch (with confirmation).']},
   {v:'1.1',d:['14 octobre 2026','14 October 2026'],fr:[
     '<b>Carrière au Bureau.</b> Cinq grades, de Recrue à As du Bureau. Les cartes s\'ouvrent avec les promotions.',
     '<b>Dossiers rouges.</b> Cinq contrats scénarisés contre la Volière, chacun avec sa complication. Le dernier clôt l\'histoire.',
