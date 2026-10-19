@@ -1721,11 +1721,9 @@ function showTitle(){
   ui(`<div id="title"><div class="logo"><span class="cls">${tr('Très secret','Top secret')}</span><h1>Paper<br>Sniper</h1><p>${tr('Identifier. Confirmer. Un seul tir.','Identify. Confirm. One shot.')}</p>
     <div class="tgo"><button class="pb red big" id="bPlay">${tr('Prendre le service','Report for duty')}</button>
     <div class="tstats">${SAVE.contrats?tr(`${gradeName(SAVE.grade)}. ${SAVE.reussis} ${plural(SAVE.reussis,'contrat exécuté','contrats exécutés')} sur ${SAVE.contrats}. Fonds : ${SAVE.francs} F.`,`${gradeName(SAVE.grade)}. ${SAVE.reussis} of ${SAVE.contrats} contracts completed. Funds: ${SAVE.francs} F.`):tr('Le Bureau recrute. Discrétion exigée.','The Bureau is hiring. Discretion required.')}</div>${SAVE.contrats?`<button class="lnk light treset" id="bReset">${tr('Recommencer à zéro','Start over')}</button>`:''}</div></div>
-    <div class="tfoot"><div class="trow"><button class="pb sm ghost light" id="bLang">${tr('English','Français')}</button><button class="pb sm ghost light" id="bOpt">${tr('Options','Options')}</button></div>
-    <div class="studio"><button class="lnk light" id="bVer">v${VERSION}</button> · Keismey Studio</div></div></div>`);
-  $('bVer').onclick=()=>{SFX.page();showNotes()};
+    <div class="tfoot"><div class="trow"><button class="pb sm ghost light" id="bOpt">${tr('Options','Options')}</button></div>
+    <div class="studio">v${VERSION} · Keismey Studio</div></div></div>`);
   $('bPlay').onclick=()=>{ac();SFX.page();showHQ()};
-  $('bLang').onclick=()=>{SAVE.lang=SAVE.lang==='en'?'fr':'en';persist();SFX.tap();document.documentElement.lang=SAVE.lang;showTitle()};
   $('bOpt').onclick=()=>{SFX.page();showOptions()};
   if($('bReset'))$('bReset').onclick=()=>{SFX.tap();confirmReset()};
 }
@@ -1763,16 +1761,14 @@ function showHQ(){
       <span class="ln"><span>${tr('Risque','Risk')} ${risk(o.stars)}</span><span class="pr">${o.prime} F</span></span>
       <span class="dt">${tr(`${o.stars} ${plural(o.stars,'sosie','sosies')}. ${['4','5','6'][o.stars-1]} suspects par cliché.`,`${o.stars} ${plural(o.stars,'double','doubles')}. ${['4','5','6'][o.stars-1]} suspects per photo.`)}</span></span></button>`).join('')}</div>
     ${next?`<div class="locked">${tr(`${MAPS[next].name} : accès au grade ${gradeName(MAP_GRADE[next])}.`,`${MAPS[next].name}: opens at the rank of ${gradeName(MAP_GRADE[next])}.`)}</div>`:''}
-    <div class="hqbtns"><button class="pb paper" id="bArm">${tr('Armurerie','Armoury')}</button><button class="pb sm ghost light" id="bNotesH">${tr('Nouveautés','What\'s new')}</button><button class="pb sm ghost light" id="bOpt">${tr('Options','Options')}</button><button class="pb sm ghost light" id="bTitle">${tr('Quitter','Exit')}</button></div>
+    <div class="hqbtns"><button class="pb paper" id="bArm">${tr('Armurerie','Armoury')}</button><button class="pb sm ghost light" id="bOpt">${tr('Options','Options')}</button></div>
     ${TEST?`<div class="testp"><b>Mode test</b><button class="pb sm" id="tMoney">+1000 F</button><button class="pb sm" id="tMaps">Toutes les cartes</button><button class="pb sm" id="tSee">Voir la cible : ${SAVE.seeTarget?'oui':'non'}</button><button class="pb sm" id="tRed">Dossier rouge suivant</button><button class="pb sm" id="tReset">Remise à zéro</button></div>`:''}</div>`);
   UI.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{SFX.page();openContract(SAVE.offers[+b.dataset.o])});
   if(red)$('bRed').onclick=()=>{SFX.page();openContract(red)};
-  $('bNotesH').onclick=()=>{SFX.page();showNotes()};
   // notes de mise à jour : une fois, pour les joueurs qui avaient déjà une partie
   if(SAVE.oldPlayer&&SAVE.seenV!==VERSION)showNotes();
   $('bArm').onclick=()=>{SFX.page();showArmory()};
   $('bOpt').onclick=()=>{SFX.page();showOptions()};
-  $('bTitle').onclick=()=>{SFX.page();showTitle()};
   if(TEST){
     $('tMoney').onclick=()=>{SAVE.francs+=1000;persist();showHQ()};
     $('tMaps').onclick=()=>{SAVE.maps=MAPK.slice();SAVE.offers=null;persist();showHQ()};
@@ -2525,7 +2521,7 @@ function showDebrief(){
    - Le cinquième dossier rouge clôt l'histoire (SAVE.fin) ; les contrats continuent ensuite.
    - Le grade règle aussi la difficulté des contrats ordinaires (voir careerLv et ses usages).
    ========================================================= */
-const VERSION='1.1.4';
+const VERSION='1.1.5';
 
 const GRADES=[
   {fr:'Recrue',en:'Recruit'},
@@ -2651,6 +2647,7 @@ function showEnding(then){
 
 /* ---------- notes de mise à jour ---------- */
 const NOTES=[
+  {v:'1.1.5',d:['19 octobre 2026','19 October 2026'],fr:['Menus épurés : la langue, les notes de mise à jour et le retour à l’écran titre se trouvent seulement dans les <b>Options</b> (plus de boutons en double sur l’écran titre et au Bureau).'],en:['Tidier menus: language, release notes and going back to the title screen now live only in <b>Options</b> (no more duplicate buttons on the title screen and in the Office).']},
   {v:'1.1.4',d:['19 octobre 2026','19 October 2026'],fr:['<b>Options</b> (écran titre et Bureau) : volume de la musique et des bruitages, vibrations, langue, notes de mise à jour, sauvegarde à exporter ou importer, signaler un bug, soutenir le studio.','Le jeu te tutoie désormais, comme tous les jeux de Keismey Studio.'],en:['<b>Options</b> (title screen and Bureau): music and sound effects volume, vibration, language, release notes, save export and import, bug report, support the studio.']},
   {v:'1.1.3',d:['19 octobre 2026','19 October 2026'],fr:['Le bouton retour du téléphone revient au menu précédent au lieu de quitter le jeu : il ferme les fenêtres, met le tir en pause, demande confirmation avant d\'abandonner une enquête ou de revenir à l\'écran titre. Depuis l\'écran titre, il propose d\'aller au hub Keismey Studio.'],en:['The phone\'s back button now returns to the previous menu instead of leaving the game: it closes windows, pauses the shot, and asks before abandoning an investigation or going back to the title screen. From the title screen, it offers to go to the Keismey Studio hub.']},
   {v:'1.1.2',d:['19 octobre 2026','19 October 2026'],fr:[

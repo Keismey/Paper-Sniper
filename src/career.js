@@ -7,7 +7,7 @@
    - Le cinquième dossier rouge clôt l'histoire (SAVE.fin) ; les contrats continuent ensuite.
    - Le grade règle aussi la difficulté des contrats ordinaires (voir careerLv et ses usages).
    ========================================================= */
-const VERSION='1.1.4';
+const VERSION='1.1.5';
 
 const GRADES=[
   {fr:'Recrue',en:'Recruit'},
@@ -133,6 +133,7 @@ function showEnding(then){
 
 /* ---------- notes de mise à jour ---------- */
 const NOTES=[
+  {v:'1.1.5',d:['19 octobre 2026','19 October 2026'],fr:['Menus épurés : la langue, les notes de mise à jour et le retour à l’écran titre se trouvent seulement dans les <b>Options</b> (plus de boutons en double sur l’écran titre et au Bureau).'],en:['Tidier menus: language, release notes and going back to the title screen now live only in <b>Options</b> (no more duplicate buttons on the title screen and in the Office).']},
   {v:'1.1.4',d:['19 octobre 2026','19 October 2026'],fr:['<b>Options</b> (écran titre et Bureau) : volume de la musique et des bruitages, vibrations, langue, notes de mise à jour, sauvegarde à exporter ou importer, signaler un bug, soutenir le studio.','Le jeu te tutoie désormais, comme tous les jeux de Keismey Studio.'],en:['<b>Options</b> (title screen and Bureau): music and sound effects volume, vibration, language, release notes, save export and import, bug report, support the studio.']},
   {v:'1.1.3',d:['19 octobre 2026','19 October 2026'],fr:['Le bouton retour du téléphone revient au menu précédent au lieu de quitter le jeu : il ferme les fenêtres, met le tir en pause, demande confirmation avant d\'abandonner une enquête ou de revenir à l\'écran titre. Depuis l\'écran titre, il propose d\'aller au hub Keismey Studio.'],en:['The phone\'s back button now returns to the previous menu instead of leaving the game: it closes windows, pauses the shot, and asks before abandoning an investigation or going back to the title screen. From the title screen, it offers to go to the Keismey Studio hub.']},
   {v:'1.1.2',d:['19 octobre 2026','19 October 2026'],fr:[

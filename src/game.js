@@ -30,11 +30,9 @@ function showTitle(){
   ui(`<div id="title"><div class="logo"><span class="cls">${tr('Très secret','Top secret')}</span><h1>Paper<br>Sniper</h1><p>${tr('Identifier. Confirmer. Un seul tir.','Identify. Confirm. One shot.')}</p>
     <div class="tgo"><button class="pb red big" id="bPlay">${tr('Prendre le service','Report for duty')}</button>
     <div class="tstats">${SAVE.contrats?tr(`${gradeName(SAVE.grade)}. ${SAVE.reussis} ${plural(SAVE.reussis,'contrat exécuté','contrats exécutés')} sur ${SAVE.contrats}. Fonds : ${SAVE.francs} F.`,`${gradeName(SAVE.grade)}. ${SAVE.reussis} of ${SAVE.contrats} contracts completed. Funds: ${SAVE.francs} F.`):tr('Le Bureau recrute. Discrétion exigée.','The Bureau is hiring. Discretion required.')}</div>${SAVE.contrats?`<button class="lnk light treset" id="bReset">${tr('Recommencer à zéro','Start over')}</button>`:''}</div></div>
-    <div class="tfoot"><div class="trow"><button class="pb sm ghost light" id="bLang">${tr('English','Français')}</button><button class="pb sm ghost light" id="bOpt">${tr('Options','Options')}</button></div>
-    <div class="studio"><button class="lnk light" id="bVer">v${VERSION}</button> · Keismey Studio</div></div></div>`);
-  $('bVer').onclick=()=>{SFX.page();showNotes()};
+    <div class="tfoot"><div class="trow"><button class="pb sm ghost light" id="bOpt">${tr('Options','Options')}</button></div>
+    <div class="studio">v${VERSION} · Keismey Studio</div></div></div>`);
   $('bPlay').onclick=()=>{ac();SFX.page();showHQ()};
-  $('bLang').onclick=()=>{SAVE.lang=SAVE.lang==='en'?'fr':'en';persist();SFX.tap();document.documentElement.lang=SAVE.lang;showTitle()};
   $('bOpt').onclick=()=>{SFX.page();showOptions()};
   if($('bReset'))$('bReset').onclick=()=>{SFX.tap();confirmReset()};
 }
@@ -72,16 +70,14 @@ function showHQ(){
       <span class="ln"><span>${tr('Risque','Risk')} ${risk(o.stars)}</span><span class="pr">${o.prime} F</span></span>
       <span class="dt">${tr(`${o.stars} ${plural(o.stars,'sosie','sosies')}. ${['4','5','6'][o.stars-1]} suspects par cliché.`,`${o.stars} ${plural(o.stars,'double','doubles')}. ${['4','5','6'][o.stars-1]} suspects per photo.`)}</span></span></button>`).join('')}</div>
     ${next?`<div class="locked">${tr(`${MAPS[next].name} : accès au grade ${gradeName(MAP_GRADE[next])}.`,`${MAPS[next].name}: opens at the rank of ${gradeName(MAP_GRADE[next])}.`)}</div>`:''}
-    <div class="hqbtns"><button class="pb paper" id="bArm">${tr('Armurerie','Armoury')}</button><button class="pb sm ghost light" id="bNotesH">${tr('Nouveautés','What\'s new')}</button><button class="pb sm ghost light" id="bOpt">${tr('Options','Options')}</button><button class="pb sm ghost light" id="bTitle">${tr('Quitter','Exit')}</button></div>
+    <div class="hqbtns"><button class="pb paper" id="bArm">${tr('Armurerie','Armoury')}</button><button class="pb sm ghost light" id="bOpt">${tr('Options','Options')}</button></div>
     ${TEST?`<div class="testp"><b>Mode test</b><button class="pb sm" id="tMoney">+1000 F</button><button class="pb sm" id="tMaps">Toutes les cartes</button><button class="pb sm" id="tSee">Voir la cible : ${SAVE.seeTarget?'oui':'non'}</button><button class="pb sm" id="tRed">Dossier rouge suivant</button><button class="pb sm" id="tReset">Remise à zéro</button></div>`:''}</div>`);
   UI.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{SFX.page();openContract(SAVE.offers[+b.dataset.o])});
   if(red)$('bRed').onclick=()=>{SFX.page();openContract(red)};
-  $('bNotesH').onclick=()=>{SFX.page();showNotes()};
   // notes de mise à jour : une fois, pour les joueurs qui avaient déjà une partie
   if(SAVE.oldPlayer&&SAVE.seenV!==VERSION)showNotes();
   $('bArm').onclick=()=>{SFX.page();showArmory()};
   $('bOpt').onclick=()=>{SFX.page();showOptions()};
-  $('bTitle').onclick=()=>{SFX.page();showTitle()};
   if(TEST){
     $('tMoney').onclick=()=>{SAVE.francs+=1000;persist();showHQ()};
     $('tMaps').onclick=()=>{SAVE.maps=MAPK.slice();SAVE.offers=null;persist();showHQ()};
