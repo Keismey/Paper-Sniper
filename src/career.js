@@ -7,7 +7,7 @@
    - Le cinquième dossier rouge clôt l'histoire (SAVE.fin) ; les contrats continuent ensuite.
    - Le grade règle aussi la difficulté des contrats ordinaires (voir careerLv et ses usages).
    ========================================================= */
-const VERSION='1.1.2';
+const VERSION='1.1.3';
 
 const GRADES=[
   {fr:'Recrue',en:'Recruit'},
@@ -133,6 +133,7 @@ function showEnding(then){
 
 /* ---------- notes de mise à jour ---------- */
 const NOTES=[
+  {v:'1.1.3',d:['19 octobre 2026','19 October 2026'],fr:['Le bouton retour du téléphone revient au menu précédent au lieu de quitter le jeu : il ferme les fenêtres, met le tir en pause, demande confirmation avant d\'abandonner une enquête ou de revenir à l\'écran titre. Depuis l\'écran titre, il ramène au hub Keismey Studio.'],en:['The phone\'s back button now returns to the previous menu instead of leaving the game: it closes windows, pauses the shot, and asks before abandoning an investigation or going back to the title screen. From the title screen, it takes you to the Keismey Studio hub.']},
   {v:'1.1.2',d:['19 octobre 2026','19 October 2026'],fr:[
     '<b>Accessoires bien visibles.</b> Canne, parapluie, journal, bouquet et valise ont maintenant leur liseré blanc, comme le reste des passants, et sont un peu plus grands. La canne et le parapluie sont tenus légèrement en avant.',
     'Lunette plus fluide sur téléphone : dessin des passants allégé, et si l\'appareil n\'arrive pas à suivre, la résolution baisse légèrement d\'elle-même.'],
@@ -160,3 +161,36 @@ function showNotes(then){
     <div class="btns"><button class="pb red big wide" id="bNotes">${tr('Fermer','Close')}</button></div>`);
   $('bNotes').onclick=()=>{SFX.page();v.remove();SAVE.seenV=VERSION;persist();then&&then()};
 }
+
+/* ---------- bouton retour du téléphone (voir ks-back.js) ----------
+   fenêtre ouverte → fermée ; enquête → abandon confirmé ; toit → fiche de tir (pause) ;
+   Bureau → retour à l'écran titre confirmé ; écran titre → hub. Épreuve en cours : ignoré. */
+function backAsk(title,text,yes,fn,no){
+  const v=modal(`${dh(tr('Bureau','Bureau'),tr('Confirmation','Confirmation'))}<h2>${title}</h2>${text?`<p>${text}</p>`:''}
+    <div class="btns"><button class="pb big wide" id="kNo">${tr('Annuler','Cancel')}</button><button class="pb red big wide" id="kYes">${yes}</button></div>`);
+  v.dataset.back='1';
+  $('kNo').onclick=()=>{SFX.tap();v.remove();no&&no()};
+  $('kYes').onclick=()=>{SFX.page();v.remove();fn()};
+}
+function onBack(){
+  const top=[...UI.querySelectorAll('.veil')].pop();
+  const press=id=>{const b=top&&top.querySelector('#'+id);if(b){b.click();return true}return false};
+  if(top){
+    if(press('kNo')||press('rNo')||press('bNotes'))return;
+    if(press('bHQ'))return;                                     // rapport → Bureau
+    if(MODE==='sniper'){press('bX');return}                     // fiche de tir ouverte → reprendre la visée (tutoriel : ignoré)
+    if(top.querySelector('#bMk')){press('bX');return}           // dossier proposé → Bureau
+    if(MODE==='hq'&&press('bX'))return;                         // armurerie
+    if(top.querySelector('#bGo,#bNx,#bFi,#bRoof'))return askQuit();// entre deux épreuves, synthèse, fiche de tir
+    return;                                                     // note de service, épilogue : il faut lire
+  }
+  if(MODE==='title')return'hub';
+  if(MODE==='hq')return backAsk(tr("Retour à l'écran titre ?",'Back to the title screen?'),'',tr('Écran titre','Title screen'),showTitle);
+  if(MODE==='sniper'&&S&&!S.end&&!S.paused){SFX.page();S.paused=true;S.hold=false;showFiche(false);return}
+}
+function askQuit(){
+  backAsk(tr("Abandonner l'enquête ?",'Abandon the investigation?'),
+    tr("Le dossier reste au tableau, mais l'argent donné aux indicateurs est perdu.",'The file stays on the board, but the money paid to informants is lost.'),
+    tr('Abandonner','Abandon'),()=>{C=null;S=null;MG=null;showHQ()});
+}
+KSBack.init({back:onBack,lang:()=>SAVE.lang==='en'?'en':'fr'});

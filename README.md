@@ -22,6 +22,7 @@ Le jeu est en français et en anglais (détection automatique, bouton sur l'écr
   - `maps.js` les trois cartes, leurs décors et leur placement
   - `career.js` carrière (v1.1) : grades, dossiers rouges de la Volière, épilogue, notes de mise à jour
   - `nav.js` déplacements des passants autour des décors
+  - `ks-back.js` bouton retour du téléphone (fichier commun à tous les jeux du hub) ; ce que fait le retour sur chaque écran est dans `onBack()`, à la fin de `career.js`
   - `game.js` Bureau, briefing, tir, rapport
   - `minigames.js` les trois épreuves d'enquête et la synthèse
   - `shell.html`, `fonts.css` structure, styles et polices
