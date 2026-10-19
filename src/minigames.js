@@ -4,9 +4,9 @@
 let MG=null;
 const MG_ORDER=['tenue','tic','lieu'];
 const MG_INFO={
-  tenue:{n:'Identification',k:'Signalement',d:'Un guetteur a photographié la cible à 9 h. Le cliché sera détruit au bout de quelques secondes. Mémorisez sa tenue, puis établissez le portrait-robot.'},
-  tic:{n:'Surveillance',k:'Habitude',d:'Vous observez la cible au téléobjectif depuis l\'immeuble d\'en face. Déclenchez à l\'instant précis où elle trahit une habitude. Les gestes ordinaires ne comptent pas. Vous disposez de trois pellicules.'},
-  lieu:{n:'Interception',k:'Rendez-vous',d:'Un coursier transporte le lieu du rendez-vous de midi. Il va se mêler à ses collègues, en uniforme identique. Ne le quittez pas des yeux, puis désignez-le.'},
+  tenue:{n:'Identification',k:'Signalement',d:'Un guetteur a photographié la cible à 9 h. Le cliché sera détruit au bout de quelques secondes. Mémorise sa tenue, puis établis le portrait-robot.'},
+  tic:{n:'Surveillance',k:'Habitude',d:'Tu observes la cible au téléobjectif depuis l\'immeuble d\'en face. Déclenche à l\'instant précis où elle trahit une habitude. Les gestes ordinaires ne comptent pas. Tu disposes de trois pellicules.'},
+  lieu:{n:'Interception',k:'Rendez-vous',d:'Un coursier transporte le lieu du rendez-vous de midi. Il va se mêler à ses collègues, en uniforme identique. Ne le quitte pas des yeux, puis désigne-le.'},
 };
 bilf(MG_INFO.tenue,{n:'Identification',k:'Description',d:'A spotter photographed the target at 9 a.m. The print will be destroyed after a few seconds. Memorise the outfit, then build the identikit.'});
 bilf(MG_INFO.tic,{n:'Surveillance',k:'Habit',d:'You watch the target through a telephoto lens from the building opposite. Shoot at the exact moment they give away a habit. Ordinary gestures do not count. You have three rolls of film.'});
@@ -15,7 +15,7 @@ const ACCL=bil({parapluie:'Parapluie',journal:'Journal',valise:'Valise',bouquet:
 const CHAPL=bil({aucun:'Tête nue',melon:'Melon',beret:'Béret',casquette:'Casquette',haut:'Haut-de-forme',cloche:'Cloche',canotier:'Canotier'},{aucun:'No hat',melon:'Bowler',beret:'Beret',casquette:'Flat cap',haut:'Top hat',cloche:'Cloche',canotier:'Boater'});
 /* équilibrage : les indics coûtent cher, et chaque achat d'un même contrat coûte plus que le précédent */
 const INFO_PRICE={tenue:.5,tic:.6,lieu:.4},INFO_STEP=[1,1.4,1.8];
-const EXTRAS={cafe:bilf({n:'Café noir',d:'Votre souffle tient 50 % plus longtemps pendant ce contrat.',p:60},{n:'Black coffee',d:'Your breath lasts 50% longer during this contract.'}),pot:bilf({n:'Figurant soudoyé',d:'Un sosie de moins sur le terrain.',p:[0,200,260]},{n:'Bribed extra',d:'One fewer double in the field.'})};
+const EXTRAS={cafe:bilf({n:'Café noir',d:'Ton souffle tient 50 % plus longtemps pendant ce contrat.',p:60},{n:'Black coffee',d:'Your breath lasts 50% longer during this contract.'}),pot:bilf({n:'Figurant soudoyé',d:'Un sosie de moins sur le terrain.',p:[0,200,260]},{n:'Bribed extra',d:'One fewer double in the field.'})};
 const maskFrac=()=>{const m=C.mask;if(!m)return 0;const n=['coat','hat','acc'].filter(k=>m[k]).length+(m.hatc&&!m.hat?1:0);return Math.max(.34,n/3)};
 const nBought=()=>['tenue','tic','lieu'].filter(k=>C.bought[k]).length;
 const priceOf=id=>Math.round(C.of.prime*INFO_PRICE[id]*INFO_STEP[nBought()]*(id==='tenue'?maskFrac():1)*(1-.25*upg('carnet'))/10)*10;
@@ -71,7 +71,7 @@ function mgTenue(){
   ];
   if(st===3&&T.chapeau!=='aucun')fields.push({id:'hatc',l:tr('Couleur du chapeau','Hat colour'),o:opts(T.hatc,others.map(l=>l.hatc),HATC,4),sw:v=>v,lab:v=>HATCN[v]});
   const pick_={};
-  ui(`<div id="desk"><div class="note">${tr('<b>Mémorisez sa tenue.</b> La cible est entourée en rouge.','<b>Memorise the outfit.</b> The target is circled in red.')}</div>
+  ui(`<div id="desk"><div class="note">${tr('<b>Mémorise sa tenue.</b> La cible est entourée en rouge.','<b>Memorise the outfit.</b> The target is circled in red.')}</div>
     <div class="pola" id="pola"><canvas id="pc" width="${PW}" height="${PH}"></canvas><div class="cap"><span>${tr(['9h00','10h00','11h00'],['9:00 a.m.','10:00 a.m.','11:00 a.m.'])[ph.hour]} — ${M.locs[ph.li].name}</span><span id="pt"></span></div></div>
     <div class="tbar"><i id="tb"></i></div>
     <div id="form" hidden>${dh(tr('Portrait-robot','Identikit'),tr('Phase 1 sur 3','Phase 1 of 3'))}${fields.map(f=>`<div class="fld"><b>${f.l}</b><div class="chs">${f.o.map(v=>`<button class="chp" data-f="${f.id}" data-v="${v}">${f.sw?`<i style="background:${f.sw(v)}"></i>`:''}${f.lab(v)}</button>`).join('')}</div></div>`).join('')}
@@ -95,7 +95,7 @@ function mgTenue(){
     // seul le choix du joueur est corrigé : la bonne réponse n'est jamais révélée
     UI.querySelectorAll('.chp.on').forEach(b=>b.classList.add(b.dataset.v===String(T[b.dataset.f])?'ok':'ko'));
     $('bVal').disabled=true;
-    setTimeout(()=>mgDone('tenue',!bad.length,bad.length?tr(`${known.length?`Éléments établis : ${known.join(', ')}. `:''}Éléments incertains : ${bad.map(nm).join(', ')}. Ils resteront masqués sur votre fiche.`,`${known.length?`Confirmed: ${known.join(', ')}. `:''}Uncertain: ${bad.map(nm).join(', ')}. They will stay hidden on your sheet.`):tr(`Signalement confirmé : ${lookText(T)}.`,`Description confirmed: ${lookText(T)}.`)),900);
+    setTimeout(()=>mgDone('tenue',!bad.length,bad.length?tr(`${known.length?`Éléments établis : ${known.join(', ')}. `:''}Éléments incertains : ${bad.map(nm).join(', ')}. Ils resteront masqués sur ta fiche.`,`${known.length?`Confirmed: ${known.join(', ')}. `:''}Uncertain: ${bad.map(nm).join(', ')}. They will stay hidden on your sheet.`):tr(`Signalement confirmé : ${lookText(T)}.`,`Description confirmed: ${lookText(T)}.`)),900);
   };
 }
 
@@ -120,7 +120,7 @@ function mgTic(){
   const cam={x:clamp(tg.x,190,W-190),y:tg.y-62,w:[330,300,270][st-1]};
   MG={id:'tic',t:0,ei:0,baseY:tg.y,tg,pass,evs,ev:null,films:3,cam,fx:[],flash:0,over:false,msg:null,msgT:0,walk,timeLeft:22};
   ui(`<div class="top"><div class="clk" id="mgc">22</div><div id="films" class="films" aria-label="${tr('Pellicules','Film')}"></div><span class="mgt">${MG_INFO.tic.n}</span></div>
-    <div class="hint2" id="mgh" style="bottom:calc(env(safe-area-inset-bottom,0px) + 136px)">${tr('Déclenchez quand la cible trahit une habitude.','Shoot when the target gives away a habit.')}</div>
+    <div class="hint2" id="mgh" style="bottom:calc(env(safe-area-inset-bottom,0px) + 136px)">${tr('Déclenche quand la cible trahit une habitude.','Shoot when the target gives away a habit.')}</div>
     <div class="bot" style="justify-content:center"><button class="round" id="bShot" style="width:108px;height:108px;background:var(--stamp);color:#fff;font-weight:700;letter-spacing:.14em">${tr('Déclencher','Shoot')}</button></div>`);
   const films=()=>{$('films').innerHTML=[0,1,2].map(i=>`<i class="${i<MG.films?'':'off'}"></i>`).join('')};films();MG.films_=films;
   $('bShot').addEventListener('pointerdown',e=>{e.preventDefault();mgTicShot()});
@@ -135,12 +135,12 @@ function mgTicShot(){
   MG.films--;MG.films_();
   const e=MG.ev,decoy=e&&!e.real&&MG.t>=e.t&&MG.t<=e.t+e.dur+.15;
   MG.msg=occ?tr('Un passant masque la cible. Pellicule perdue.','A passer-by blocks the shot. Film wasted.'):decoy?tr('Geste ordinaire. Pellicule perdue.','Ordinary gesture. Film wasted.'):tr('Rien à signaler. Pellicule perdue.','Nothing to report. Film wasted.');MG.msgT=1.6;
-  if(MG.films<=0){MG.over=true;setTimeout(()=>mgDone('tic',false,tr('Pellicule épuisée. L\'habitude de la cible reste inconnue. Sur le toit, vous devrez la repérer seul.','Out of film. The target\'s habit remains unknown. On the roof, you will have to spot it yourself.')),700)}
+  if(MG.films<=0){MG.over=true;setTimeout(()=>mgDone('tic',false,tr('Pellicule épuisée. L\'habitude de la cible reste inconnue. Sur le toit, tu devras la repérer seul.','Out of film. The target\'s habit remains unknown. On the roof, you will have to spot it yourself.')),700)}
 }
 function mgTicUpdate(dt){
   const G=MG;
   G.t+=dt;G.flash=Math.max(0,G.flash-dt*4);if(G.msgT>0){G.msgT-=dt;if(G.msgT<=0)G.msg=null}
-  if(!G.over){G.timeLeft-=dt;const c=$('mgc');if(c)c.textContent=Math.max(0,Math.ceil(G.timeLeft));if(G.timeLeft<=0){G.over=true;mgDone('tic',false,tr('La cible a quitté votre champ. Son habitude reste inconnue.','The target left your field of view. The habit remains unknown.'));return}}
+  if(!G.over){G.timeLeft-=dt;const c=$('mgc');if(c)c.textContent=Math.max(0,Math.ceil(G.timeLeft));if(G.timeLeft<=0){G.over=true;mgDone('tic',false,tr('La cible a quitté ton champ. Son habitude reste inconnue.','The target left your field of view. The habit remains unknown.'));return}}
   const tg=G.tg;
   // événement courant
   if(G.ev&&G.t>G.ev.t+G.ev.dur)endEv();
@@ -212,7 +212,7 @@ function mgLieu(){
     if(st===3&&k%3===2&&n>=4){let c,e;do{c=ri(0,n-1)}while(c===a||c===b);do{e=ri(0,n-1)}while(e===a||e===b||e===c);swaps.push({t,a:c,b:e,d})}
     t+=d+.08}
   MG={id:'lieu',t:0,cs,real,swaps,slots:cs.map(c=>c.x),cam:{x:cx,y:665,w:Math.max(380,gap*(n+1.2))},end:t+.3,phase:'show',over:false,pickT:0,picked:null};
-  ui(`<div class="top"><span class="mgt" style="margin:auto">${MG_INFO.lieu.n}</span></div><div class="hint2" id="mgh" style="bottom:calc(env(safe-area-inset-bottom,0px) + 70px)">${tr("Repérez le coursier qui porte l'enveloppe.",'Spot the courier carrying the envelope.')}</div>`);
+  ui(`<div class="top"><span class="mgt" style="margin:auto">${MG_INFO.lieu.n}</span></div><div class="hint2" id="mgh" style="bottom:calc(env(safe-area-inset-bottom,0px) + 70px)">${tr("Repère le coursier qui porte l'enveloppe.",'Spot the courier carrying the envelope.')}</div>`);
   SFX.page();
 }
 function mgLieuUpdate(dt){
@@ -226,8 +226,8 @@ function mgLieuUpdate(dt){
     A.x=lerp(xa,xb,e);A.y=750+Math.sin(a*Math.PI)*32;B.x=lerp(xb,xa,e);B.y=750-Math.sin(a*Math.PI)*22;
     A.state=B.state='walk';A.flip=Math.sign(xb-xa);B.flip=-A.flip;A.ph+=dt*10;B.ph+=dt*10}
   for(const c of G.cs){if(c.state==='dwell')c.ph+=dt*2;c.po=poseOf(c,G.t)}
-  if(G.phase==='show'&&G.t>2.2){G.phase='swap';const h=$('mgh');if(h)h.textContent=tr('Suivez-le.','Follow him.')}
-  if(G.phase==='swap'&&G.t>G.end){G.phase='pick';const h=$('mgh');if(h)h.textContent=tr('Désignez le coursier.','Point out the courier.')}
+  if(G.phase==='show'&&G.t>2.2){G.phase='swap';const h=$('mgh');if(h)h.textContent=tr('Suis-le.','Follow him.')}
+  if(G.phase==='swap'&&G.t>G.end){G.phase='pick';const h=$('mgh');if(h)h.textContent=tr('Désigne le coursier.','Point out the courier.')}
 }
 function mgLieuRender(){
   const G=MG,real=G.cs[G.real];
@@ -267,9 +267,9 @@ function showDebrief(){
     const T=C.T,has={tenue:!C.mask||C.bought.tenue,tic:C.res.tic||C.bought.tic,lieu:C.res.lieu||C.bought.lieu};
     const val={tenue:lookText(T),tic:TICS[C.tic].n,lieu:tr('Rendez-vous ','Meeting ')+M.locs[C.rdv].a};
     v.innerHTML=`${dh(fileNo(C.of),tr('Fonds : ','Funds: ')+SAVE.francs+' F')}<span class="tag">${tr(`Synthèse : ${C.good} ${plural(C.good,'information acquise','informations acquises')} sur 3`,`Summary: ${C.good} of 3 intel secured`)}</span><h2>${tr('Ce que nous savons','What we know')}</h2>
-      ${MG_ORDER.map(id=>`<div class="offer ${has[id]?'':'miss'}"><b>${MG_INFO[id].k}</b><small>${has[id]?val[id]+'.':id==='tenue'?lookTextMasked(T,C.mask)+(mute?'.':tr('. Un indicateur peut compléter.','. An informant can fill in the gaps.')):mute?tr('Inconnu.','Unknown.'):tr('Inconnu. Un indicateur peut vous le vendre.','Unknown. An informant can sell it to you.')}</small>${has[id]?`<span class="ok">${C.bought[id]?tr('Acheté','Bought'):tr('Acquis','Secured')}</span>`:mute?`<span class="ok mute">${tr('Muet','Silent')}</span>`:`<button class="pb sm" data-b="${id}" ${SAVE.francs<priceOf(id)?'disabled':''}>${priceOf(id)} F</button>`}</div>`).join('')}
-      ${mute?`<p class="notice">${tr('Les indicateurs ont été payés par la Volière : aucun ne vous vendra quoi que ce soit.','The Aviary has paid off the informants: none of them will sell you anything.')}</p>`:''}
-      ${!mute&&nBought()&&nBought()<3?`<p class="small">${tr('Les indicateurs ont senti votre intérêt : leurs prix montent.','The informants sense your interest: their prices are going up.')}</p>`:''}
+      ${MG_ORDER.map(id=>`<div class="offer ${has[id]?'':'miss'}"><b>${MG_INFO[id].k}</b><small>${has[id]?val[id]+'.':id==='tenue'?lookTextMasked(T,C.mask)+(mute?'.':tr('. Un indicateur peut compléter.','. An informant can fill in the gaps.')):mute?tr('Inconnu.','Unknown.'):tr('Inconnu. Un indicateur peut te le vendre.','Unknown. An informant can sell it to you.')}</small>${has[id]?`<span class="ok">${C.bought[id]?tr('Acheté','Bought'):tr('Acquis','Secured')}</span>`:mute?`<span class="ok mute">${tr('Muet','Silent')}</span>`:`<button class="pb sm" data-b="${id}" ${SAVE.francs<priceOf(id)?'disabled':''}>${priceOf(id)} F</button>`}</div>`).join('')}
+      ${mute?`<p class="notice">${tr('Les indicateurs ont été payés par la Volière : aucun ne te vendra quoi que ce soit.','The Aviary has paid off the informants: none of them will sell you anything.')}</p>`:''}
+      ${!mute&&nBought()&&nBought()<3?`<p class="small">${tr('Les indicateurs ont senti ton intérêt : leurs prix montent.','The informants sense your interest: their prices are going up.')}</p>`:''}
       <h3>${tr('Services','Services')}</h3>
       ${['cafe','pot'].filter(id=>id!=='pot'||(C.st>1&&!mute)).map(id=>{const o=EXTRAS[id],p=Array.isArray(o.p)?o.p[C.st-1]:o.p,b=C.bought[id];return`<div class="offer"><b>${o.n}</b><small>${o.d}</small>${b?`<span class="ok">${tr('Acheté','Bought')}</span>`:`<button class="pb sm" data-x="${id}" ${SAVE.francs<p?'disabled':''}>${p} F</button>`}</div>`}).join('')}
       <div class="btns"><button class="pb red big wide" id="bFi">${tr('Établir la fiche de tir','Prepare the target sheet')}</button></div>`;

@@ -7,7 +7,7 @@
    - Le cinquième dossier rouge clôt l'histoire (SAVE.fin) ; les contrats continuent ensuite.
    - Le grade règle aussi la difficulté des contrats ordinaires (voir careerLv et ses usages).
    ========================================================= */
-const VERSION='1.1.3';
+const VERSION='1.1.4';
 
 const GRADES=[
   {fr:'Recrue',en:'Recruit'},
@@ -30,22 +30,22 @@ const RED=[
    win:"Dans la doublure du manteau de la Pie : une plume de geai, et un reçu de consigne du port aux Mouettes. Quelqu'un y a déposé un paquet pour la Volière.",
    winEn:"In the lining of the Magpie's coat: a jay's feather, and a left-luggage ticket from Gull Harbour. Someone has dropped off a parcel there for the Aviary."},
   {rep:5,map:'port',stars:2,prime:560,n:'Le Hibou',en:'The Owl',look:{genre:'homme'},tw:{noInfo:1},
-   brief:["Le paquet de la consigne contenait des photographies : nos propres planques, prises de l'intérieur. Le Hibou est le photographe de la Volière.","Il travaille la nuit et traîne le jour sur le port. Les indicateurs du quai ont été payés avant nous : cette fois, personne ne vous vendra rien. — A."],
+   brief:["Le paquet de la consigne contenait des photographies : nos propres planques, prises de l'intérieur. Le Hibou est le photographe de la Volière.","Il travaille la nuit et traîne le jour sur le port. Les indicateurs du quai ont été payés avant nous : cette fois, personne ne te vendra rien. — A."],
    briefEn:["The parcel at the left-luggage office held photographs: our own safe houses, taken from the inside. The Owl is the Aviary's photographer.","He works at night and idles on the harbour by day. The dockside informants were paid before we got to them: this time, nobody will sell you anything. — A."],
    win:"Le Hibou portait un appareil chargé. Sur la dernière photo : un couloir du Bureau, et une porte que seuls les cadres peuvent ouvrir. La taupe est chez nous.",
    winEn:"The Owl carried a loaded camera. On the last frame: a corridor inside the Bureau, and a door only senior staff can open. The mole is one of us."},
   {rep:9,map:'foire',stars:3,prime:700,n:'La Mouette',en:'The Gull',look:{genre:'femme'},tw:{short:1},
-   brief:["La Volière se retrouve à la fête foraine, entre les manèges. La Mouette porte les messages d'un oiseau à l'autre.","Elle ne s'attarde jamais : à son rendez-vous de midi, vous n'aurez que quelques secondes. — A."],
+   brief:["La Volière se retrouve à la fête foraine, entre les manèges. La Mouette porte les messages d'un oiseau à l'autre.","Elle ne s'attarde jamais : à son rendez-vous de midi, tu n'auras que quelques secondes. — A."],
    briefEn:["The Aviary meets at the funfair, between the rides. The Gull carries messages from one bird to the next.","She never lingers: at her noon meeting, you will have only a few seconds. — A."],
    win:"Le message de la Mouette n'avait qu'un destinataire : « Au Coucou ». Le coucou pond ses œufs dans le nid des autres. Notre taupe a un nom.",
    winEn:"The Gull's message had a single addressee: “To the Cuckoo”. The cuckoo lays its eggs in other birds' nests. Our mole has a name."},
   {rep:13,map:'port',stars:3,prime:850,n:'Le Corbeau',en:'The Raven',look:{genre:'homme'},tw:{extra:1},
-   brief:["Le Corbeau dirige la Volière. Il sait que nous approchons : il a fait habiller un figurant de plus à son image.","Abattez-le, et la Volière n'a plus de tête. Le Coucou, lui, devra sortir du nid. — A."],
+   brief:["Le Corbeau dirige la Volière. Il sait que nous approchons : il a fait habiller un figurant de plus à son image.","Abats-le, et la Volière n'a plus de tête. Le Coucou, lui, devra sortir du nid. — A."],
    briefEn:["The Raven runs the Aviary. He knows we are closing in: he has had one more extra dressed in his likeness.","Take him down, and the Aviary loses its head. The Cuckoo will have to leave the nest. — A."],
-   win:"Dans la poche du Corbeau, une seule clé, en laiton, numérotée. C'est une clé des archives du Bureau. Le Chef vous félicite par écrit, et signe comme toujours d'une seule lettre : « A. »",
+   win:"Dans la poche du Corbeau, une seule clé, en laiton, numérotée. C'est une clé des archives du Bureau. Le Chef te félicite par écrit, et signe comme toujours d'une seule lettre : « A. »",
    winEn:"In the Raven's pocket, a single numbered brass key. It opens the Bureau's archives. The Chief congratulates you in writing, and signs, as always, with a single letter: “A.”"},
   {rep:17,map:'tilleuls',stars:3,prime:1000,n:'Le Coucou',en:'The Cuckoo',look:{genre:'homme',chapeau:'haut',acc:'canne'},tw:{extra:1},from:'odette',
-   brief:["Ce dossier ne vient pas du Bureau. Je suis l'archiviste. La clé du Corbeau ouvre mon armoire, et une seule autre personne en possède le double : le Chef.","Il ne démantelait pas la Volière. Il effaçait, par votre main, les seuls témoins qui connaissaient son visage. À midi, place des Tilleuls, il rencontre son acheteur. Là où tout a commencé. — Odette"],
+   brief:["Ce dossier ne vient pas du Bureau. Je suis l'archiviste. La clé du Corbeau ouvre mon armoire, et une seule autre personne en possède le double : le Chef.","Il ne démantelait pas la Volière. Il effaçait, par ta main, les seuls témoins qui connaissaient son visage. À midi, place des Tilleuls, il rencontre son acheteur. Là où tout a commencé. — Odette"],
    briefEn:["This file does not come from the Bureau. I am the archivist. The Raven's key opens my cabinet, and only one other person holds a copy: the Chief.","He was not dismantling the Aviary. Through your hand, he was erasing the only witnesses who knew his face. At noon, on Lindens Square, he meets his buyer. Where it all began. — Odette"],
    win:"Le Coucou est tombé au pied de la fontaine. Son acheteur s'est fondu dans la foule, sa mallette à la main, vide.",
    winEn:"The Cuckoo fell at the foot of the fountain. His buyer slipped into the crowd, briefcase in hand, empty."},
@@ -98,7 +98,7 @@ function careerHTML(){
   const g=SAVE.grade||0,left=contractsToRed();
   const pips=RED.map((_,i)=>`<i class="${i<(SAVE.dr||0)?'on':''}" title="${redName(i)}"></i>`).join('');
   const line=SAVE.fin?tr('Dossier clos. Les contrats continuent d\'arriver.','Case closed. Contracts keep coming in.')
-    :left===0?tr('Un dossier rouge vous attend.','A red file is waiting for you.')
+    :left===0?tr('Un dossier rouge t\'attend.','A red file is waiting for you.')
     :tr(`Prochain dossier rouge dans ${left} ${plural(left,'contrat exécuté','contrats exécutés')}.`,`Next red file in ${left} completed ${plural(left,'contract','contracts')}.`);
   return`<div class="career"><div><small>${tr('Grade','Rank')}</small><b>${gradeName(g)}</b></div><div class="rpips" aria-label="${tr('Dossiers rouges','Red files')} ${SAVE.dr||0}/5">${pips}</div><p>${line}</p></div>`;
 }
@@ -123,9 +123,9 @@ function redTwistText(tw){
 function showEnding(then){
   MODE='brief';closeModals();ui('');MUS.play('planque');
   const v=modal(`<span class="stamp">${tr('Classé','Closed')}</span>${dh(tr('Sans en-tête','No letterhead'),tr('Lendemain matin','The next morning'))}<span class="tag">${tr('Épilogue','Epilogue')}</span><h2>${tr('Le Fantôme','The Ghost')}</h2>
-    <p>${tr('Le lendemain, une note tapée à la machine attend sur votre bureau. Pas de signature, pas de tampon.','The next morning, a typewritten note waits on your desk. No signature, no stamp.')}</p>
-    <p class="quote">${tr('« Le Bureau n\'a jamais eu de chef nommé A. Il n\'a jamais employé d\'agent à votre nom. Odette a pris sa retraite hier soir. Continuez. »','“The Bureau never had a chief named A. It never employed an agent by your name. Odette retired last night. Carry on.”')}</p>
-    <p>${tr('Vous n\'existez plus sur le papier. Pour le Bureau, vous êtes désormais le Fantôme.','You no longer exist on paper. To the Bureau, you are now the Ghost.')}</p>
+    <p>${tr('Le lendemain, une note tapée à la machine attend sur ton bureau. Pas de signature, pas de tampon.','The next morning, a typewritten note waits on your desk. No signature, no stamp.')}</p>
+    <p class="quote">${tr('« Le Bureau n\'a jamais eu de chef nommé A. Il n\'a jamais employé d\'agent à ton nom. Odette a pris sa retraite hier soir. Continue. »','“The Bureau never had a chief named A. It never employed an agent by your name. Odette retired last night. Carry on.”')}</p>
+    <p>${tr('Tu n\'existes plus sur le papier. Pour le Bureau, tu es désormais le Fantôme.','You no longer exist on paper. To the Bureau, you are now the Ghost.')}</p>
     <div class="notice">${tr('Titre obtenu : <b>Le Fantôme</b>. Les contrats continuent, au niveau de risque le plus élevé.','Title earned: <b>The Ghost</b>. Contracts keep coming, at the highest risk level.')}</div>
     <div class="btns"><button class="pb red big wide" id="bEnd">${tr('Retour au Bureau','Back to the Bureau')}</button></div>`,'ending');
   $('bEnd').onclick=()=>{SFX.page();SAVE.grade=5;persist();then()};
@@ -133,6 +133,7 @@ function showEnding(then){
 
 /* ---------- notes de mise à jour ---------- */
 const NOTES=[
+  {v:'1.1.4',d:['19 octobre 2026','19 October 2026'],fr:['<b>Options</b> (écran titre et Bureau) : volume de la musique et des bruitages, vibrations, langue, notes de mise à jour, sauvegarde à exporter ou importer, signaler un bug, soutenir le studio.','Le jeu te tutoie désormais, comme tous les jeux de Keismey Studio.'],en:['<b>Options</b> (title screen and Bureau): music and sound effects volume, vibration, language, release notes, save export and import, bug report, support the studio.']},
   {v:'1.1.3',d:['19 octobre 2026','19 October 2026'],fr:['Le bouton retour du téléphone revient au menu précédent au lieu de quitter le jeu : il ferme les fenêtres, met le tir en pause, demande confirmation avant d\'abandonner une enquête ou de revenir à l\'écran titre. Depuis l\'écran titre, il propose d\'aller au hub Keismey Studio.'],en:['The phone\'s back button now returns to the previous menu instead of leaving the game: it closes windows, pauses the shot, and asks before abandoning an investigation or going back to the title screen. From the title screen, it offers to go to the Keismey Studio hub.']},
   {v:'1.1.2',d:['19 octobre 2026','19 October 2026'],fr:[
     '<b>Accessoires bien visibles.</b> Canne, parapluie, journal, bouquet et valise ont maintenant leur liseré blanc, comme le reste des passants, et sont un peu plus grands. La canne et le parapluie sont tenus légèrement en avant.',
@@ -140,13 +141,13 @@ const NOTES=[
    en:[
     '<b>Clearly visible accessories.</b> Walking sticks, umbrellas, newspapers, bouquets and suitcases now have the same white outline as the rest of the passers-by, and are a little larger. Sticks and umbrellas are held slightly forward.',
     'Smoother scope on phones: lighter drawing of passers-by, and if the device cannot keep up, the resolution drops slightly on its own.']},
-  {v:'1.1.1',d:['16 octobre 2026','16 October 2026'],fr:['Nouveau bouton « Recommencer » sur l\'écran titre pour effacer votre carrière et repartir de zéro (avec confirmation).'],en:['New “Start over” button on the title screen to erase your career and start from scratch (with confirmation).']},
+  {v:'1.1.1',d:['16 octobre 2026','16 October 2026'],fr:['Nouveau bouton « Recommencer » sur l\'écran titre pour effacer ta carrière et repartir de zéro (avec confirmation).'],en:['New “Start over” button on the title screen to erase your career and start from scratch (with confirmation).']},
   {v:'1.1',d:['14 octobre 2026','14 October 2026'],fr:[
     '<b>Carrière au Bureau.</b> Cinq grades, de Recrue à As du Bureau. Les cartes s\'ouvrent avec les promotions.',
     '<b>Dossiers rouges.</b> Cinq contrats scénarisés contre la Volière, chacun avec sa complication. Le dernier clôt l\'histoire.',
-    '<b>Difficulté progressive.</b> Plus vous montez en grade, plus la foule est dense et le rendez-vous de midi court. Les primes suivent.',
+    '<b>Difficulté progressive.</b> Plus tu montes en grade, plus la foule est dense et le rendez-vous de midi court. Les primes suivent.',
     'Lunette ×1 et ×2 beaucoup plus fluides sur téléphone.',
-    'Votre partie en cours est conservée, avec les cartes déjà ouvertes.'],
+    'Ta partie en cours est conservée, avec les cartes déjà ouvertes.'],
    en:[
     '<b>A career at the Bureau.</b> Five ranks, from Recruit to Bureau ace. Promotions open up new maps.',
     '<b>Red files.</b> Five story contracts against the Aviary, each with its own complication. The last one closes the story.',
@@ -176,7 +177,7 @@ function onBack(){
   const top=[...UI.querySelectorAll('.veil')].pop();
   const press=id=>{const b=top&&top.querySelector('#'+id);if(b){b.click();return true}return false};
   if(top){
-    if(press('kNo')||press('rNo')||press('bNotes'))return;
+    if(press('kNo')||press('rNo')||press('bNotes')||press('oX'))return;
     if(press('bHQ'))return;                                     // rapport → Bureau
     if(MODE==='sniper'){press('bX');return}                     // fiche de tir ouverte → reprendre la visée (tutoriel : ignoré)
     if(top.querySelector('#bMk')){press('bX');return}           // dossier proposé → Bureau
@@ -184,7 +185,7 @@ function onBack(){
     if(top.querySelector('#bGo,#bNx,#bFi,#bRoof'))return askQuit();// entre deux épreuves, synthèse, fiche de tir
     return;                                                     // note de service, épilogue : il faut lire
   }
-  if(MODE==='title')return backAsk(tr('Quitter Paper Sniper ?','Leave Paper Sniper?'),tr('Votre carrière est enregistrée. Vous retrouverez les autres jeux de Keismey Studio sur le hub.','Your career is saved. You will find the other Keismey Studio games on the hub.'),tr('Aller au hub','Go to the hub'),()=>KSBack.toHub());
+  if(MODE==='title')return backAsk(tr('Quitter Paper Sniper ?','Leave Paper Sniper?'),tr('Ta carrière est enregistrée. Tu retrouveras les autres jeux de Keismey Studio sur le hub.','Your career is saved. You will find the other Keismey Studio games on the hub.'),tr('Aller au hub','Go to the hub'),()=>KSBack.toHub());
   if(MODE==='hq')return backAsk(tr("Retour à l'écran titre ?",'Back to the title screen?'),'',tr('Écran titre','Title screen'),showTitle);
   if(MODE==='sniper'&&S&&!S.end&&!S.paused){SFX.page();S.paused=true;S.hold=false;showFiche(false);return}
 }
@@ -194,3 +195,31 @@ function askQuit(){
     tr('Abandonner','Abandon'),()=>{C=null;S=null;MG=null;showHQ()});
 }
 KSBack.init({back:onBack,lang:()=>SAVE.lang==='en'?'en':'fr'});
+
+/* ---------- Options (socle commun des jeux Keismey Studio) ---------- */
+function showOptions(){
+  const fromHQ=MODE==='hq',onoff=b=>b?tr('oui','on'):tr('non','off');
+  const v=modal(`${dh(tr('Options','Options'),'v'+VERSION)}<h2>${tr('Options','Options')}</h2>
+    <div class="opt"><label>${tr('Musique','Music')}<input type="range" min="0" max="100" step="5" id="oMv" value="${Math.round(SAVE.mv*100)}"></label>
+    <label>${tr('Bruitages','Sound effects')}<input type="range" min="0" max="100" step="5" id="oSv" value="${Math.round(SAVE.sv*100)}"></label></div>
+    <div class="btns col">
+    <button class="pb sm" id="oVib">${tr('Vibrations','Vibration')} : ${onoff(SAVE.vib!==0)}</button>
+    <button class="pb sm" id="oLang">${tr('Play in English','Jouer en français')}</button>
+    <button class="pb sm" id="oNotes">${tr('Notes de mise à jour','Release notes')}</button>
+    <button class="pb sm" id="oSave">${tr('Sauvegarde : exporter, importer','Save: export, import')}</button>
+    <button class="pb sm" id="oBug">${tr('Signaler un bug','Report a bug')}</button>
+    <button class="pb sm" id="oSup">${tr('Soutenir le studio','Support the studio')}</button>
+    ${fromHQ?`<button class="pb sm" id="oTitle">${tr('Écran titre','Title screen')}</button>`:''}
+    <button class="pb red big wide" id="oX">${tr('Fermer','Close')}</button></div>
+    <p class="vline">v${VERSION} · Keismey Studio</p>`);
+  const vol=(id,k)=>{const r=v.querySelector('#'+id);r.oninput=()=>setVol(k,r.value/100);r.onchange=()=>{if(k==='sv')SFX.tap()}};
+  vol('oMv','mv');vol('oSv','sv');
+  $('oVib').onclick=()=>{SAVE.vib=SAVE.vib===0?1:0;persist();$('oVib').textContent=tr('Vibrations','Vibration')+' : '+onoff(SAVE.vib);if(SAVE.vib&&navigator.vibrate)try{navigator.vibrate(40)}catch(e){}};
+  $('oLang').onclick=()=>{SAVE.lang=SAVE.lang==='en'?'fr':'en';persist();SFX.tap();document.documentElement.lang=SAVE.lang;v.remove();fromHQ?showHQ():showTitle();showOptions()};
+  $('oNotes').onclick=()=>{SFX.page();v.remove();showNotes(showOptions)};
+  $('oSave').onclick=()=>{SFX.page();KS.saveDialog({lang:SAVE.lang,keys:[SKEY],save:persist,file:'paper-sniper',accent:'#c9372c'})};
+  $('oBug').onclick=()=>KS.bug('Paper Sniper',SAVE.lang);
+  $('oSup').onclick=()=>KS.support();
+  if(fromHQ)$('oTitle').onclick=()=>{SFX.page();v.remove();showTitle()};
+  $('oX').onclick=()=>{SFX.page();v.remove()};
+}

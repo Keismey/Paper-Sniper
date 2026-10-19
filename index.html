@@ -80,6 +80,9 @@ button:focus-visible{outline:2px solid var(--manila);outline-offset:3px}
 .pb.ghost{background:transparent;background-image:none;color:var(--ink);box-shadow:inset 0 0 0 1.5px currentColor;text-shadow:none}
 .pb.ghost.light{color:var(--paper)}
 .pb[disabled]{opacity:.38;pointer-events:none}
+.opt label{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0;font:600 15px var(--f-ui);color:var(--ink)}
+.opt input[type=range]{flex:1;max-width:62%;accent-color:var(--stamp)}
+.vline{text-align:center;font:400 12px var(--f-type);color:var(--graphite);margin:14px 0 0}
 .lnk{border:0;background:none;padding:6px 2px;font:400 14px var(--f-type);color:var(--graphite);text-decoration:underline;text-underline-offset:3px}
 
 /* ---------- Documents (feuilles modales) ---------- */
@@ -276,6 +279,152 @@ ul.notes b{color:var(--ink)}
   <div id="splash"><img alt="Keismey Studio" src="data:image/webp;base64,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"></div>
 </div>
 <script>
+/* Keismey Studio — outils communs aux jeux du hub (même fichier dans chaque jeu).
+
+   KS.support()                      ouvre la page de soutien (Ko-fi) dans un nouvel onglet
+   KS.bug(jeu, lang)                 ouvre le formulaire du hub, type « Bug », titre prérempli avec le nom du jeu
+   KS.saveDialog({ jeu, keys, lang })
+                                     fenêtre « Sauvegarde » : exporter (code à copier ou fichier) et importer.
+                                     keys = clés localStorage de la partie ; la première est la sauvegarde principale.
+   Au premier toucher, le jeu demande au navigateur de garder ses données (stockage persistant).
+
+   Import : le code est rangé, la page se recharge, et ce fichier l'écrit dans le stockage AVANT
+   que le jeu ne démarre (le jeu ne peut donc pas l'écraser en sauvegardant au moment de quitter). */
+(function () {
+  'use strict';
+  var DIR = location.pathname.split('/')[1] || '';
+  var PENDING = 'ks-import:' + DIR;
+
+  // 1. import en attente : appliqué avant le jeu
+  try {
+    var p = sessionStorage.getItem(PENDING);
+    if (p) {
+      sessionStorage.removeItem(PENDING);
+      var d = JSON.parse(p);
+      Object.keys(d).forEach(function (k) {
+        if (d[k] === null) localStorage.removeItem(k); else localStorage.setItem(k, d[k]);
+      });
+    }
+  } catch (e) {}
+
+  // 2. stockage persistant, demandé une fois au premier geste du joueur
+  var asked = false;
+  function persist(e) {
+    if (asked || (e && e.isTrusted === false)) return;
+    asked = true;
+    try {
+      if (navigator.storage && navigator.storage.persist && navigator.storage.persisted)
+        navigator.storage.persisted().then(function (ok) { if (!ok) navigator.storage.persist().catch(function () {}); }).catch(function () {});
+    } catch (err) {}
+  }
+  window.addEventListener('pointerup', persist, true);
+  window.addEventListener('keydown', persist, true);
+
+  // 3. textes
+  var TX = {
+    fr: { title: 'Sauvegarde', intro: 'Garde ce code ou le fichier en lieu sûr : il permet de retrouver ta partie sur un autre appareil ou après avoir effacé les données du navigateur.',
+      copy: 'Copier le code', copied: 'Code copié', file: 'Télécharger le fichier', load: 'Charger une partie',
+      paste: 'Colle un code de sauvegarde, ou choisis un fichier.', pick: 'Choisir un fichier', go: 'Charger',
+      confirm: 'Remplacer ta partie actuelle par celle-ci ? Ta partie actuelle sera perdue.', yes: 'Oui, remplacer', no: 'Annuler',
+      bad: 'Code invalide, ou code d’un autre jeu.', close: 'Fermer', empty: 'Aucune partie à sauvegarder pour l’instant.' },
+    en: { title: 'Save', intro: 'Keep this code or the file somewhere safe: it lets you get your game back on another device or after clearing your browser data.',
+      copy: 'Copy the code', copied: 'Code copied', file: 'Download the file', load: 'Load a game',
+      paste: 'Paste a save code, or choose a file.', pick: 'Choose a file', go: 'Load',
+      confirm: 'Replace your current game with this one? Your current game will be lost.', yes: 'Yes, replace', no: 'Cancel',
+      bad: 'Invalid code, or a code from another game.', close: 'Close', empty: 'No game to save yet.' }
+  };
+
+  // 4. code de sauvegarde : KS1.<jeu>.<base64 du JSON>
+  function b64e(s) { return btoa(unescape(encodeURIComponent(s))); }
+  function b64d(s) { return decodeURIComponent(escape(atob(s))); }
+  function makeCode(keys) {
+    var d = {}, any = false;
+    keys.forEach(function (k) { var v = null; try { v = localStorage.getItem(k); } catch (e) {} d[k] = v; if (v !== null) any = true; });
+    return any ? 'KS1.' + DIR + '.' + b64e(JSON.stringify(d)) : '';
+  }
+  function readCode(txt, keys) {
+    try {
+      var m = String(txt || '').replace(/\s+/g, '').match(/^KS1\.([^.]*)\.(.+)$/);
+      if (!m || m[1] !== DIR) return null;
+      var d = JSON.parse(b64d(m[2]));
+      if (!d || typeof d !== 'object' || typeof d[keys[0]] !== 'string') return null;
+      var out = {};
+      keys.forEach(function (k) { out[k] = typeof d[k] === 'string' ? d[k] : null; });
+      return out;
+    } catch (e) { return null; }
+  }
+
+  // 5. fenêtre commune (neutre, sur fond sombre ; la police est celle du jeu)
+  var CSS = '#ks-dlg{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.66);font:inherit;color:#f3ecdf}' +
+    '#ks-dlg .kb{width:min(100%,380px);max-height:calc(100% - 32px);overflow:auto;background:#1d1a22;border:2px solid var(--ks-accent,#c9a45c);border-radius:14px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.5)}' +
+    '#ks-dlg h2{margin:0 0 8px;font-size:20px}#ks-dlg p{margin:0 0 10px;font-size:14px;line-height:1.4;opacity:.9}' +
+    '#ks-dlg textarea{width:100%;box-sizing:border-box;height:84px;margin:0 0 8px;background:#0f0d12;color:#f3ecdf;border:1px solid #4a4452;border-radius:8px;padding:8px;font:12px/1.3 monospace;resize:none}' +
+    '#ks-dlg button{display:block;width:100%;margin:0 0 8px;padding:11px 10px;border-radius:10px;border:0;font:inherit;font-weight:700;font-size:15px;background:#3a3442;color:#f3ecdf;cursor:pointer}' +
+    '#ks-dlg button.ks-main{background:var(--ks-accent,#c9a45c);color:#16121a}#ks-dlg hr{border:0;border-top:1px solid #3a3442;margin:12px 0}' +
+    '#ks-dlg .ks-err{color:#ff8f7a}';
+
+  function saveDialog(o) {
+    var L = TX[o.lang === 'en' ? 'en' : 'fr'], keys = o.keys;
+    if (document.getElementById('ks-dlg')) return;
+    if (!document.getElementById('ks-css')) { var st = document.createElement('style'); st.id = 'ks-css'; st.textContent = CSS; document.head.appendChild(st); }
+    if (o.save) try { o.save(); } catch (e) {}
+    var code = makeCode(keys);
+    var d = document.createElement('div'); d.id = 'ks-dlg'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true');
+    if (o.accent) d.style.setProperty('--ks-accent', o.accent);
+    d.innerHTML = '<div class="kb"><h2>' + L.title + '</h2>' +
+      (code ? '<p>' + L.intro + '</p><textarea readonly id="ks-out"></textarea><button class="ks-main" id="ks-copy">' + L.copy + '</button><button id="ks-file">' + L.file + '</button>' : '<p>' + L.empty + '</p>') +
+      '<hr><h2>' + L.load + '</h2><p>' + L.paste + '</p><textarea id="ks-in" autocomplete="off" spellcheck="false" placeholder="KS1…"></textarea>' +
+      '<button id="ks-pick">' + L.pick + '</button><button class="ks-main" id="ks-go">' + L.go + '</button><p class="ks-err" id="ks-msg" hidden></p>' +
+      '<hr><button id="ks-close">' + L.close + '</button><input type="file" id="ks-f" accept=".txt,text/plain" hidden></div>';
+    document.body.appendChild(d);
+    var $ = function (id) { return d.querySelector('#' + id); };
+    var close = function () { d.remove(); };
+    if (code) {
+      $('ks-out').value = code;
+      $('ks-copy').onclick = function () {
+        var done = function () { $('ks-copy').textContent = L.copied; };
+        try { navigator.clipboard.writeText(code).then(done, function () { $('ks-out').select(); document.execCommand('copy'); done(); }); }
+        catch (e) { $('ks-out').select(); try { document.execCommand('copy'); done(); } catch (err) {} }
+      };
+      $('ks-file').onclick = function () {
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([code], { type: 'text/plain' }));
+        a.download = (o.file || DIR) + '-sauvegarde-' + new Date().toISOString().slice(0, 10) + '.txt';
+        document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+      };
+    }
+    $('ks-pick').onclick = function () { $('ks-f').click(); };
+    $('ks-f').onchange = function () {
+      var f = $('ks-f').files[0]; if (!f) return;
+      var r = new FileReader(); r.onload = function () { $('ks-in').value = String(r.result).trim(); }; r.readAsText(f);
+    };
+    $('ks-go').onclick = function () {
+      var data = readCode($('ks-in').value, keys), msg = $('ks-msg');
+      if (!data) { msg.textContent = L.bad; msg.hidden = false; return; }
+      if ($('ks-go').dataset.sure !== '1') {
+        msg.textContent = L.confirm; msg.hidden = false;
+        $('ks-go').textContent = L.yes; $('ks-go').dataset.sure = '1';
+        return;
+      }
+      try { sessionStorage.setItem(PENDING, JSON.stringify(data)); } catch (e) { return; }
+      location.reload();
+    };
+    $('ks-close').onclick = close;
+    d.addEventListener('pointerdown', function (e) { if (e.target === d) close(); });
+    d.ksClose = close;
+  }
+
+  window.KS = {
+    SUPPORT_URL: 'https://ko-fi.com/keismey',
+    support: function () { window.open('https://ko-fi.com/keismey', '_blank', 'noopener'); },
+    bugUrl: function (jeu, lang) { return '/?contact=bug&jeu=' + encodeURIComponent(jeu || '') + (lang === 'en' ? '&lang=en' : '&lang=fr'); },
+    bug: function (jeu, lang) { location.assign(window.KS.bugUrl(jeu, lang)); },
+    saveDialog: saveDialog,
+    // pour le bouton retour : la fenêtre « Sauvegarde » est-elle ouverte ? la ferme si oui.
+    closeDialog: function () { var d = document.getElementById('ks-dlg'); if (!d) return false; d.remove(); return true; }
+  };
+})();
+
 /* Keismey Studio — bouton retour du téléphone (même fichier dans chaque jeu du hub).
 
    Le jeu appelle KSBack.init({ back, lang }) :
@@ -358,6 +507,7 @@ ul.notes b{color:var(--ink)}
 
   function back(fromKey) {
     var r;
+    if (window.KS && window.KS.closeDialog && window.KS.closeDialog()) return;   // fenêtre « Sauvegarde » commune
     try { r = cfg.back(); } catch (e) { r = null; if (window.console) console.error(e); }
     if (r === 'hub' && !fromKey) toHub();
   }
@@ -468,21 +618,27 @@ let AUD_OK=false;
 function unlockAudio(){let a=AC;if(!a){try{a=AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){return}}
   if(a.state!=='running')a.resume().catch(()=>{});
   if(!AUD_OK){try{const b=a.createBuffer(1,1,22050),s=a.createBufferSource();s.buffer=b;s.connect(a.destination);s.start(0)}catch(e){}AUD_OK=true;
-    if(typeof MUS!=='undefined'&&MUS.want&&!MUS.cur&&SAVE.music)MUS.play(MUS.want)}}
+    if(typeof MUS!=='undefined'&&MUS.want&&!MUS.cur&&SAVE.mv)MUS.play(MUS.want)}}
 ['pointerdown','pointerup','touchstart','touchend','mousedown','click','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{capture:true,passive:true}));
 document.addEventListener('visibilitychange',()=>{if(!AC)return;if(document.hidden)AC.suspend().catch(()=>{});else if(AUD_OK)AC.resume().catch(()=>{})});
-function tone(f1,f2,dur,type,vol,delay){if(SAVE.music===0||!AUD_OK)return;const a=ac();if(!a)return;const t=a.currentTime+(delay||0);const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f1,t);o.frequency.exponentialRampToValueAtTime(Math.max(20,f2),t+dur);g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol||.12,t+.01);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(g).connect(a.destination);o.start(t);o.stop(t+dur+.05)}
-function noise(dur,vol,ft,freq,delay){if(SAVE.music===0||!AUD_OK)return;const a=ac();if(!a)return;const t=a.currentTime+(delay||0);if(!NB_){NB_=a.createBuffer(1,a.sampleRate,a.sampleRate);const d=NB_.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}const s=a.createBufferSource();s.buffer=NB_;const f=a.createBiquadFilter();f.type=ft||'lowpass';f.frequency.value=freq||1000;const g=a.createGain();g.gain.setValueAtTime(vol||.1,t);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);s.connect(f).connect(g).connect(a.destination);s.start(t);s.stop(t+dur+.05)}
+/* sorties son : bruitages et musique, chacun avec son volume (Options) */
+let SFXO=null,MUSO=null;
+function sfxOut(){const a=ac();if(!SFXO){SFXO=a.createGain();SFXO.connect(a.destination)}SFXO.gain.value=SAVE.sv;return SFXO}
+function musOut(){const a=ac();if(!MUSO){MUSO=a.createGain();MUSO.connect(a.destination)}MUSO.gain.value=SAVE.mv;return MUSO}
+function setVol(k,v){SAVE[k]=v;persist();if(k==='sv'&&SFXO)SFXO.gain.value=v;
+  if(k==='mv'){if(MUSO)MUSO.gain.value=v;for(const e of Object.values(MUS.el))e.volume=MUS.vol*v;if(v>0&&!MUS.cur&&MUS.want)MUS.play(MUS.want);if(v===0)MUS.fadeOut()}}
+function tone(f1,f2,dur,type,vol,delay){if(!SAVE.sv||!AUD_OK)return;const a=ac();if(!a)return;const t=a.currentTime+(delay||0);const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f1,t);o.frequency.exponentialRampToValueAtTime(Math.max(20,f2),t+dur);g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol||.12,t+.01);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(g).connect(sfxOut());o.start(t);o.stop(t+dur+.05)}
+function noise(dur,vol,ft,freq,delay){if(!SAVE.sv||!AUD_OK)return;const a=ac();if(!a)return;const t=a.currentTime+(delay||0);if(!NB_){NB_=a.createBuffer(1,a.sampleRate,a.sampleRate);const d=NB_.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}const s=a.createBufferSource();s.buffer=NB_;const f=a.createBiquadFilter();f.type=ft||'lowpass';f.frequency.value=freq||1000;const g=a.createGain();g.gain.setValueAtTime(vol||.1,t);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);s.connect(f).connect(g).connect(sfxOut());s.start(t);s.stop(t+dur+.05)}
 /* ---------- Détonation : claquement + souffle + coup sourd saturé + écho des façades ---------- */
 let BUS=null,VERB=null;
 function sfxBus(){const a=ac();if(!a)return null;if(BUS)return BUS;
-  const comp=a.createDynamicsCompressor();comp.threshold.value=-10;comp.knee.value=8;comp.ratio.value=6;comp.attack.value=.002;comp.release.value=.25;comp.connect(a.destination);
+  const comp=a.createDynamicsCompressor();comp.threshold.value=-10;comp.knee.value=8;comp.ratio.value=6;comp.attack.value=.002;comp.release.value=.25;comp.connect(sfxOut());
   // réverbération : réponse impulsionnelle générée (rue étroite, ~2,4 s)
   const len=Math.floor(a.sampleRate*2.4),ir=a.createBuffer(2,len,a.sampleRate);
   for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<len;i++){const t=i/a.sampleRate;d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3.2)*(t<.012?t/.012:1)}}
   VERB=a.createConvolver();VERB.buffer=ir;const vg=a.createGain();vg.gain.value=.55;const vl=a.createBiquadFilter();vl.type='lowpass';vl.frequency.value=2400;VERB.connect(vl).connect(vg).connect(comp);
   BUS=comp;return BUS}
-function boom(silenced){if(SAVE.music===0||!AUD_OK)return;const a=ac();if(!a)return;const bus=sfxBus(),t=a.currentTime+.005;
+function boom(silenced){if(!SAVE.sv||!AUD_OK)return;const a=ac();if(!a)return;const bus=sfxBus(),t=a.currentTime+.005;
   if(!NB_){NB_=a.createBuffer(1,a.sampleRate,a.sampleRate);const d=NB_.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
   const out=a.createGain();out.gain.value=silenced?.3:.85;out.connect(bus);out.connect(VERB);
   const nz=(dur,vol,type,f0,f1,q)=>{const s=a.createBufferSource();s.buffer=NB_;s.playbackRate.value=.7+Math.random()*.3;const f=a.createBiquadFilter();f.type=type;f.Q.value=q||.7;f.frequency.setValueAtTime(f0,t);f.frequency.exponentialRampToValueAtTime(f1,t+dur);
@@ -520,15 +676,17 @@ const MUS={cur:null,want:null,buf:{},src:null,gain:null,el:{},vol:.55,
   url:k=>'music/'+k+'.mp3',
   async load(k){if(this.buf[k]!==undefined)return this.buf[k];this.buf[k]=null;
     try{const r=await fetch(this.url(k));const ab=await r.arrayBuffer();this.buf[k]=await ac().decodeAudioData(ab)}catch(e){this.buf[k]=false}return this.buf[k]},
-  async play(k){this.want=k;if(!SAVE.music||this.cur===k||!AUD_OK)return;const a=ac();if(!a)return;
-    this.fadeOut();this.cur=k;const b=await this.load(k);if(this.want!==k||!SAVE.music||this.cur!==k)return;
-    if(b){const s=a.createBufferSource(),g=a.createGain();s.buffer=b;s.loop=true;g.gain.setValueAtTime(0.0001,a.currentTime);g.gain.exponentialRampToValueAtTime(this.vol,a.currentTime+1.6);s.connect(g).connect(a.destination);s.start();this.src=s;this.gain=g}
-    else{let el=this.el[k];if(!el){el=this.el[k]=new Audio(this.url(k));el.loop=true}el.volume=this.vol;el.currentTime=0;el.play().catch(()=>{});this.src={stop:()=>{}};this.gain={el}}},
+  async play(k){this.want=k;if(!SAVE.mv||this.cur===k||!AUD_OK)return;const a=ac();if(!a)return;
+    this.fadeOut();this.cur=k;const b=await this.load(k);if(this.want!==k||!SAVE.mv||this.cur!==k)return;
+    if(b){const s=a.createBufferSource(),g=a.createGain();s.buffer=b;s.loop=true;g.gain.setValueAtTime(0.0001,a.currentTime);g.gain.exponentialRampToValueAtTime(this.vol,a.currentTime+1.6);s.connect(g).connect(musOut());s.start();this.src=s;this.gain=g}
+    else{let el=this.el[k];if(!el){el=this.el[k]=new Audio(this.url(k));el.loop=true}el.volume=this.vol*SAVE.mv;el.currentTime=0;el.play().catch(()=>{});this.src={stop:()=>{}};this.gain={el}}},
   fadeOut(){const a=AC,s=this.src,g=this.gain;this.src=this.gain=null;this.cur=null;if(!s)return;
     if(g.el){const el=g.el;let v=el.volume;const iv=setInterval(()=>{v-=.05;if(v<=0){el.pause();clearInterval(iv)}else el.volume=v},50);return}
     g.gain.cancelScheduledValues(a.currentTime);g.gain.setValueAtTime(Math.max(.0001,g.gain.value),a.currentTime);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+1);s.stop(a.currentTime+1.1)},
-  toggle(){SAVE.music=SAVE.music?0:1;persist();if(SAVE.music){const k=this.want;this.cur=null;if(k)this.play(k)}else this.fadeOut()}};
-if(SAVE.music===undefined)SAVE.music=1;
+  toggle(){setVol('mv',SAVE.mv?0:1)}};
+// réglages du son et des vibrations (anciennes parties : « Son : non » coupait tout)
+if(SAVE.mv===undefined){SAVE.mv=SAVE.music===0?0:1;SAVE.sv=SAVE.music===0?0:1}
+if(SAVE.vib===undefined)SAVE.vib=1;
 let toastT=0;
 function toast(msg,bad){const t=$('toast');t.innerHTML=msg;t.classList.toggle('bad',!!bad);t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600)}
 
@@ -596,11 +754,11 @@ function pickTic(maxV,minV,look,not){const c=TICK.filter(k=>TICS[k].v<=maxV&&TIC
 
 const UPGS=[
   {id:'stab',n:'Lunette stabilisée',d:'Le réticule tremble moins.',c:[300,600,1000]},
-  {id:'souffle',n:'Entraînement respiratoire',d:'Vous retenez votre souffle plus longtemps.',c:[250,500,850]},
+  {id:'souffle',n:'Entraînement respiratoire',d:'Tu retiens ton souffle plus longtemps.',c:[250,500,850]},
   {id:'culasse',n:'Culasse rectifiée',d:'Rechargement plus rapide entre deux tirs.',c:[350,750]},
   {id:'zoom6',n:'Lunette ×6',d:'Un grossissement supplémentaire, pour les habitudes discrètes.',c:[900]},
   {id:'silence',n:'Silencieux',d:'Un premier tir manqué ne provoque pas de panique.',c:[1200]},
-  {id:'carnet',n:'Carnet d\'adresses',d:'Les indicateurs vous accordent 25 % de remise.',c:[600]},
+  {id:'carnet',n:'Carnet d\'adresses',d:'Les indicateurs t\'accordent 25 % de remise.',c:[600]},
 ];
 bilf(UPGS[0],{n:'Stabilised scope',d:'The crosshair shakes less.'});bilf(UPGS[1],{n:'Breathing drills',d:'You hold your breath for longer.'});
 bilf(UPGS[2],{n:'Trued bolt',d:'Faster reload between shots.'});bilf(UPGS[3],{n:'×6 scope',d:'An extra magnification step, for discreet habits.'});
@@ -1563,12 +1721,12 @@ function showTitle(){
   ui(`<div id="title"><div class="logo"><span class="cls">${tr('Très secret','Top secret')}</span><h1>Paper<br>Sniper</h1><p>${tr('Identifier. Confirmer. Un seul tir.','Identify. Confirm. One shot.')}</p>
     <div class="tgo"><button class="pb red big" id="bPlay">${tr('Prendre le service','Report for duty')}</button>
     <div class="tstats">${SAVE.contrats?tr(`${gradeName(SAVE.grade)}. ${SAVE.reussis} ${plural(SAVE.reussis,'contrat exécuté','contrats exécutés')} sur ${SAVE.contrats}. Fonds : ${SAVE.francs} F.`,`${gradeName(SAVE.grade)}. ${SAVE.reussis} of ${SAVE.contrats} contracts completed. Funds: ${SAVE.francs} F.`):tr('Le Bureau recrute. Discrétion exigée.','The Bureau is hiring. Discretion required.')}</div>${SAVE.contrats?`<button class="lnk light treset" id="bReset">${tr('Recommencer à zéro','Start over')}</button>`:''}</div></div>
-    <div class="tfoot"><div class="trow"><button class="pb sm ghost light" id="bLang">${tr('English','Français')}</button><button class="pb sm ghost light" id="bMus">${tr('Son','Sound')} : ${SAVE.music?tr('oui','on'):tr('non','off')}</button></div>
+    <div class="tfoot"><div class="trow"><button class="pb sm ghost light" id="bLang">${tr('English','Français')}</button><button class="pb sm ghost light" id="bOpt">${tr('Options','Options')}</button></div>
     <div class="studio"><button class="lnk light" id="bVer">v${VERSION}</button> · Keismey Studio</div></div></div>`);
   $('bVer').onclick=()=>{SFX.page();showNotes()};
   $('bPlay').onclick=()=>{ac();SFX.page();showHQ()};
   $('bLang').onclick=()=>{SAVE.lang=SAVE.lang==='en'?'fr':'en';persist();SFX.tap();document.documentElement.lang=SAVE.lang;showTitle()};
-  $('bMus').onclick=()=>{ac();MUS.toggle();showTitle()};
+  $('bOpt').onclick=()=>{SFX.page();showOptions()};
   if($('bReset'))$('bReset').onclick=()=>{SFX.tap();confirmReset()};
 }
 
@@ -1578,7 +1736,7 @@ function confirmReset(){
     <p>${tr('Grade, fonds, équipement, cartes ouvertes et dossiers rouges seront effacés. Impossible de revenir en arrière.','Rank, funds, equipment, open maps and red files will be erased. This cannot be undone.')}</p>
     <div class="btns"><button class="pb big wide" id="rNo">${tr('Annuler','Cancel')}</button><button class="pb red big wide" id="rYes">${tr('Tout effacer','Erase everything')}</button></div>`);
   $('rNo').onclick=()=>{SFX.tap();v.remove()};
-  $('rYes').onclick=()=>{SFX.page();SAVE={francs:150,rep:0,contrats:0,reussis:0,upg:{},seed:1,offers:null,tutoP:0,tutoS:0,seeTarget:0,lang:SAVE.lang,music:SAVE.music,seenV:VERSION};careerInit();persist();showTitle()};
+  $('rYes').onclick=()=>{SFX.page();SAVE={francs:150,rep:0,contrats:0,reussis:0,upg:{},seed:1,offers:null,tutoP:0,tutoS:0,seeTarget:0,lang:SAVE.lang,music:SAVE.music,mv:SAVE.mv,sv:SAVE.sv,vib:SAVE.vib,seenV:VERSION};careerInit();persist();showTitle()};
 }
 
 /* =========================================================
@@ -1599,13 +1757,13 @@ function showHQ(){
   const next=MAPK.find(k=>!SAVE.maps.includes(k));
   ui(`<div id="hq"><div class="hqtop"><h2>${tr('Le Bureau','The Bureau')}</h2><div class="purse"><small>${tr('Fonds','Funds')}</small><span class="money">${SAVE.francs} F</span></div></div>
     ${careerHTML()}
-    <p class="hqsub">${red?tr('Un dossier rouge et trois dossiers ordinaires sont ouverts.','One red file and three ordinary files are open.'):tr('Trois dossiers sont ouverts. Choisissez votre cible.','Three files are open. Choose your target.')}${SAVE.rep?tr(` Contrats exécutés : ${SAVE.rep}.`,` Contracts completed: ${SAVE.rep}.`):''}</p>
+    <p class="hqsub">${red?tr('Un dossier rouge et trois dossiers ordinaires sont ouverts.','One red file and three ordinary files are open.'):tr('Trois dossiers sont ouverts. Choisis ta cible.','Three files are open. Choose your target.')}${SAVE.rep?tr(` Contrats exécutés : ${SAVE.rep}.`,` Contracts completed: ${SAVE.rep}.`):''}</p>
     <div class="board">${red?redCardHTML(red):''}${SAVE.offers.map((o,i)=>`<button class="ccard" data-o="${i}" data-n="${fileNo(o)}"><span class="sil" aria-hidden="true">?</span><span>
       <span class="al">${q(aliasOf(o))}</span><span class="mp">${MAPS[o.map].name}</span>
       <span class="ln"><span>${tr('Risque','Risk')} ${risk(o.stars)}</span><span class="pr">${o.prime} F</span></span>
       <span class="dt">${tr(`${o.stars} ${plural(o.stars,'sosie','sosies')}. ${['4','5','6'][o.stars-1]} suspects par cliché.`,`${o.stars} ${plural(o.stars,'double','doubles')}. ${['4','5','6'][o.stars-1]} suspects per photo.`)}</span></span></button>`).join('')}</div>
     ${next?`<div class="locked">${tr(`${MAPS[next].name} : accès au grade ${gradeName(MAP_GRADE[next])}.`,`${MAPS[next].name}: opens at the rank of ${gradeName(MAP_GRADE[next])}.`)}</div>`:''}
-    <div class="hqbtns"><button class="pb paper" id="bArm">${tr('Armurerie','Armoury')}</button><button class="pb sm ghost light" id="bNotesH">${tr('Nouveautés','What\'s new')}</button><button class="pb sm ghost light" id="bMus">${tr('Son','Sound')} : ${SAVE.music?tr('oui','on'):tr('non','off')}</button><button class="pb sm ghost light" id="bTitle">${tr('Quitter','Exit')}</button></div>
+    <div class="hqbtns"><button class="pb paper" id="bArm">${tr('Armurerie','Armoury')}</button><button class="pb sm ghost light" id="bNotesH">${tr('Nouveautés','What\'s new')}</button><button class="pb sm ghost light" id="bOpt">${tr('Options','Options')}</button><button class="pb sm ghost light" id="bTitle">${tr('Quitter','Exit')}</button></div>
     ${TEST?`<div class="testp"><b>Mode test</b><button class="pb sm" id="tMoney">+1000 F</button><button class="pb sm" id="tMaps">Toutes les cartes</button><button class="pb sm" id="tSee">Voir la cible : ${SAVE.seeTarget?'oui':'non'}</button><button class="pb sm" id="tRed">Dossier rouge suivant</button><button class="pb sm" id="tReset">Remise à zéro</button></div>`:''}</div>`);
   UI.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{SFX.page();openContract(SAVE.offers[+b.dataset.o])});
   if(red)$('bRed').onclick=()=>{SFX.page();openContract(red)};
@@ -1613,14 +1771,14 @@ function showHQ(){
   // notes de mise à jour : une fois, pour les joueurs qui avaient déjà une partie
   if(SAVE.oldPlayer&&SAVE.seenV!==VERSION)showNotes();
   $('bArm').onclick=()=>{SFX.page();showArmory()};
-  $('bMus').onclick=()=>{ac();MUS.toggle();$('bMus').textContent=tr('Son','Sound')+' : '+(SAVE.music?tr('oui','on'):tr('non','off'))};
+  $('bOpt').onclick=()=>{SFX.page();showOptions()};
   $('bTitle').onclick=()=>{SFX.page();showTitle()};
   if(TEST){
     $('tMoney').onclick=()=>{SAVE.francs+=1000;persist();showHQ()};
     $('tMaps').onclick=()=>{SAVE.maps=MAPK.slice();SAVE.offers=null;persist();showHQ()};
     $('tRed').onclick=()=>{const i=SAVE.dr||0;if(i<RED.length){SAVE.rep=Math.max(SAVE.rep,RED[i].rep);persist();showHQ()}};
     $('tSee').onclick=()=>{SAVE.seeTarget=SAVE.seeTarget?0:1;persist();showHQ()};
-    $('tReset').onclick=()=>{SAVE={francs:150,rep:0,contrats:0,reussis:0,upg:{},seed:1,offers:null,tutoP:0,tutoS:0,seeTarget:0,lang:SAVE.lang,music:SAVE.music,seenV:VERSION};careerInit();showHQ()};
+    $('tReset').onclick=()=>{SAVE={francs:150,rep:0,contrats:0,reussis:0,upg:{},seed:1,offers:null,tutoP:0,tutoS:0,seeTarget:0,lang:SAVE.lang,music:SAVE.music,mv:SAVE.mv,sv:SAVE.sv,vib:SAVE.vib,seenV:VERSION};careerInit();showHQ()};
   }
 }
 function showArmory(){
@@ -1709,7 +1867,7 @@ function showProcedure(then){
     <p>${tr('Agent, voici la procédure. Elle ne change jamais.','Agent, here is the procedure. It never changes.')}</p>
     <ol class="proc">
       <li><span>${tr("<b>L'enquête.</b> Trois épreuves courtes pour établir le signalement de la cible : sa tenue, son habitude, le lieu de son rendez-vous.","<b>The investigation.</b> Three short trials to build the target's profile: outfit, habit, and meeting place.")}</span></li>
-      <li><span>${tr("<b>Les indicateurs.</b> Ce que vous n'avez pas obtenu s'achète. C'est cher, et chaque achat coûte plus que le précédent.","<b>Informants.</b> Whatever you missed can be bought. It is expensive, and each purchase costs more than the last.")}</span></li>
+      <li><span>${tr("<b>Les indicateurs.</b> Ce que tu n'as pas obtenu s'achète. C'est cher, et chaque achat coûte plus que le précédent.","<b>Informants.</b> Whatever you missed can be bought. It is expensive, and each purchase costs more than the last.")}</span></li>
       <li><span>${tr('<b>Le tir.</b> À midi, depuis les toits. La cible a des sosies. Un seul tir propre.','<b>The shot.</b> At noon, from the rooftops. The target has doubles. One clean shot.')}</span></li>
     </ol>
     <p class="notice">${tr('Abattre un civil annule le contrat.','Shooting a civilian voids the contract.')}</p>
@@ -1815,10 +1973,10 @@ function buildHud2(){
   if(!SAVE.tutoS){S.paused=true;
     const v=modal(`${dh(tr('Consignes de tir','Firing orders'),tr('À lire une fois','Read once'))}<h2>${tr('Sur le toit','On the roof')}</h2>
       <ol class="proc">
-        <li><span>${tr("<b>Observer.</b> À l'œil nu (×1), vous voyez toute la zone. Glissez pour regarder ailleurs. Touchez un passant pour épauler et le viser à la lunette.","<b>Observe.</b> With the naked eye (×1) you see the whole area. Drag to look around. Tap a passer-by to raise the rifle and scope in on them.")}</span></li>
-        <li><span>${tr('<b>Viser.</b> Dans la lunette, glissez pour déplacer le réticule. ×2 et ×4 règlent le grossissement.','<b>Aim.</b> In the scope, drag to move the crosshair. ×2 and ×4 set the magnification.')}</span></li>
-        <li><span>${tr('<b>Stabiliser.</b> Maintenez Souffle : le réticule cesse de trembler, tant que votre souffle tient.','<b>Steady.</b> Hold Breath: the crosshair stops shaking for as long as your breath lasts.')}</span></li>
-        <li><span>${tr('<b>Marquer.</b> Posez une épingle sur un suspect pour ne pas le perdre. Votre fiche, en haut à gauche, rappelle le signalement.','<b>Mark.</b> Pin a suspect so you do not lose them. Your sheet, top left, recalls the description.')}</span></li>
+        <li><span>${tr("<b>Observer.</b> À l'œil nu (×1), tu vois toute la zone. Glisse pour regarder ailleurs. Touche un passant pour épauler et le viser à la lunette.","<b>Observe.</b> With the naked eye (×1) you see the whole area. Drag to look around. Tap a passer-by to raise the rifle and scope in on them.")}</span></li>
+        <li><span>${tr('<b>Viser.</b> Dans la lunette, glisse pour déplacer le réticule. ×2 et ×4 règlent le grossissement.','<b>Aim.</b> In the scope, drag to move the crosshair. ×2 and ×4 set the magnification.')}</span></li>
+        <li><span>${tr('<b>Stabiliser.</b> Maintiens Souffle : le réticule cesse de trembler, tant que ton souffle tient.','<b>Steady.</b> Hold Breath: the crosshair stops shaking for as long as your breath lasts.')}</span></li>
+        <li><span>${tr('<b>Marquer.</b> Pose une épingle sur un suspect pour ne pas le perdre. Ta fiche, en haut à gauche, rappelle le signalement.','<b>Mark.</b> Pin a suspect so you do not lose them. Your sheet, top left, recalls the description.')}</span></li>
       </ol>
       <p class="notice">${tr('Après son rendez-vous de midi, la cible quitte la zone. Un tir manqué disperse la foule.','After the noon meeting, the target leaves the area. A missed shot scatters the crowd.')}</p>
       <div class="btns"><button class="pb red big wide" id="bPos">${tr('En position','In position')}</button></div>`);
@@ -1828,7 +1986,7 @@ const eyeMode=()=>S&&S.Z[S.z].eye;
 /* boutons et consigne selon qu'on regarde à l'œil nu ou à la lunette */
 function hudMode(){const e=eyeMode(),f=$('fire'),pb=$('pinb'),br=$('breath'),h=$('hint2');if(!f)return;
   f.textContent=e?tr('Épauler','Raise'):tr('Tirer','Fire');f.classList.toggle('eye',!!e);pb.disabled=!!e;br.classList.toggle('off',!!e);
-  if(h){h.innerHTML='<span>'+(e?tr('Touchez un passant pour le viser.','Tap a passer-by to scope in.'):tr('Glissez pour viser.','Drag to aim.'))+'</span>';h.style.opacity=1;S.hintT=Math.max(S.hintT,3.5)}}
+  if(h){h.innerHTML='<span>'+(e?tr('Touche un passant pour le viser.','Tap a passer-by to scope in.'):tr('Glisse pour viser.','Drag to aim.'))+'</span>';h.style.opacity=1;S.hintT=Math.max(S.hintT,3.5)}}
 function setZoom(z){const was=S.z;S.z=z;document.querySelectorAll('#zoom [data-z]').forEach(b=>b.classList.toggle('on',+b.dataset.z===z));if(was!==z&&(!S.Z[was].eye)!==(!S.Z[z].eye)){SFX.bolt();S.hold=false}clampCam();hudMode()}
 /* vue à l'œil nu : toute la largeur de l'écran, le sol calé au-dessus des boutons */
 function eyeGeo(){const k=SW/1100,bot=SH-118;return{k,w:SW/k,bot,yb:955}}
@@ -1842,7 +2000,7 @@ function fire(){
   if(!S||S.end||S.paused)return;
   if(eyeMode()){S.cam.y=Math.min(S.cam.y,700);setZoom(1);return}
   if(S.cool>0)return;
-  S.cool=S.coolDur;S.shots++;S.flash=1;S.shake=S.silent?.4:1;if(navigator.vibrate)try{navigator.vibrate(S.silent?30:70)}catch(e){}(S.silent?SFX.shotS:SFX.shot)();setTimeout(()=>S&&!S.end&&SFX.bolt(),S.coolDur*450);
+  S.cool=S.coolDur;S.shots++;S.flash=1;S.shake=S.silent?.4:1;if(SAVE.vib!==0&&navigator.vibrate)try{navigator.vibrate(S.silent?30:70)}catch(e){}(S.silent?SFX.shotS:SFX.shot)();setTimeout(()=>S&&!S.end&&SFX.bolt(),S.coolDur*450);
   const a=aimPoint();S.recoil=S.Z[S.z].w*.1;
   const h=hitTest(S.crowd,a.x,a.y);
   if(h&&h.n){SFX.hit();const n=h.n;n.dead=0.001;S.head=h.part==='head';confetti(n);if(n.birds)flyBirds(n);
@@ -1931,20 +2089,20 @@ function showResult(){
   persist();
   MUS.fadeOut();win?SFX.win():SFX.fail();
   let why='';
-  if(S.end==='innocent'){const v=S.victim;why=v.kind==='sosie'?tr('Vous avez abattu un sosie. La cible a profité de la confusion pour disparaître.','You shot a double. The target used the confusion to vanish.'):tr('Vous avez abattu un civil. Le contrat est annulé.','You shot a civilian. The contract is void.')}
+  if(S.end==='innocent'){const v=S.victim;why=v.kind==='sosie'?tr('Tu as abattu un sosie. La cible a profité de la confusion pour disparaître.','You shot a double. The target used the confusion to vanish.'):tr('Tu as abattu un civil. Le contrat est annulé.','You shot a civilian. The contract is void.')}
   if(S.end==='escape')why=tr('La cible a quitté la zone. Le contrat est perdu.','The target left the area. The contract is lost.');
-  if(S.end==='abandon')why=tr('Vous avez quitté votre position. Le contrat est annulé.','You left your position. The contract is void.');
+  if(S.end==='abandon')why=tr('Tu as quitté ta position. Le contrat est annulé.','You left your position. The contract is void.');
   const hm=`${gameClock.h}:${String(gameClock.m).padStart(2,'0')}`;
   if(win)why=tr(`${q(aliasOf(C.of))} a été neutralisé${C.T.genre==='femme'?'e':''} à ${gameClock.h}\u00a0h\u00a0${String(gameClock.m).padStart(2,'0')}. Le Bureau prend acte.`,`${q(aliasOf(C.of))} was neutralised at ${hm}. The Bureau takes note.`);
   if(rd&&win)why+=' '+tr(rd.win,rd.winEn);
-  if(rd&&!win)why+=' '+tr('Le dossier rouge reste ouvert : vous pourrez le reprendre depuis le Bureau.','The red file stays open: you can take it up again from the Bureau.');
+  if(rd&&!win)why+=' '+tr('Le dossier rouge reste ouvert : tu pourras le reprendre depuis le Bureau.','The red file stays open: you can take it up again from the Bureau.');
   const promo=rd&&win&&C.red<RED.length-1?SAVE.grade:0;
   modal(`<span class="stamp ${win?'ok':''}">${win?tr('Exécuté','Done'):tr('Échec','Failed')}</span>${dh(fileNo(C.of),tr('Rapport de mission','Mission report'))}<h2>${win?tr('Contrat exécuté','Contract completed'):tr('Contrat perdu','Contract lost')}</h2>
     <p>${why}</p>${win?'':`<p class="small">${tr('Pour mémoire, la cible','For the record, the target')} ${TICS[C.tic].d}.</p>`}
     <h3>${tr('Évaluation','Assessment')}</h3>
     <div class="eval">${st.map(s=>`<div class="${s[0]?'ok':''}"><i></i>${s[1]}</div>`).join('')}</div>
     <div class="total"><span>${tr('Prime versée','Fee paid')}</span><span class="money">${prime} F</span></div>
-    ${promo&&promo>gradeBefore?`<p class="notice">${tr('Promotion : vous passez au grade ','Promotion: you are now ')}<b>${gradeName(promo)}</b>.${opened.length?tr(' Nouveau secteur accessible : ',' New sector available: ')+`<b>${opened.map(k=>MAPS[k].name).join(', ')}</b>.`:''}</p>`:''}
+    ${promo&&promo>gradeBefore?`<p class="notice">${tr('Promotion : tu passes au grade ','Promotion: you are now ')}<b>${gradeName(promo)}</b>.${opened.length?tr(' Nouveau secteur accessible : ',' New sector available: ')+`<b>${opened.map(k=>MAPS[k].name).join(', ')}</b>.`:''}</p>`:''}
     <div class="btns"><button class="pb red big wide" id="bHQ">${rd&&win&&SAVE.fin&&C.red===RED.length-1?tr('Lire la suite','Read on'):tr('Retour au Bureau','Back to the Bureau')}</button></div>`,rd?'redbrief':'');
   const ending=rd&&win&&C.red===RED.length-1;
   $('bHQ').onclick=()=>{SFX.page();S=null;C=null;sprClear();if(ending)showEnding(showHQ);else showHQ()};
@@ -2080,9 +2238,9 @@ requestAnimationFrame(frame);
 let MG=null;
 const MG_ORDER=['tenue','tic','lieu'];
 const MG_INFO={
-  tenue:{n:'Identification',k:'Signalement',d:'Un guetteur a photographié la cible à 9 h. Le cliché sera détruit au bout de quelques secondes. Mémorisez sa tenue, puis établissez le portrait-robot.'},
-  tic:{n:'Surveillance',k:'Habitude',d:'Vous observez la cible au téléobjectif depuis l\'immeuble d\'en face. Déclenchez à l\'instant précis où elle trahit une habitude. Les gestes ordinaires ne comptent pas. Vous disposez de trois pellicules.'},
-  lieu:{n:'Interception',k:'Rendez-vous',d:'Un coursier transporte le lieu du rendez-vous de midi. Il va se mêler à ses collègues, en uniforme identique. Ne le quittez pas des yeux, puis désignez-le.'},
+  tenue:{n:'Identification',k:'Signalement',d:'Un guetteur a photographié la cible à 9 h. Le cliché sera détruit au bout de quelques secondes. Mémorise sa tenue, puis établis le portrait-robot.'},
+  tic:{n:'Surveillance',k:'Habitude',d:'Tu observes la cible au téléobjectif depuis l\'immeuble d\'en face. Déclenche à l\'instant précis où elle trahit une habitude. Les gestes ordinaires ne comptent pas. Tu disposes de trois pellicules.'},
+  lieu:{n:'Interception',k:'Rendez-vous',d:'Un coursier transporte le lieu du rendez-vous de midi. Il va se mêler à ses collègues, en uniforme identique. Ne le quitte pas des yeux, puis désigne-le.'},
 };
 bilf(MG_INFO.tenue,{n:'Identification',k:'Description',d:'A spotter photographed the target at 9 a.m. The print will be destroyed after a few seconds. Memorise the outfit, then build the identikit.'});
 bilf(MG_INFO.tic,{n:'Surveillance',k:'Habit',d:'You watch the target through a telephoto lens from the building opposite. Shoot at the exact moment they give away a habit. Ordinary gestures do not count. You have three rolls of film.'});
@@ -2091,7 +2249,7 @@ const ACCL=bil({parapluie:'Parapluie',journal:'Journal',valise:'Valise',bouquet:
 const CHAPL=bil({aucun:'Tête nue',melon:'Melon',beret:'Béret',casquette:'Casquette',haut:'Haut-de-forme',cloche:'Cloche',canotier:'Canotier'},{aucun:'No hat',melon:'Bowler',beret:'Beret',casquette:'Flat cap',haut:'Top hat',cloche:'Cloche',canotier:'Boater'});
 /* équilibrage : les indics coûtent cher, et chaque achat d'un même contrat coûte plus que le précédent */
 const INFO_PRICE={tenue:.5,tic:.6,lieu:.4},INFO_STEP=[1,1.4,1.8];
-const EXTRAS={cafe:bilf({n:'Café noir',d:'Votre souffle tient 50 % plus longtemps pendant ce contrat.',p:60},{n:'Black coffee',d:'Your breath lasts 50% longer during this contract.'}),pot:bilf({n:'Figurant soudoyé',d:'Un sosie de moins sur le terrain.',p:[0,200,260]},{n:'Bribed extra',d:'One fewer double in the field.'})};
+const EXTRAS={cafe:bilf({n:'Café noir',d:'Ton souffle tient 50 % plus longtemps pendant ce contrat.',p:60},{n:'Black coffee',d:'Your breath lasts 50% longer during this contract.'}),pot:bilf({n:'Figurant soudoyé',d:'Un sosie de moins sur le terrain.',p:[0,200,260]},{n:'Bribed extra',d:'One fewer double in the field.'})};
 const maskFrac=()=>{const m=C.mask;if(!m)return 0;const n=['coat','hat','acc'].filter(k=>m[k]).length+(m.hatc&&!m.hat?1:0);return Math.max(.34,n/3)};
 const nBought=()=>['tenue','tic','lieu'].filter(k=>C.bought[k]).length;
 const priceOf=id=>Math.round(C.of.prime*INFO_PRICE[id]*INFO_STEP[nBought()]*(id==='tenue'?maskFrac():1)*(1-.25*upg('carnet'))/10)*10;
@@ -2147,7 +2305,7 @@ function mgTenue(){
   ];
   if(st===3&&T.chapeau!=='aucun')fields.push({id:'hatc',l:tr('Couleur du chapeau','Hat colour'),o:opts(T.hatc,others.map(l=>l.hatc),HATC,4),sw:v=>v,lab:v=>HATCN[v]});
   const pick_={};
-  ui(`<div id="desk"><div class="note">${tr('<b>Mémorisez sa tenue.</b> La cible est entourée en rouge.','<b>Memorise the outfit.</b> The target is circled in red.')}</div>
+  ui(`<div id="desk"><div class="note">${tr('<b>Mémorise sa tenue.</b> La cible est entourée en rouge.','<b>Memorise the outfit.</b> The target is circled in red.')}</div>
     <div class="pola" id="pola"><canvas id="pc" width="${PW}" height="${PH}"></canvas><div class="cap"><span>${tr(['9h00','10h00','11h00'],['9:00 a.m.','10:00 a.m.','11:00 a.m.'])[ph.hour]} — ${M.locs[ph.li].name}</span><span id="pt"></span></div></div>
     <div class="tbar"><i id="tb"></i></div>
     <div id="form" hidden>${dh(tr('Portrait-robot','Identikit'),tr('Phase 1 sur 3','Phase 1 of 3'))}${fields.map(f=>`<div class="fld"><b>${f.l}</b><div class="chs">${f.o.map(v=>`<button class="chp" data-f="${f.id}" data-v="${v}">${f.sw?`<i style="background:${f.sw(v)}"></i>`:''}${f.lab(v)}</button>`).join('')}</div></div>`).join('')}
@@ -2171,7 +2329,7 @@ function mgTenue(){
     // seul le choix du joueur est corrigé : la bonne réponse n'est jamais révélée
     UI.querySelectorAll('.chp.on').forEach(b=>b.classList.add(b.dataset.v===String(T[b.dataset.f])?'ok':'ko'));
     $('bVal').disabled=true;
-    setTimeout(()=>mgDone('tenue',!bad.length,bad.length?tr(`${known.length?`Éléments établis : ${known.join(', ')}. `:''}Éléments incertains : ${bad.map(nm).join(', ')}. Ils resteront masqués sur votre fiche.`,`${known.length?`Confirmed: ${known.join(', ')}. `:''}Uncertain: ${bad.map(nm).join(', ')}. They will stay hidden on your sheet.`):tr(`Signalement confirmé : ${lookText(T)}.`,`Description confirmed: ${lookText(T)}.`)),900);
+    setTimeout(()=>mgDone('tenue',!bad.length,bad.length?tr(`${known.length?`Éléments établis : ${known.join(', ')}. `:''}Éléments incertains : ${bad.map(nm).join(', ')}. Ils resteront masqués sur ta fiche.`,`${known.length?`Confirmed: ${known.join(', ')}. `:''}Uncertain: ${bad.map(nm).join(', ')}. They will stay hidden on your sheet.`):tr(`Signalement confirmé : ${lookText(T)}.`,`Description confirmed: ${lookText(T)}.`)),900);
   };
 }
 
@@ -2196,7 +2354,7 @@ function mgTic(){
   const cam={x:clamp(tg.x,190,W-190),y:tg.y-62,w:[330,300,270][st-1]};
   MG={id:'tic',t:0,ei:0,baseY:tg.y,tg,pass,evs,ev:null,films:3,cam,fx:[],flash:0,over:false,msg:null,msgT:0,walk,timeLeft:22};
   ui(`<div class="top"><div class="clk" id="mgc">22</div><div id="films" class="films" aria-label="${tr('Pellicules','Film')}"></div><span class="mgt">${MG_INFO.tic.n}</span></div>
-    <div class="hint2" id="mgh" style="bottom:calc(env(safe-area-inset-bottom,0px) + 136px)">${tr('Déclenchez quand la cible trahit une habitude.','Shoot when the target gives away a habit.')}</div>
+    <div class="hint2" id="mgh" style="bottom:calc(env(safe-area-inset-bottom,0px) + 136px)">${tr('Déclenche quand la cible trahit une habitude.','Shoot when the target gives away a habit.')}</div>
     <div class="bot" style="justify-content:center"><button class="round" id="bShot" style="width:108px;height:108px;background:var(--stamp);color:#fff;font-weight:700;letter-spacing:.14em">${tr('Déclencher','Shoot')}</button></div>`);
   const films=()=>{$('films').innerHTML=[0,1,2].map(i=>`<i class="${i<MG.films?'':'off'}"></i>`).join('')};films();MG.films_=films;
   $('bShot').addEventListener('pointerdown',e=>{e.preventDefault();mgTicShot()});
@@ -2211,12 +2369,12 @@ function mgTicShot(){
   MG.films--;MG.films_();
   const e=MG.ev,decoy=e&&!e.real&&MG.t>=e.t&&MG.t<=e.t+e.dur+.15;
   MG.msg=occ?tr('Un passant masque la cible. Pellicule perdue.','A passer-by blocks the shot. Film wasted.'):decoy?tr('Geste ordinaire. Pellicule perdue.','Ordinary gesture. Film wasted.'):tr('Rien à signaler. Pellicule perdue.','Nothing to report. Film wasted.');MG.msgT=1.6;
-  if(MG.films<=0){MG.over=true;setTimeout(()=>mgDone('tic',false,tr('Pellicule épuisée. L\'habitude de la cible reste inconnue. Sur le toit, vous devrez la repérer seul.','Out of film. The target\'s habit remains unknown. On the roof, you will have to spot it yourself.')),700)}
+  if(MG.films<=0){MG.over=true;setTimeout(()=>mgDone('tic',false,tr('Pellicule épuisée. L\'habitude de la cible reste inconnue. Sur le toit, tu devras la repérer seul.','Out of film. The target\'s habit remains unknown. On the roof, you will have to spot it yourself.')),700)}
 }
 function mgTicUpdate(dt){
   const G=MG;
   G.t+=dt;G.flash=Math.max(0,G.flash-dt*4);if(G.msgT>0){G.msgT-=dt;if(G.msgT<=0)G.msg=null}
-  if(!G.over){G.timeLeft-=dt;const c=$('mgc');if(c)c.textContent=Math.max(0,Math.ceil(G.timeLeft));if(G.timeLeft<=0){G.over=true;mgDone('tic',false,tr('La cible a quitté votre champ. Son habitude reste inconnue.','The target left your field of view. The habit remains unknown.'));return}}
+  if(!G.over){G.timeLeft-=dt;const c=$('mgc');if(c)c.textContent=Math.max(0,Math.ceil(G.timeLeft));if(G.timeLeft<=0){G.over=true;mgDone('tic',false,tr('La cible a quitté ton champ. Son habitude reste inconnue.','The target left your field of view. The habit remains unknown.'));return}}
   const tg=G.tg;
   // événement courant
   if(G.ev&&G.t>G.ev.t+G.ev.dur)endEv();
@@ -2288,7 +2446,7 @@ function mgLieu(){
     if(st===3&&k%3===2&&n>=4){let c,e;do{c=ri(0,n-1)}while(c===a||c===b);do{e=ri(0,n-1)}while(e===a||e===b||e===c);swaps.push({t,a:c,b:e,d})}
     t+=d+.08}
   MG={id:'lieu',t:0,cs,real,swaps,slots:cs.map(c=>c.x),cam:{x:cx,y:665,w:Math.max(380,gap*(n+1.2))},end:t+.3,phase:'show',over:false,pickT:0,picked:null};
-  ui(`<div class="top"><span class="mgt" style="margin:auto">${MG_INFO.lieu.n}</span></div><div class="hint2" id="mgh" style="bottom:calc(env(safe-area-inset-bottom,0px) + 70px)">${tr("Repérez le coursier qui porte l'enveloppe.",'Spot the courier carrying the envelope.')}</div>`);
+  ui(`<div class="top"><span class="mgt" style="margin:auto">${MG_INFO.lieu.n}</span></div><div class="hint2" id="mgh" style="bottom:calc(env(safe-area-inset-bottom,0px) + 70px)">${tr("Repère le coursier qui porte l'enveloppe.",'Spot the courier carrying the envelope.')}</div>`);
   SFX.page();
 }
 function mgLieuUpdate(dt){
@@ -2302,8 +2460,8 @@ function mgLieuUpdate(dt){
     A.x=lerp(xa,xb,e);A.y=750+Math.sin(a*Math.PI)*32;B.x=lerp(xb,xa,e);B.y=750-Math.sin(a*Math.PI)*22;
     A.state=B.state='walk';A.flip=Math.sign(xb-xa);B.flip=-A.flip;A.ph+=dt*10;B.ph+=dt*10}
   for(const c of G.cs){if(c.state==='dwell')c.ph+=dt*2;c.po=poseOf(c,G.t)}
-  if(G.phase==='show'&&G.t>2.2){G.phase='swap';const h=$('mgh');if(h)h.textContent=tr('Suivez-le.','Follow him.')}
-  if(G.phase==='swap'&&G.t>G.end){G.phase='pick';const h=$('mgh');if(h)h.textContent=tr('Désignez le coursier.','Point out the courier.')}
+  if(G.phase==='show'&&G.t>2.2){G.phase='swap';const h=$('mgh');if(h)h.textContent=tr('Suis-le.','Follow him.')}
+  if(G.phase==='swap'&&G.t>G.end){G.phase='pick';const h=$('mgh');if(h)h.textContent=tr('Désigne le coursier.','Point out the courier.')}
 }
 function mgLieuRender(){
   const G=MG,real=G.cs[G.real];
@@ -2343,9 +2501,9 @@ function showDebrief(){
     const T=C.T,has={tenue:!C.mask||C.bought.tenue,tic:C.res.tic||C.bought.tic,lieu:C.res.lieu||C.bought.lieu};
     const val={tenue:lookText(T),tic:TICS[C.tic].n,lieu:tr('Rendez-vous ','Meeting ')+M.locs[C.rdv].a};
     v.innerHTML=`${dh(fileNo(C.of),tr('Fonds : ','Funds: ')+SAVE.francs+' F')}<span class="tag">${tr(`Synthèse : ${C.good} ${plural(C.good,'information acquise','informations acquises')} sur 3`,`Summary: ${C.good} of 3 intel secured`)}</span><h2>${tr('Ce que nous savons','What we know')}</h2>
-      ${MG_ORDER.map(id=>`<div class="offer ${has[id]?'':'miss'}"><b>${MG_INFO[id].k}</b><small>${has[id]?val[id]+'.':id==='tenue'?lookTextMasked(T,C.mask)+(mute?'.':tr('. Un indicateur peut compléter.','. An informant can fill in the gaps.')):mute?tr('Inconnu.','Unknown.'):tr('Inconnu. Un indicateur peut vous le vendre.','Unknown. An informant can sell it to you.')}</small>${has[id]?`<span class="ok">${C.bought[id]?tr('Acheté','Bought'):tr('Acquis','Secured')}</span>`:mute?`<span class="ok mute">${tr('Muet','Silent')}</span>`:`<button class="pb sm" data-b="${id}" ${SAVE.francs<priceOf(id)?'disabled':''}>${priceOf(id)} F</button>`}</div>`).join('')}
-      ${mute?`<p class="notice">${tr('Les indicateurs ont été payés par la Volière : aucun ne vous vendra quoi que ce soit.','The Aviary has paid off the informants: none of them will sell you anything.')}</p>`:''}
-      ${!mute&&nBought()&&nBought()<3?`<p class="small">${tr('Les indicateurs ont senti votre intérêt : leurs prix montent.','The informants sense your interest: their prices are going up.')}</p>`:''}
+      ${MG_ORDER.map(id=>`<div class="offer ${has[id]?'':'miss'}"><b>${MG_INFO[id].k}</b><small>${has[id]?val[id]+'.':id==='tenue'?lookTextMasked(T,C.mask)+(mute?'.':tr('. Un indicateur peut compléter.','. An informant can fill in the gaps.')):mute?tr('Inconnu.','Unknown.'):tr('Inconnu. Un indicateur peut te le vendre.','Unknown. An informant can sell it to you.')}</small>${has[id]?`<span class="ok">${C.bought[id]?tr('Acheté','Bought'):tr('Acquis','Secured')}</span>`:mute?`<span class="ok mute">${tr('Muet','Silent')}</span>`:`<button class="pb sm" data-b="${id}" ${SAVE.francs<priceOf(id)?'disabled':''}>${priceOf(id)} F</button>`}</div>`).join('')}
+      ${mute?`<p class="notice">${tr('Les indicateurs ont été payés par la Volière : aucun ne te vendra quoi que ce soit.','The Aviary has paid off the informants: none of them will sell you anything.')}</p>`:''}
+      ${!mute&&nBought()&&nBought()<3?`<p class="small">${tr('Les indicateurs ont senti ton intérêt : leurs prix montent.','The informants sense your interest: their prices are going up.')}</p>`:''}
       <h3>${tr('Services','Services')}</h3>
       ${['cafe','pot'].filter(id=>id!=='pot'||(C.st>1&&!mute)).map(id=>{const o=EXTRAS[id],p=Array.isArray(o.p)?o.p[C.st-1]:o.p,b=C.bought[id];return`<div class="offer"><b>${o.n}</b><small>${o.d}</small>${b?`<span class="ok">${tr('Acheté','Bought')}</span>`:`<button class="pb sm" data-x="${id}" ${SAVE.francs<p?'disabled':''}>${p} F</button>`}</div>`}).join('')}
       <div class="btns"><button class="pb red big wide" id="bFi">${tr('Établir la fiche de tir','Prepare the target sheet')}</button></div>`;
@@ -2367,7 +2525,7 @@ function showDebrief(){
    - Le cinquième dossier rouge clôt l'histoire (SAVE.fin) ; les contrats continuent ensuite.
    - Le grade règle aussi la difficulté des contrats ordinaires (voir careerLv et ses usages).
    ========================================================= */
-const VERSION='1.1.3';
+const VERSION='1.1.4';
 
 const GRADES=[
   {fr:'Recrue',en:'Recruit'},
@@ -2390,22 +2548,22 @@ const RED=[
    win:"Dans la doublure du manteau de la Pie : une plume de geai, et un reçu de consigne du port aux Mouettes. Quelqu'un y a déposé un paquet pour la Volière.",
    winEn:"In the lining of the Magpie's coat: a jay's feather, and a left-luggage ticket from Gull Harbour. Someone has dropped off a parcel there for the Aviary."},
   {rep:5,map:'port',stars:2,prime:560,n:'Le Hibou',en:'The Owl',look:{genre:'homme'},tw:{noInfo:1},
-   brief:["Le paquet de la consigne contenait des photographies : nos propres planques, prises de l'intérieur. Le Hibou est le photographe de la Volière.","Il travaille la nuit et traîne le jour sur le port. Les indicateurs du quai ont été payés avant nous : cette fois, personne ne vous vendra rien. — A."],
+   brief:["Le paquet de la consigne contenait des photographies : nos propres planques, prises de l'intérieur. Le Hibou est le photographe de la Volière.","Il travaille la nuit et traîne le jour sur le port. Les indicateurs du quai ont été payés avant nous : cette fois, personne ne te vendra rien. — A."],
    briefEn:["The parcel at the left-luggage office held photographs: our own safe houses, taken from the inside. The Owl is the Aviary's photographer.","He works at night and idles on the harbour by day. The dockside informants were paid before we got to them: this time, nobody will sell you anything. — A."],
    win:"Le Hibou portait un appareil chargé. Sur la dernière photo : un couloir du Bureau, et une porte que seuls les cadres peuvent ouvrir. La taupe est chez nous.",
    winEn:"The Owl carried a loaded camera. On the last frame: a corridor inside the Bureau, and a door only senior staff can open. The mole is one of us."},
   {rep:9,map:'foire',stars:3,prime:700,n:'La Mouette',en:'The Gull',look:{genre:'femme'},tw:{short:1},
-   brief:["La Volière se retrouve à la fête foraine, entre les manèges. La Mouette porte les messages d'un oiseau à l'autre.","Elle ne s'attarde jamais : à son rendez-vous de midi, vous n'aurez que quelques secondes. — A."],
+   brief:["La Volière se retrouve à la fête foraine, entre les manèges. La Mouette porte les messages d'un oiseau à l'autre.","Elle ne s'attarde jamais : à son rendez-vous de midi, tu n'auras que quelques secondes. — A."],
    briefEn:["The Aviary meets at the funfair, between the rides. The Gull carries messages from one bird to the next.","She never lingers: at her noon meeting, you will have only a few seconds. — A."],
    win:"Le message de la Mouette n'avait qu'un destinataire : « Au Coucou ». Le coucou pond ses œufs dans le nid des autres. Notre taupe a un nom.",
    winEn:"The Gull's message had a single addressee: “To the Cuckoo”. The cuckoo lays its eggs in other birds' nests. Our mole has a name."},
   {rep:13,map:'port',stars:3,prime:850,n:'Le Corbeau',en:'The Raven',look:{genre:'homme'},tw:{extra:1},
-   brief:["Le Corbeau dirige la Volière. Il sait que nous approchons : il a fait habiller un figurant de plus à son image.","Abattez-le, et la Volière n'a plus de tête. Le Coucou, lui, devra sortir du nid. — A."],
+   brief:["Le Corbeau dirige la Volière. Il sait que nous approchons : il a fait habiller un figurant de plus à son image.","Abats-le, et la Volière n'a plus de tête. Le Coucou, lui, devra sortir du nid. — A."],
    briefEn:["The Raven runs the Aviary. He knows we are closing in: he has had one more extra dressed in his likeness.","Take him down, and the Aviary loses its head. The Cuckoo will have to leave the nest. — A."],
-   win:"Dans la poche du Corbeau, une seule clé, en laiton, numérotée. C'est une clé des archives du Bureau. Le Chef vous félicite par écrit, et signe comme toujours d'une seule lettre : « A. »",
+   win:"Dans la poche du Corbeau, une seule clé, en laiton, numérotée. C'est une clé des archives du Bureau. Le Chef te félicite par écrit, et signe comme toujours d'une seule lettre : « A. »",
    winEn:"In the Raven's pocket, a single numbered brass key. It opens the Bureau's archives. The Chief congratulates you in writing, and signs, as always, with a single letter: “A.”"},
   {rep:17,map:'tilleuls',stars:3,prime:1000,n:'Le Coucou',en:'The Cuckoo',look:{genre:'homme',chapeau:'haut',acc:'canne'},tw:{extra:1},from:'odette',
-   brief:["Ce dossier ne vient pas du Bureau. Je suis l'archiviste. La clé du Corbeau ouvre mon armoire, et une seule autre personne en possède le double : le Chef.","Il ne démantelait pas la Volière. Il effaçait, par votre main, les seuls témoins qui connaissaient son visage. À midi, place des Tilleuls, il rencontre son acheteur. Là où tout a commencé. — Odette"],
+   brief:["Ce dossier ne vient pas du Bureau. Je suis l'archiviste. La clé du Corbeau ouvre mon armoire, et une seule autre personne en possède le double : le Chef.","Il ne démantelait pas la Volière. Il effaçait, par ta main, les seuls témoins qui connaissaient son visage. À midi, place des Tilleuls, il rencontre son acheteur. Là où tout a commencé. — Odette"],
    briefEn:["This file does not come from the Bureau. I am the archivist. The Raven's key opens my cabinet, and only one other person holds a copy: the Chief.","He was not dismantling the Aviary. Through your hand, he was erasing the only witnesses who knew his face. At noon, on Lindens Square, he meets his buyer. Where it all began. — Odette"],
    win:"Le Coucou est tombé au pied de la fontaine. Son acheteur s'est fondu dans la foule, sa mallette à la main, vide.",
    winEn:"The Cuckoo fell at the foot of the fountain. His buyer slipped into the crowd, briefcase in hand, empty."},
@@ -2458,7 +2616,7 @@ function careerHTML(){
   const g=SAVE.grade||0,left=contractsToRed();
   const pips=RED.map((_,i)=>`<i class="${i<(SAVE.dr||0)?'on':''}" title="${redName(i)}"></i>`).join('');
   const line=SAVE.fin?tr('Dossier clos. Les contrats continuent d\'arriver.','Case closed. Contracts keep coming in.')
-    :left===0?tr('Un dossier rouge vous attend.','A red file is waiting for you.')
+    :left===0?tr('Un dossier rouge t\'attend.','A red file is waiting for you.')
     :tr(`Prochain dossier rouge dans ${left} ${plural(left,'contrat exécuté','contrats exécutés')}.`,`Next red file in ${left} completed ${plural(left,'contract','contracts')}.`);
   return`<div class="career"><div><small>${tr('Grade','Rank')}</small><b>${gradeName(g)}</b></div><div class="rpips" aria-label="${tr('Dossiers rouges','Red files')} ${SAVE.dr||0}/5">${pips}</div><p>${line}</p></div>`;
 }
@@ -2483,9 +2641,9 @@ function redTwistText(tw){
 function showEnding(then){
   MODE='brief';closeModals();ui('');MUS.play('planque');
   const v=modal(`<span class="stamp">${tr('Classé','Closed')}</span>${dh(tr('Sans en-tête','No letterhead'),tr('Lendemain matin','The next morning'))}<span class="tag">${tr('Épilogue','Epilogue')}</span><h2>${tr('Le Fantôme','The Ghost')}</h2>
-    <p>${tr('Le lendemain, une note tapée à la machine attend sur votre bureau. Pas de signature, pas de tampon.','The next morning, a typewritten note waits on your desk. No signature, no stamp.')}</p>
-    <p class="quote">${tr('« Le Bureau n\'a jamais eu de chef nommé A. Il n\'a jamais employé d\'agent à votre nom. Odette a pris sa retraite hier soir. Continuez. »','“The Bureau never had a chief named A. It never employed an agent by your name. Odette retired last night. Carry on.”')}</p>
-    <p>${tr('Vous n\'existez plus sur le papier. Pour le Bureau, vous êtes désormais le Fantôme.','You no longer exist on paper. To the Bureau, you are now the Ghost.')}</p>
+    <p>${tr('Le lendemain, une note tapée à la machine attend sur ton bureau. Pas de signature, pas de tampon.','The next morning, a typewritten note waits on your desk. No signature, no stamp.')}</p>
+    <p class="quote">${tr('« Le Bureau n\'a jamais eu de chef nommé A. Il n\'a jamais employé d\'agent à ton nom. Odette a pris sa retraite hier soir. Continue. »','“The Bureau never had a chief named A. It never employed an agent by your name. Odette retired last night. Carry on.”')}</p>
+    <p>${tr('Tu n\'existes plus sur le papier. Pour le Bureau, tu es désormais le Fantôme.','You no longer exist on paper. To the Bureau, you are now the Ghost.')}</p>
     <div class="notice">${tr('Titre obtenu : <b>Le Fantôme</b>. Les contrats continuent, au niveau de risque le plus élevé.','Title earned: <b>The Ghost</b>. Contracts keep coming, at the highest risk level.')}</div>
     <div class="btns"><button class="pb red big wide" id="bEnd">${tr('Retour au Bureau','Back to the Bureau')}</button></div>`,'ending');
   $('bEnd').onclick=()=>{SFX.page();SAVE.grade=5;persist();then()};
@@ -2493,6 +2651,7 @@ function showEnding(then){
 
 /* ---------- notes de mise à jour ---------- */
 const NOTES=[
+  {v:'1.1.4',d:['19 octobre 2026','19 October 2026'],fr:['<b>Options</b> (écran titre et Bureau) : volume de la musique et des bruitages, vibrations, langue, notes de mise à jour, sauvegarde à exporter ou importer, signaler un bug, soutenir le studio.','Le jeu te tutoie désormais, comme tous les jeux de Keismey Studio.'],en:['<b>Options</b> (title screen and Bureau): music and sound effects volume, vibration, language, release notes, save export and import, bug report, support the studio.']},
   {v:'1.1.3',d:['19 octobre 2026','19 October 2026'],fr:['Le bouton retour du téléphone revient au menu précédent au lieu de quitter le jeu : il ferme les fenêtres, met le tir en pause, demande confirmation avant d\'abandonner une enquête ou de revenir à l\'écran titre. Depuis l\'écran titre, il propose d\'aller au hub Keismey Studio.'],en:['The phone\'s back button now returns to the previous menu instead of leaving the game: it closes windows, pauses the shot, and asks before abandoning an investigation or going back to the title screen. From the title screen, it offers to go to the Keismey Studio hub.']},
   {v:'1.1.2',d:['19 octobre 2026','19 October 2026'],fr:[
     '<b>Accessoires bien visibles.</b> Canne, parapluie, journal, bouquet et valise ont maintenant leur liseré blanc, comme le reste des passants, et sont un peu plus grands. La canne et le parapluie sont tenus légèrement en avant.',
@@ -2500,13 +2659,13 @@ const NOTES=[
    en:[
     '<b>Clearly visible accessories.</b> Walking sticks, umbrellas, newspapers, bouquets and suitcases now have the same white outline as the rest of the passers-by, and are a little larger. Sticks and umbrellas are held slightly forward.',
     'Smoother scope on phones: lighter drawing of passers-by, and if the device cannot keep up, the resolution drops slightly on its own.']},
-  {v:'1.1.1',d:['16 octobre 2026','16 October 2026'],fr:['Nouveau bouton « Recommencer » sur l\'écran titre pour effacer votre carrière et repartir de zéro (avec confirmation).'],en:['New “Start over” button on the title screen to erase your career and start from scratch (with confirmation).']},
+  {v:'1.1.1',d:['16 octobre 2026','16 October 2026'],fr:['Nouveau bouton « Recommencer » sur l\'écran titre pour effacer ta carrière et repartir de zéro (avec confirmation).'],en:['New “Start over” button on the title screen to erase your career and start from scratch (with confirmation).']},
   {v:'1.1',d:['14 octobre 2026','14 October 2026'],fr:[
     '<b>Carrière au Bureau.</b> Cinq grades, de Recrue à As du Bureau. Les cartes s\'ouvrent avec les promotions.',
     '<b>Dossiers rouges.</b> Cinq contrats scénarisés contre la Volière, chacun avec sa complication. Le dernier clôt l\'histoire.',
-    '<b>Difficulté progressive.</b> Plus vous montez en grade, plus la foule est dense et le rendez-vous de midi court. Les primes suivent.',
+    '<b>Difficulté progressive.</b> Plus tu montes en grade, plus la foule est dense et le rendez-vous de midi court. Les primes suivent.',
     'Lunette ×1 et ×2 beaucoup plus fluides sur téléphone.',
-    'Votre partie en cours est conservée, avec les cartes déjà ouvertes.'],
+    'Ta partie en cours est conservée, avec les cartes déjà ouvertes.'],
    en:[
     '<b>A career at the Bureau.</b> Five ranks, from Recruit to Bureau ace. Promotions open up new maps.',
     '<b>Red files.</b> Five story contracts against the Aviary, each with its own complication. The last one closes the story.',
@@ -2536,7 +2695,7 @@ function onBack(){
   const top=[...UI.querySelectorAll('.veil')].pop();
   const press=id=>{const b=top&&top.querySelector('#'+id);if(b){b.click();return true}return false};
   if(top){
-    if(press('kNo')||press('rNo')||press('bNotes'))return;
+    if(press('kNo')||press('rNo')||press('bNotes')||press('oX'))return;
     if(press('bHQ'))return;                                     // rapport → Bureau
     if(MODE==='sniper'){press('bX');return}                     // fiche de tir ouverte → reprendre la visée (tutoriel : ignoré)
     if(top.querySelector('#bMk')){press('bX');return}           // dossier proposé → Bureau
@@ -2544,7 +2703,7 @@ function onBack(){
     if(top.querySelector('#bGo,#bNx,#bFi,#bRoof'))return askQuit();// entre deux épreuves, synthèse, fiche de tir
     return;                                                     // note de service, épilogue : il faut lire
   }
-  if(MODE==='title')return backAsk(tr('Quitter Paper Sniper ?','Leave Paper Sniper?'),tr('Votre carrière est enregistrée. Vous retrouverez les autres jeux de Keismey Studio sur le hub.','Your career is saved. You will find the other Keismey Studio games on the hub.'),tr('Aller au hub','Go to the hub'),()=>KSBack.toHub());
+  if(MODE==='title')return backAsk(tr('Quitter Paper Sniper ?','Leave Paper Sniper?'),tr('Ta carrière est enregistrée. Tu retrouveras les autres jeux de Keismey Studio sur le hub.','Your career is saved. You will find the other Keismey Studio games on the hub.'),tr('Aller au hub','Go to the hub'),()=>KSBack.toHub());
   if(MODE==='hq')return backAsk(tr("Retour à l'écran titre ?",'Back to the title screen?'),'',tr('Écran titre','Title screen'),showTitle);
   if(MODE==='sniper'&&S&&!S.end&&!S.paused){SFX.page();S.paused=true;S.hold=false;showFiche(false);return}
 }
@@ -2554,6 +2713,34 @@ function askQuit(){
     tr('Abandonner','Abandon'),()=>{C=null;S=null;MG=null;showHQ()});
 }
 KSBack.init({back:onBack,lang:()=>SAVE.lang==='en'?'en':'fr'});
+
+/* ---------- Options (socle commun des jeux Keismey Studio) ---------- */
+function showOptions(){
+  const fromHQ=MODE==='hq',onoff=b=>b?tr('oui','on'):tr('non','off');
+  const v=modal(`${dh(tr('Options','Options'),'v'+VERSION)}<h2>${tr('Options','Options')}</h2>
+    <div class="opt"><label>${tr('Musique','Music')}<input type="range" min="0" max="100" step="5" id="oMv" value="${Math.round(SAVE.mv*100)}"></label>
+    <label>${tr('Bruitages','Sound effects')}<input type="range" min="0" max="100" step="5" id="oSv" value="${Math.round(SAVE.sv*100)}"></label></div>
+    <div class="btns col">
+    <button class="pb sm" id="oVib">${tr('Vibrations','Vibration')} : ${onoff(SAVE.vib!==0)}</button>
+    <button class="pb sm" id="oLang">${tr('Play in English','Jouer en français')}</button>
+    <button class="pb sm" id="oNotes">${tr('Notes de mise à jour','Release notes')}</button>
+    <button class="pb sm" id="oSave">${tr('Sauvegarde : exporter, importer','Save: export, import')}</button>
+    <button class="pb sm" id="oBug">${tr('Signaler un bug','Report a bug')}</button>
+    <button class="pb sm" id="oSup">${tr('Soutenir le studio','Support the studio')}</button>
+    ${fromHQ?`<button class="pb sm" id="oTitle">${tr('Écran titre','Title screen')}</button>`:''}
+    <button class="pb red big wide" id="oX">${tr('Fermer','Close')}</button></div>
+    <p class="vline">v${VERSION} · Keismey Studio</p>`);
+  const vol=(id,k)=>{const r=v.querySelector('#'+id);r.oninput=()=>setVol(k,r.value/100);r.onchange=()=>{if(k==='sv')SFX.tap()}};
+  vol('oMv','mv');vol('oSv','sv');
+  $('oVib').onclick=()=>{SAVE.vib=SAVE.vib===0?1:0;persist();$('oVib').textContent=tr('Vibrations','Vibration')+' : '+onoff(SAVE.vib);if(SAVE.vib&&navigator.vibrate)try{navigator.vibrate(40)}catch(e){}};
+  $('oLang').onclick=()=>{SAVE.lang=SAVE.lang==='en'?'fr':'en';persist();SFX.tap();document.documentElement.lang=SAVE.lang;v.remove();fromHQ?showHQ():showTitle();showOptions()};
+  $('oNotes').onclick=()=>{SFX.page();v.remove();showNotes(showOptions)};
+  $('oSave').onclick=()=>{SFX.page();KS.saveDialog({lang:SAVE.lang,keys:[SKEY],save:persist,file:'paper-sniper',accent:'#c9372c'})};
+  $('oBug').onclick=()=>KS.bug('Paper Sniper',SAVE.lang);
+  $('oSup').onclick=()=>KS.support();
+  if(fromHQ)$('oTitle').onclick=()=>{SFX.page();v.remove();showTitle()};
+  $('oX').onclick=()=>{SFX.page();v.remove()};
+}
 
 
 </script>

@@ -30,12 +30,12 @@ function showTitle(){
   ui(`<div id="title"><div class="logo"><span class="cls">${tr('Très secret','Top secret')}</span><h1>Paper<br>Sniper</h1><p>${tr('Identifier. Confirmer. Un seul tir.','Identify. Confirm. One shot.')}</p>
     <div class="tgo"><button class="pb red big" id="bPlay">${tr('Prendre le service','Report for duty')}</button>
     <div class="tstats">${SAVE.contrats?tr(`${gradeName(SAVE.grade)}. ${SAVE.reussis} ${plural(SAVE.reussis,'contrat exécuté','contrats exécutés')} sur ${SAVE.contrats}. Fonds : ${SAVE.francs} F.`,`${gradeName(SAVE.grade)}. ${SAVE.reussis} of ${SAVE.contrats} contracts completed. Funds: ${SAVE.francs} F.`):tr('Le Bureau recrute. Discrétion exigée.','The Bureau is hiring. Discretion required.')}</div>${SAVE.contrats?`<button class="lnk light treset" id="bReset">${tr('Recommencer à zéro','Start over')}</button>`:''}</div></div>
-    <div class="tfoot"><div class="trow"><button class="pb sm ghost light" id="bLang">${tr('English','Français')}</button><button class="pb sm ghost light" id="bMus">${tr('Son','Sound')} : ${SAVE.music?tr('oui','on'):tr('non','off')}</button></div>
+    <div class="tfoot"><div class="trow"><button class="pb sm ghost light" id="bLang">${tr('English','Français')}</button><button class="pb sm ghost light" id="bOpt">${tr('Options','Options')}</button></div>
     <div class="studio"><button class="lnk light" id="bVer">v${VERSION}</button> · Keismey Studio</div></div></div>`);
   $('bVer').onclick=()=>{SFX.page();showNotes()};
   $('bPlay').onclick=()=>{ac();SFX.page();showHQ()};
   $('bLang').onclick=()=>{SAVE.lang=SAVE.lang==='en'?'fr':'en';persist();SFX.tap();document.documentElement.lang=SAVE.lang;showTitle()};
-  $('bMus').onclick=()=>{ac();MUS.toggle();showTitle()};
+  $('bOpt').onclick=()=>{SFX.page();showOptions()};
   if($('bReset'))$('bReset').onclick=()=>{SFX.tap();confirmReset()};
 }
 
@@ -45,7 +45,7 @@ function confirmReset(){
     <p>${tr('Grade, fonds, équipement, cartes ouvertes et dossiers rouges seront effacés. Impossible de revenir en arrière.','Rank, funds, equipment, open maps and red files will be erased. This cannot be undone.')}</p>
     <div class="btns"><button class="pb big wide" id="rNo">${tr('Annuler','Cancel')}</button><button class="pb red big wide" id="rYes">${tr('Tout effacer','Erase everything')}</button></div>`);
   $('rNo').onclick=()=>{SFX.tap();v.remove()};
-  $('rYes').onclick=()=>{SFX.page();SAVE={francs:150,rep:0,contrats:0,reussis:0,upg:{},seed:1,offers:null,tutoP:0,tutoS:0,seeTarget:0,lang:SAVE.lang,music:SAVE.music,seenV:VERSION};careerInit();persist();showTitle()};
+  $('rYes').onclick=()=>{SFX.page();SAVE={francs:150,rep:0,contrats:0,reussis:0,upg:{},seed:1,offers:null,tutoP:0,tutoS:0,seeTarget:0,lang:SAVE.lang,music:SAVE.music,mv:SAVE.mv,sv:SAVE.sv,vib:SAVE.vib,seenV:VERSION};careerInit();persist();showTitle()};
 }
 
 /* =========================================================
@@ -66,13 +66,13 @@ function showHQ(){
   const next=MAPK.find(k=>!SAVE.maps.includes(k));
   ui(`<div id="hq"><div class="hqtop"><h2>${tr('Le Bureau','The Bureau')}</h2><div class="purse"><small>${tr('Fonds','Funds')}</small><span class="money">${SAVE.francs} F</span></div></div>
     ${careerHTML()}
-    <p class="hqsub">${red?tr('Un dossier rouge et trois dossiers ordinaires sont ouverts.','One red file and three ordinary files are open.'):tr('Trois dossiers sont ouverts. Choisissez votre cible.','Three files are open. Choose your target.')}${SAVE.rep?tr(` Contrats exécutés : ${SAVE.rep}.`,` Contracts completed: ${SAVE.rep}.`):''}</p>
+    <p class="hqsub">${red?tr('Un dossier rouge et trois dossiers ordinaires sont ouverts.','One red file and three ordinary files are open.'):tr('Trois dossiers sont ouverts. Choisis ta cible.','Three files are open. Choose your target.')}${SAVE.rep?tr(` Contrats exécutés : ${SAVE.rep}.`,` Contracts completed: ${SAVE.rep}.`):''}</p>
     <div class="board">${red?redCardHTML(red):''}${SAVE.offers.map((o,i)=>`<button class="ccard" data-o="${i}" data-n="${fileNo(o)}"><span class="sil" aria-hidden="true">?</span><span>
       <span class="al">${q(aliasOf(o))}</span><span class="mp">${MAPS[o.map].name}</span>
       <span class="ln"><span>${tr('Risque','Risk')} ${risk(o.stars)}</span><span class="pr">${o.prime} F</span></span>
       <span class="dt">${tr(`${o.stars} ${plural(o.stars,'sosie','sosies')}. ${['4','5','6'][o.stars-1]} suspects par cliché.`,`${o.stars} ${plural(o.stars,'double','doubles')}. ${['4','5','6'][o.stars-1]} suspects per photo.`)}</span></span></button>`).join('')}</div>
     ${next?`<div class="locked">${tr(`${MAPS[next].name} : accès au grade ${gradeName(MAP_GRADE[next])}.`,`${MAPS[next].name}: opens at the rank of ${gradeName(MAP_GRADE[next])}.`)}</div>`:''}
-    <div class="hqbtns"><button class="pb paper" id="bArm">${tr('Armurerie','Armoury')}</button><button class="pb sm ghost light" id="bNotesH">${tr('Nouveautés','What\'s new')}</button><button class="pb sm ghost light" id="bMus">${tr('Son','Sound')} : ${SAVE.music?tr('oui','on'):tr('non','off')}</button><button class="pb sm ghost light" id="bTitle">${tr('Quitter','Exit')}</button></div>
+    <div class="hqbtns"><button class="pb paper" id="bArm">${tr('Armurerie','Armoury')}</button><button class="pb sm ghost light" id="bNotesH">${tr('Nouveautés','What\'s new')}</button><button class="pb sm ghost light" id="bOpt">${tr('Options','Options')}</button><button class="pb sm ghost light" id="bTitle">${tr('Quitter','Exit')}</button></div>
     ${TEST?`<div class="testp"><b>Mode test</b><button class="pb sm" id="tMoney">+1000 F</button><button class="pb sm" id="tMaps">Toutes les cartes</button><button class="pb sm" id="tSee">Voir la cible : ${SAVE.seeTarget?'oui':'non'}</button><button class="pb sm" id="tRed">Dossier rouge suivant</button><button class="pb sm" id="tReset">Remise à zéro</button></div>`:''}</div>`);
   UI.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{SFX.page();openContract(SAVE.offers[+b.dataset.o])});
   if(red)$('bRed').onclick=()=>{SFX.page();openContract(red)};
@@ -80,14 +80,14 @@ function showHQ(){
   // notes de mise à jour : une fois, pour les joueurs qui avaient déjà une partie
   if(SAVE.oldPlayer&&SAVE.seenV!==VERSION)showNotes();
   $('bArm').onclick=()=>{SFX.page();showArmory()};
-  $('bMus').onclick=()=>{ac();MUS.toggle();$('bMus').textContent=tr('Son','Sound')+' : '+(SAVE.music?tr('oui','on'):tr('non','off'))};
+  $('bOpt').onclick=()=>{SFX.page();showOptions()};
   $('bTitle').onclick=()=>{SFX.page();showTitle()};
   if(TEST){
     $('tMoney').onclick=()=>{SAVE.francs+=1000;persist();showHQ()};
     $('tMaps').onclick=()=>{SAVE.maps=MAPK.slice();SAVE.offers=null;persist();showHQ()};
     $('tRed').onclick=()=>{const i=SAVE.dr||0;if(i<RED.length){SAVE.rep=Math.max(SAVE.rep,RED[i].rep);persist();showHQ()}};
     $('tSee').onclick=()=>{SAVE.seeTarget=SAVE.seeTarget?0:1;persist();showHQ()};
-    $('tReset').onclick=()=>{SAVE={francs:150,rep:0,contrats:0,reussis:0,upg:{},seed:1,offers:null,tutoP:0,tutoS:0,seeTarget:0,lang:SAVE.lang,music:SAVE.music,seenV:VERSION};careerInit();showHQ()};
+    $('tReset').onclick=()=>{SAVE={francs:150,rep:0,contrats:0,reussis:0,upg:{},seed:1,offers:null,tutoP:0,tutoS:0,seeTarget:0,lang:SAVE.lang,music:SAVE.music,mv:SAVE.mv,sv:SAVE.sv,vib:SAVE.vib,seenV:VERSION};careerInit();showHQ()};
   }
 }
 function showArmory(){
@@ -176,7 +176,7 @@ function showProcedure(then){
     <p>${tr('Agent, voici la procédure. Elle ne change jamais.','Agent, here is the procedure. It never changes.')}</p>
     <ol class="proc">
       <li><span>${tr("<b>L'enquête.</b> Trois épreuves courtes pour établir le signalement de la cible : sa tenue, son habitude, le lieu de son rendez-vous.","<b>The investigation.</b> Three short trials to build the target's profile: outfit, habit, and meeting place.")}</span></li>
-      <li><span>${tr("<b>Les indicateurs.</b> Ce que vous n'avez pas obtenu s'achète. C'est cher, et chaque achat coûte plus que le précédent.","<b>Informants.</b> Whatever you missed can be bought. It is expensive, and each purchase costs more than the last.")}</span></li>
+      <li><span>${tr("<b>Les indicateurs.</b> Ce que tu n'as pas obtenu s'achète. C'est cher, et chaque achat coûte plus que le précédent.","<b>Informants.</b> Whatever you missed can be bought. It is expensive, and each purchase costs more than the last.")}</span></li>
       <li><span>${tr('<b>Le tir.</b> À midi, depuis les toits. La cible a des sosies. Un seul tir propre.','<b>The shot.</b> At noon, from the rooftops. The target has doubles. One clean shot.')}</span></li>
     </ol>
     <p class="notice">${tr('Abattre un civil annule le contrat.','Shooting a civilian voids the contract.')}</p>
@@ -282,10 +282,10 @@ function buildHud2(){
   if(!SAVE.tutoS){S.paused=true;
     const v=modal(`${dh(tr('Consignes de tir','Firing orders'),tr('À lire une fois','Read once'))}<h2>${tr('Sur le toit','On the roof')}</h2>
       <ol class="proc">
-        <li><span>${tr("<b>Observer.</b> À l'œil nu (×1), vous voyez toute la zone. Glissez pour regarder ailleurs. Touchez un passant pour épauler et le viser à la lunette.","<b>Observe.</b> With the naked eye (×1) you see the whole area. Drag to look around. Tap a passer-by to raise the rifle and scope in on them.")}</span></li>
-        <li><span>${tr('<b>Viser.</b> Dans la lunette, glissez pour déplacer le réticule. ×2 et ×4 règlent le grossissement.','<b>Aim.</b> In the scope, drag to move the crosshair. ×2 and ×4 set the magnification.')}</span></li>
-        <li><span>${tr('<b>Stabiliser.</b> Maintenez Souffle : le réticule cesse de trembler, tant que votre souffle tient.','<b>Steady.</b> Hold Breath: the crosshair stops shaking for as long as your breath lasts.')}</span></li>
-        <li><span>${tr('<b>Marquer.</b> Posez une épingle sur un suspect pour ne pas le perdre. Votre fiche, en haut à gauche, rappelle le signalement.','<b>Mark.</b> Pin a suspect so you do not lose them. Your sheet, top left, recalls the description.')}</span></li>
+        <li><span>${tr("<b>Observer.</b> À l'œil nu (×1), tu vois toute la zone. Glisse pour regarder ailleurs. Touche un passant pour épauler et le viser à la lunette.","<b>Observe.</b> With the naked eye (×1) you see the whole area. Drag to look around. Tap a passer-by to raise the rifle and scope in on them.")}</span></li>
+        <li><span>${tr('<b>Viser.</b> Dans la lunette, glisse pour déplacer le réticule. ×2 et ×4 règlent le grossissement.','<b>Aim.</b> In the scope, drag to move the crosshair. ×2 and ×4 set the magnification.')}</span></li>
+        <li><span>${tr('<b>Stabiliser.</b> Maintiens Souffle : le réticule cesse de trembler, tant que ton souffle tient.','<b>Steady.</b> Hold Breath: the crosshair stops shaking for as long as your breath lasts.')}</span></li>
+        <li><span>${tr('<b>Marquer.</b> Pose une épingle sur un suspect pour ne pas le perdre. Ta fiche, en haut à gauche, rappelle le signalement.','<b>Mark.</b> Pin a suspect so you do not lose them. Your sheet, top left, recalls the description.')}</span></li>
       </ol>
       <p class="notice">${tr('Après son rendez-vous de midi, la cible quitte la zone. Un tir manqué disperse la foule.','After the noon meeting, the target leaves the area. A missed shot scatters the crowd.')}</p>
       <div class="btns"><button class="pb red big wide" id="bPos">${tr('En position','In position')}</button></div>`);
@@ -295,7 +295,7 @@ const eyeMode=()=>S&&S.Z[S.z].eye;
 /* boutons et consigne selon qu'on regarde à l'œil nu ou à la lunette */
 function hudMode(){const e=eyeMode(),f=$('fire'),pb=$('pinb'),br=$('breath'),h=$('hint2');if(!f)return;
   f.textContent=e?tr('Épauler','Raise'):tr('Tirer','Fire');f.classList.toggle('eye',!!e);pb.disabled=!!e;br.classList.toggle('off',!!e);
-  if(h){h.innerHTML='<span>'+(e?tr('Touchez un passant pour le viser.','Tap a passer-by to scope in.'):tr('Glissez pour viser.','Drag to aim.'))+'</span>';h.style.opacity=1;S.hintT=Math.max(S.hintT,3.5)}}
+  if(h){h.innerHTML='<span>'+(e?tr('Touche un passant pour le viser.','Tap a passer-by to scope in.'):tr('Glisse pour viser.','Drag to aim.'))+'</span>';h.style.opacity=1;S.hintT=Math.max(S.hintT,3.5)}}
 function setZoom(z){const was=S.z;S.z=z;document.querySelectorAll('#zoom [data-z]').forEach(b=>b.classList.toggle('on',+b.dataset.z===z));if(was!==z&&(!S.Z[was].eye)!==(!S.Z[z].eye)){SFX.bolt();S.hold=false}clampCam();hudMode()}
 /* vue à l'œil nu : toute la largeur de l'écran, le sol calé au-dessus des boutons */
 function eyeGeo(){const k=SW/1100,bot=SH-118;return{k,w:SW/k,bot,yb:955}}
@@ -309,7 +309,7 @@ function fire(){
   if(!S||S.end||S.paused)return;
   if(eyeMode()){S.cam.y=Math.min(S.cam.y,700);setZoom(1);return}
   if(S.cool>0)return;
-  S.cool=S.coolDur;S.shots++;S.flash=1;S.shake=S.silent?.4:1;if(navigator.vibrate)try{navigator.vibrate(S.silent?30:70)}catch(e){}(S.silent?SFX.shotS:SFX.shot)();setTimeout(()=>S&&!S.end&&SFX.bolt(),S.coolDur*450);
+  S.cool=S.coolDur;S.shots++;S.flash=1;S.shake=S.silent?.4:1;if(SAVE.vib!==0&&navigator.vibrate)try{navigator.vibrate(S.silent?30:70)}catch(e){}(S.silent?SFX.shotS:SFX.shot)();setTimeout(()=>S&&!S.end&&SFX.bolt(),S.coolDur*450);
   const a=aimPoint();S.recoil=S.Z[S.z].w*.1;
   const h=hitTest(S.crowd,a.x,a.y);
   if(h&&h.n){SFX.hit();const n=h.n;n.dead=0.001;S.head=h.part==='head';confetti(n);if(n.birds)flyBirds(n);
@@ -398,20 +398,20 @@ function showResult(){
   persist();
   MUS.fadeOut();win?SFX.win():SFX.fail();
   let why='';
-  if(S.end==='innocent'){const v=S.victim;why=v.kind==='sosie'?tr('Vous avez abattu un sosie. La cible a profité de la confusion pour disparaître.','You shot a double. The target used the confusion to vanish.'):tr('Vous avez abattu un civil. Le contrat est annulé.','You shot a civilian. The contract is void.')}
+  if(S.end==='innocent'){const v=S.victim;why=v.kind==='sosie'?tr('Tu as abattu un sosie. La cible a profité de la confusion pour disparaître.','You shot a double. The target used the confusion to vanish.'):tr('Tu as abattu un civil. Le contrat est annulé.','You shot a civilian. The contract is void.')}
   if(S.end==='escape')why=tr('La cible a quitté la zone. Le contrat est perdu.','The target left the area. The contract is lost.');
-  if(S.end==='abandon')why=tr('Vous avez quitté votre position. Le contrat est annulé.','You left your position. The contract is void.');
+  if(S.end==='abandon')why=tr('Tu as quitté ta position. Le contrat est annulé.','You left your position. The contract is void.');
   const hm=`${gameClock.h}:${String(gameClock.m).padStart(2,'0')}`;
   if(win)why=tr(`${q(aliasOf(C.of))} a été neutralisé${C.T.genre==='femme'?'e':''} à ${gameClock.h}\u00a0h\u00a0${String(gameClock.m).padStart(2,'0')}. Le Bureau prend acte.`,`${q(aliasOf(C.of))} was neutralised at ${hm}. The Bureau takes note.`);
   if(rd&&win)why+=' '+tr(rd.win,rd.winEn);
-  if(rd&&!win)why+=' '+tr('Le dossier rouge reste ouvert : vous pourrez le reprendre depuis le Bureau.','The red file stays open: you can take it up again from the Bureau.');
+  if(rd&&!win)why+=' '+tr('Le dossier rouge reste ouvert : tu pourras le reprendre depuis le Bureau.','The red file stays open: you can take it up again from the Bureau.');
   const promo=rd&&win&&C.red<RED.length-1?SAVE.grade:0;
   modal(`<span class="stamp ${win?'ok':''}">${win?tr('Exécuté','Done'):tr('Échec','Failed')}</span>${dh(fileNo(C.of),tr('Rapport de mission','Mission report'))}<h2>${win?tr('Contrat exécuté','Contract completed'):tr('Contrat perdu','Contract lost')}</h2>
     <p>${why}</p>${win?'':`<p class="small">${tr('Pour mémoire, la cible','For the record, the target')} ${TICS[C.tic].d}.</p>`}
     <h3>${tr('Évaluation','Assessment')}</h3>
     <div class="eval">${st.map(s=>`<div class="${s[0]?'ok':''}"><i></i>${s[1]}</div>`).join('')}</div>
     <div class="total"><span>${tr('Prime versée','Fee paid')}</span><span class="money">${prime} F</span></div>
-    ${promo&&promo>gradeBefore?`<p class="notice">${tr('Promotion : vous passez au grade ','Promotion: you are now ')}<b>${gradeName(promo)}</b>.${opened.length?tr(' Nouveau secteur accessible : ',' New sector available: ')+`<b>${opened.map(k=>MAPS[k].name).join(', ')}</b>.`:''}</p>`:''}
+    ${promo&&promo>gradeBefore?`<p class="notice">${tr('Promotion : tu passes au grade ','Promotion: you are now ')}<b>${gradeName(promo)}</b>.${opened.length?tr(' Nouveau secteur accessible : ',' New sector available: ')+`<b>${opened.map(k=>MAPS[k].name).join(', ')}</b>.`:''}</p>`:''}
     <div class="btns"><button class="pb red big wide" id="bHQ">${rd&&win&&SAVE.fin&&C.red===RED.length-1?tr('Lire la suite','Read on'):tr('Retour au Bureau','Back to the Bureau')}</button></div>`,rd?'redbrief':'');
   const ending=rd&&win&&C.red===RED.length-1;
   $('bHQ').onclick=()=>{SFX.page();S=null;C=null;sprClear();if(ending)showEnding(showHQ);else showHQ()};

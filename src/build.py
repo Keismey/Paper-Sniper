@@ -8,7 +8,7 @@ import hashlib, json, os, sys
 
 SRC = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(SRC)
-JS_FILES = ['ks-back.js', 'assets.js', 'engine.js', 'puppet.js', 'maps.js', 'nav.js', 'game.js', 'minigames.js', 'career.js']
+JS_FILES = ['ks-studio.js', 'ks-back.js', 'assets.js', 'engine.js', 'puppet.js', 'maps.js', 'nav.js', 'game.js', 'minigames.js', 'career.js']
 
 # Suivi Cloudflare Web Analytics (version publiée uniquement, pas l'aperçu de test)
 CF_ANALYTICS = """<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "cdb82226cd1b401d9e4f4e899f9b8425"}'></script><!-- End Cloudflare Web Analytics -->"""

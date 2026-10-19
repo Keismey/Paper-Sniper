@@ -64,21 +64,27 @@ let AUD_OK=false;
 function unlockAudio(){let a=AC;if(!a){try{a=AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){return}}
   if(a.state!=='running')a.resume().catch(()=>{});
   if(!AUD_OK){try{const b=a.createBuffer(1,1,22050),s=a.createBufferSource();s.buffer=b;s.connect(a.destination);s.start(0)}catch(e){}AUD_OK=true;
-    if(typeof MUS!=='undefined'&&MUS.want&&!MUS.cur&&SAVE.music)MUS.play(MUS.want)}}
+    if(typeof MUS!=='undefined'&&MUS.want&&!MUS.cur&&SAVE.mv)MUS.play(MUS.want)}}
 ['pointerdown','pointerup','touchstart','touchend','mousedown','click','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{capture:true,passive:true}));
 document.addEventListener('visibilitychange',()=>{if(!AC)return;if(document.hidden)AC.suspend().catch(()=>{});else if(AUD_OK)AC.resume().catch(()=>{})});
-function tone(f1,f2,dur,type,vol,delay){if(SAVE.music===0||!AUD_OK)return;const a=ac();if(!a)return;const t=a.currentTime+(delay||0);const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f1,t);o.frequency.exponentialRampToValueAtTime(Math.max(20,f2),t+dur);g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol||.12,t+.01);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(g).connect(a.destination);o.start(t);o.stop(t+dur+.05)}
-function noise(dur,vol,ft,freq,delay){if(SAVE.music===0||!AUD_OK)return;const a=ac();if(!a)return;const t=a.currentTime+(delay||0);if(!NB_){NB_=a.createBuffer(1,a.sampleRate,a.sampleRate);const d=NB_.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}const s=a.createBufferSource();s.buffer=NB_;const f=a.createBiquadFilter();f.type=ft||'lowpass';f.frequency.value=freq||1000;const g=a.createGain();g.gain.setValueAtTime(vol||.1,t);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);s.connect(f).connect(g).connect(a.destination);s.start(t);s.stop(t+dur+.05)}
+/* sorties son : bruitages et musique, chacun avec son volume (Options) */
+let SFXO=null,MUSO=null;
+function sfxOut(){const a=ac();if(!SFXO){SFXO=a.createGain();SFXO.connect(a.destination)}SFXO.gain.value=SAVE.sv;return SFXO}
+function musOut(){const a=ac();if(!MUSO){MUSO=a.createGain();MUSO.connect(a.destination)}MUSO.gain.value=SAVE.mv;return MUSO}
+function setVol(k,v){SAVE[k]=v;persist();if(k==='sv'&&SFXO)SFXO.gain.value=v;
+  if(k==='mv'){if(MUSO)MUSO.gain.value=v;for(const e of Object.values(MUS.el))e.volume=MUS.vol*v;if(v>0&&!MUS.cur&&MUS.want)MUS.play(MUS.want);if(v===0)MUS.fadeOut()}}
+function tone(f1,f2,dur,type,vol,delay){if(!SAVE.sv||!AUD_OK)return;const a=ac();if(!a)return;const t=a.currentTime+(delay||0);const o=a.createOscillator(),g=a.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f1,t);o.frequency.exponentialRampToValueAtTime(Math.max(20,f2),t+dur);g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol||.12,t+.01);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(g).connect(sfxOut());o.start(t);o.stop(t+dur+.05)}
+function noise(dur,vol,ft,freq,delay){if(!SAVE.sv||!AUD_OK)return;const a=ac();if(!a)return;const t=a.currentTime+(delay||0);if(!NB_){NB_=a.createBuffer(1,a.sampleRate,a.sampleRate);const d=NB_.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}const s=a.createBufferSource();s.buffer=NB_;const f=a.createBiquadFilter();f.type=ft||'lowpass';f.frequency.value=freq||1000;const g=a.createGain();g.gain.setValueAtTime(vol||.1,t);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);s.connect(f).connect(g).connect(sfxOut());s.start(t);s.stop(t+dur+.05)}
 /* ---------- Détonation : claquement + souffle + coup sourd saturé + écho des façades ---------- */
 let BUS=null,VERB=null;
 function sfxBus(){const a=ac();if(!a)return null;if(BUS)return BUS;
-  const comp=a.createDynamicsCompressor();comp.threshold.value=-10;comp.knee.value=8;comp.ratio.value=6;comp.attack.value=.002;comp.release.value=.25;comp.connect(a.destination);
+  const comp=a.createDynamicsCompressor();comp.threshold.value=-10;comp.knee.value=8;comp.ratio.value=6;comp.attack.value=.002;comp.release.value=.25;comp.connect(sfxOut());
   // réverbération : réponse impulsionnelle générée (rue étroite, ~2,4 s)
   const len=Math.floor(a.sampleRate*2.4),ir=a.createBuffer(2,len,a.sampleRate);
   for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<len;i++){const t=i/a.sampleRate;d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3.2)*(t<.012?t/.012:1)}}
   VERB=a.createConvolver();VERB.buffer=ir;const vg=a.createGain();vg.gain.value=.55;const vl=a.createBiquadFilter();vl.type='lowpass';vl.frequency.value=2400;VERB.connect(vl).connect(vg).connect(comp);
   BUS=comp;return BUS}
-function boom(silenced){if(SAVE.music===0||!AUD_OK)return;const a=ac();if(!a)return;const bus=sfxBus(),t=a.currentTime+.005;
+function boom(silenced){if(!SAVE.sv||!AUD_OK)return;const a=ac();if(!a)return;const bus=sfxBus(),t=a.currentTime+.005;
   if(!NB_){NB_=a.createBuffer(1,a.sampleRate,a.sampleRate);const d=NB_.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1}
   const out=a.createGain();out.gain.value=silenced?.3:.85;out.connect(bus);out.connect(VERB);
   const nz=(dur,vol,type,f0,f1,q)=>{const s=a.createBufferSource();s.buffer=NB_;s.playbackRate.value=.7+Math.random()*.3;const f=a.createBiquadFilter();f.type=type;f.Q.value=q||.7;f.frequency.setValueAtTime(f0,t);f.frequency.exponentialRampToValueAtTime(f1,t+dur);
@@ -116,15 +122,17 @@ const MUS={cur:null,want:null,buf:{},src:null,gain:null,el:{},vol:.55,
   url:k=>'music/'+k+'.mp3',
   async load(k){if(this.buf[k]!==undefined)return this.buf[k];this.buf[k]=null;
     try{const r=await fetch(this.url(k));const ab=await r.arrayBuffer();this.buf[k]=await ac().decodeAudioData(ab)}catch(e){this.buf[k]=false}return this.buf[k]},
-  async play(k){this.want=k;if(!SAVE.music||this.cur===k||!AUD_OK)return;const a=ac();if(!a)return;
-    this.fadeOut();this.cur=k;const b=await this.load(k);if(this.want!==k||!SAVE.music||this.cur!==k)return;
-    if(b){const s=a.createBufferSource(),g=a.createGain();s.buffer=b;s.loop=true;g.gain.setValueAtTime(0.0001,a.currentTime);g.gain.exponentialRampToValueAtTime(this.vol,a.currentTime+1.6);s.connect(g).connect(a.destination);s.start();this.src=s;this.gain=g}
-    else{let el=this.el[k];if(!el){el=this.el[k]=new Audio(this.url(k));el.loop=true}el.volume=this.vol;el.currentTime=0;el.play().catch(()=>{});this.src={stop:()=>{}};this.gain={el}}},
+  async play(k){this.want=k;if(!SAVE.mv||this.cur===k||!AUD_OK)return;const a=ac();if(!a)return;
+    this.fadeOut();this.cur=k;const b=await this.load(k);if(this.want!==k||!SAVE.mv||this.cur!==k)return;
+    if(b){const s=a.createBufferSource(),g=a.createGain();s.buffer=b;s.loop=true;g.gain.setValueAtTime(0.0001,a.currentTime);g.gain.exponentialRampToValueAtTime(this.vol,a.currentTime+1.6);s.connect(g).connect(musOut());s.start();this.src=s;this.gain=g}
+    else{let el=this.el[k];if(!el){el=this.el[k]=new Audio(this.url(k));el.loop=true}el.volume=this.vol*SAVE.mv;el.currentTime=0;el.play().catch(()=>{});this.src={stop:()=>{}};this.gain={el}}},
   fadeOut(){const a=AC,s=this.src,g=this.gain;this.src=this.gain=null;this.cur=null;if(!s)return;
     if(g.el){const el=g.el;let v=el.volume;const iv=setInterval(()=>{v-=.05;if(v<=0){el.pause();clearInterval(iv)}else el.volume=v},50);return}
     g.gain.cancelScheduledValues(a.currentTime);g.gain.setValueAtTime(Math.max(.0001,g.gain.value),a.currentTime);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+1);s.stop(a.currentTime+1.1)},
-  toggle(){SAVE.music=SAVE.music?0:1;persist();if(SAVE.music){const k=this.want;this.cur=null;if(k)this.play(k)}else this.fadeOut()}};
-if(SAVE.music===undefined)SAVE.music=1;
+  toggle(){setVol('mv',SAVE.mv?0:1)}};
+// réglages du son et des vibrations (anciennes parties : « Son : non » coupait tout)
+if(SAVE.mv===undefined){SAVE.mv=SAVE.music===0?0:1;SAVE.sv=SAVE.music===0?0:1}
+if(SAVE.vib===undefined)SAVE.vib=1;
 let toastT=0;
 function toast(msg,bad){const t=$('toast');t.innerHTML=msg;t.classList.toggle('bad',!!bad);t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600)}
 
@@ -192,11 +200,11 @@ function pickTic(maxV,minV,look,not){const c=TICK.filter(k=>TICS[k].v<=maxV&&TIC
 
 const UPGS=[
   {id:'stab',n:'Lunette stabilisée',d:'Le réticule tremble moins.',c:[300,600,1000]},
-  {id:'souffle',n:'Entraînement respiratoire',d:'Vous retenez votre souffle plus longtemps.',c:[250,500,850]},
+  {id:'souffle',n:'Entraînement respiratoire',d:'Tu retiens ton souffle plus longtemps.',c:[250,500,850]},
   {id:'culasse',n:'Culasse rectifiée',d:'Rechargement plus rapide entre deux tirs.',c:[350,750]},
   {id:'zoom6',n:'Lunette ×6',d:'Un grossissement supplémentaire, pour les habitudes discrètes.',c:[900]},
   {id:'silence',n:'Silencieux',d:'Un premier tir manqué ne provoque pas de panique.',c:[1200]},
-  {id:'carnet',n:'Carnet d\'adresses',d:'Les indicateurs vous accordent 25 % de remise.',c:[600]},
+  {id:'carnet',n:'Carnet d\'adresses',d:'Les indicateurs t\'accordent 25 % de remise.',c:[600]},
 ];
 bilf(UPGS[0],{n:'Stabilised scope',d:'The crosshair shakes less.'});bilf(UPGS[1],{n:'Breathing drills',d:'You hold your breath for longer.'});
 bilf(UPGS[2],{n:'Trued bolt',d:'Faster reload between shots.'});bilf(UPGS[3],{n:'×6 scope',d:'An extra magnification step, for discreet habits.'});
