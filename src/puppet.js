@@ -144,11 +144,13 @@ function mipDraw(c,src,x,y,w,h){
   const T=c.getTransform(),sc=Math.hypot(T.a,T.b)||1,tw=Math.abs(w*sc);
   let lv=MIPS.get(src);if(!lv){lv=[src];MIPS.set(src,lv)}
   let cur=src,i=0;const W0=src.naturalWidth||src.width;
-  while((cur.naturalWidth||cur.width)>tw*1.6&&(cur.naturalWidth||cur.width)>8){i++;
+  while((cur.naturalWidth||cur.width)>tw*1.4&&(cur.naturalWidth||cur.width)>8){i++;
     if(!lv[i]){const pw=cur.naturalWidth||cur.width,ph=cur.naturalHeight||cur.height,cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(pw/2));cv.height=Math.max(1,Math.round(ph/2));
       const x2=cv.getContext('2d');x2.imageSmoothingEnabled=true;x2.imageSmoothingQuality='high';x2.drawImage(cur,0,0,cv.width,cv.height);lv[i]=cv}
     cur=lv[i]}
-  c.imageSmoothingEnabled=true;c.imageSmoothingQuality='high';c.drawImage(cur,x,y,w,h)}
+  // les niveaux sont déjà pré-réduits en haute qualité (et choisis à moins de ×1,4 de la taille voulue) :
+  // un lissage simple suffit au dessin, bien moins coûteux sur téléphone que 'high' à chaque image
+  c.imageSmoothingEnabled=true;c.imageSmoothingQuality='low';c.drawImage(cur,x,y,w,h)}
 /* ---------- calques images : coiffures, chapeaux, objets ---------- */
 const GREYC=new Map();
 function tintGrey(key,col,ref){const id=key+'|'+col;let cv=GREYC.get(id);if(cv)return cv;const im=SPR.img[key];cv=document.createElement('canvas');cv.width=im.naturalWidth;cv.height=im.naturalHeight;
@@ -156,12 +158,13 @@ function tintGrey(key,col,ref){const id=key+'|'+col;let cv=GREYC.get(id);if(cv)r
   for(let i=0;i<q.length;i+=4){if(!q[i+3])continue;const L=(q[i]+q[i+1]+q[i+2])/3;if(L<42)continue;const f=L/ref,hi=f>1?(f-1)*90:0,w=Math.min(1,(L-42)/48);  // fondu vers l'encre : pas de mouchetis sur les rubans sombres
     for(let k=0;k<3;k++)q[i+k]=q[i+k]*(1-w)+Math.min(255,C[k]*f+hi)*w}
   x.putImageData(d,0,0);GREYC.set(id,cv);return cv}
-function silImg(key,col,pw){const id='s|'+key+'|'+col;let o=SILC.get(id);if(o)return o;const im=SPR.img[key],B=Math.max(2,Math.round(pw));const cv=document.createElement('canvas');cv.width=im.naturalWidth+2*B;cv.height=im.naturalHeight+2*B;const x=cv.getContext('2d');
+function silImg(key,col,pw){const B0=Math.max(2,Math.round(pw)),id='s|'+key+'|'+col+'|'+B0;/* l'épaisseur fait partie de la clé du cache */let o=SILC.get(id);if(o)return o;const im=SPR.img[key],B=Math.max(2,Math.round(pw));const cv=document.createElement('canvas');cv.width=im.naturalWidth+2*B;cv.height=im.naturalHeight+2*B;const x=cv.getContext('2d');
   for(let a=0;a<24;a++){const t=a/24*Math.PI*2;x.drawImage(im,B+Math.cos(t)*B,B+Math.sin(t)*B)}x.drawImage(im,B,B);x.globalCompositeOperation='source-in';x.fillStyle=col;x.fillRect(0,0,cv.width,cv.height);o={cv,B};SILC.set(id,o);return o}
 /* dessine une image dans un rectangle monde, en mode ombre / liseré / remplissage */
-function layImg(c,key,x,y,w,h,mode,fill){const im=SPR.img[key];if(!im)return;
+/* k : taille d'une unité locale en unités monde (objets tenus, dessinés réduits) : le liseré garde 2,3 unités monde comme le reste du pantin */
+function layImg(c,key,x,y,w,h,mode,fill,k){const im=SPR.img[key];if(!im)return;
   if(mode==='fill'){mipDraw(c,fill||im,x,y,w,h);return}
-  const ppw=im.naturalWidth/w,s=silImg(key,mode==='ol'?'#fff':'rgba(40,22,10,.17)',2.3*ppw),pad=s.B/ppw;mipDraw(c,s.cv,x-pad,y-pad,w+2*pad,h+2*pad)}
+  const ppw=im.naturalWidth/w,s=silImg(key,mode==='ol'?'#fff':'rgba(40,22,10,.17)',2.3*ppw/(k||1)),pad=s.B/ppw;mipDraw(c,s.cv,x-pad,y-pad,w+2*pad,h+2*pad)}
 /* cheveux sous un chapeau : on retire ce qui dépasse au-dessus du bord inférieur du chapeau
    (derrière le chapeau, la limite redescend doucement : les cheveux longs sortent de dessous),
    puis on encre la coupe pour qu'elle ait l'air d'un vrai bord. Calculé une fois par combinaison. */
@@ -226,11 +229,17 @@ function lowTail(x,im,nW,nH,pts,mg,bx){
   const dmax=mg/1.2*36;x.drawImage(rest,0,0);
   if(dy<=dmax)x.drawImage(tail,dx,dy);else{const f=(yb+dmax-top-dy)/(yb-top),a=top+dy-f*top;x.drawImage(tail,dx,a,nW,nH*f)}return dy}
 /* objets tenus : point de prise (px de l'image d'origine), échelle monde/px, suspendu ou non */
-const OBJ={parapluie:{gx:60,gy:105,s:.056,hang:1,back:1},canne:{gx:72,gy:24,s:.052,hang:1,back:1},valise:{gx:165,gy:18,s:.088,hang:1,back:1},
-  journal:{gx:95,gy:240,s:.074,rot:-.15,back:1},bouquet:{gx:115,gy:250,s:.09,rot:-.2,back:1},cigarette:{gx:12,gy:17,s:.026},montre:{gx:140,gy:150,s:.036},pigeon:{gx:220,gy:318,s:.055}};
+/* wx : élargissement horizontal (objets fins). ol : le liseré blanc de l'objet est posé juste sous lui, par-dessus le manteau
+   et les jambes (sans lui, une canne brune devant un pantalon sombre disparaît). Canne et parapluie inclinés vers l'avant. */
+const OBJ={parapluie:{gx:60,gy:105,s:.056,wx:1.9,olw:.7,hang:1,back:1,ol:1,rot:-.16},canne:{gx:72,gy:24,s:.052,wx:2.5,olw:.6,hang:1,back:1,ol:1,rot:-.24},valise:{gx:165,gy:18,s:.092,hang:1,back:1,ol:1},
+  journal:{gx:95,gy:240,s:.094,rot:-.15,back:1,ol:1},bouquet:{gx:115,gy:250,s:.115,rot:-.2,back:1,ol:1},cigarette:{gx:12,gy:17,s:.026},montre:{gx:140,gy:150,s:.036},pigeon:{gx:220,gy:318,s:.055}};
 const hasImg=k=>!!SPR.img[k];
 function drawObj(c,name,mode,armA){const O=OBJ[name],key='o_'+name,A=ASSETS[key];if(!A||!hasImg(key))return false;
-  c.save();if(O.hang)c.rotate(-armA);if(O.rot)c.rotate(O.rot);c.scale(O.s,O.s);layImg(c,key,-O.gx,-O.gy,A.w,A.h,mode);c.restore();return true}
+  c.save();if(O.hang)c.rotate(-armA);if(O.rot)c.rotate(O.rot);c.scale(O.s*(O.wx||1),O.s);
+  if(mode==='ol'&&O.ol){c.restore();return true}   // liseré posé avec l'objet, pendant la passe des couleurs
+  const k=O.s*(O.wx||1);   // liseré réglé sur la largeur : l'étirement horizontal ne l'épaissit pas sur les côtés
+  if(mode==='fill'&&O.ol)layImg(c,key,-O.gx,-O.gy,A.w,A.h,'ol',null,k/(O.olw||1));   // olw : liseré plus fin pour les objets fins
+  layImg(c,key,-O.gx,-O.gy,A.w,A.h,mode,null,k);c.restore();return true}
 /* pastille noire « ? » (parties inconnues de la cible) */
 const MASKC='#1b1820';
 function qmark(c,x,y,r,mode,flip){if(mode==='sh'){c.fillStyle='rgba(40,22,10,.17)';c.beginPath();c.arc(x,y,r,0,7);c.fill();return}

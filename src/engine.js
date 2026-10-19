@@ -7,9 +7,22 @@ const TEST=true; // mode test (panneau dans la planque) — à passer à false p
 const $=id=>document.getElementById(id);
 const cv=$('cv');let ctx=cv.getContext('2d');
 const UI=$('ui');
-let DPR=1,SW=360,SH=640;
-function resize(){const r=$('app').getBoundingClientRect();SW=r.width;SH=r.height;DPR=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(SW*DPR);cv.height=Math.round(SH*DPR)}
+let DPR=1,SW=360,SH=640,DPR_CAP=2;
+function resize(){const r=$('app').getBoundingClientRect();SW=r.width;SH=r.height;DPR=Math.min(DPR_CAP,window.devicePixelRatio||1);cv.width=Math.round(SW*DPR);cv.height=Math.round(SH*DPR)}
 addEventListener('resize',resize);resize();
+/* ---------- Résolution adaptative ----------
+   Si le téléphone n'arrive pas à suivre (images trop espacées pendant plus de 2 s, hors démarrage d'une scène),
+   la résolution du canevas baisse d'un palier (2 → 1,75 → 1,5 → 1,25 pixel par point), pour toute la session. */
+const PERF={ema:16,slow:0,warm:0,mode:'',work:0};
+function perfTick(rdt,mode){
+  if(mode!==PERF.mode){PERF.mode=mode;PERF.warm=1.5;PERF.slow=0;PERF.ema=16;return}   // nouvelle scène : préparation des images, on ne juge pas
+  if(!mode)return;   // menus et documents : rien à mesurer
+  if(PERF.warm>0){PERF.warm-=rdt;return}
+  PERF.ema+=(Math.min(rdt,.2)*1000-PERF.ema)*Math.min(.5,rdt*5);   // moyenne glissante sur ~0,2 s de temps réel
+  // trop lent = moins de 40 images/s ET (calcul d'une image lourd, ou moins de 25 images/s) :
+  // un écran bridé à 30 images/s (mode économie d'énergie) ne déclenche rien si le jeu calcule vite
+  if(PERF.ema>25&&(PERF.work>12||PERF.ema>40)){PERF.slow+=rdt;if(PERF.slow>2&&DPR>1.3){DPR_CAP=Math.max(1.25,DPR-.25);resize();PERF.slow=0;PERF.warm=1;PERF.ema=16}}
+  else PERF.slow=Math.max(0,PERF.slow-rdt*.5)}
 
 /* ---------- Hasard & maths ---------- */
 function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -284,7 +297,10 @@ function drawNpc(n,t,opts){
   const s=scaleAt(n.y);
   let rot=0,pop=1;if(n.dead){const k=ease(n.dead/.55);rot=-k*1.45*Math.sign(n.flip||1);pop=1-k*.15}
   if(opts.mark&&opts.mark(n)){ctx.save();ctx.fillStyle='rgba(227,180,74,.55)';ctx.beginPath();ctx.ellipse(n.x,n.y,34*s,9*s,0,0,7);ctx.fill();ctx.restore()}
-  if(!(SPR_ON&&!n.dead&&sprDraw(n,s)))drawPerson(ctx,n.look,n.x,n.y,s,n.dead?NEUTRAL:(n.po||NEUTRAL),n.flip,{rot,pop,mask:n.mask});
+  // SPR_ON : 'all' (×1, ×2) tous les passants passent par le cache ; 'still' (×4, ×6) seulement ceux qui ne bougent pas
+  // (à l'arrêt, sans tic en cours) : en gros plan, les passants en mouvement restent dessinés pièce par pièce
+  const still=(n.state==='dwell'||n.state==='halt')&&!(n.ticA>=0);
+  if(!(SPR_ON&&!n.dead&&(SPR_ON==='all'||still)&&sprDraw(n,s)))drawPerson(ctx,n.look,n.x,n.y,s,n.dead?NEUTRAL:(n.po||NEUTRAL),n.flip,{rot,pop,mask:n.mask});
   if(n.birds)for(const b of n.birds)drawBird(n.x+b.dx*s,n.y+b.dy*s,s*.9,t*7+b.ph,b.fl);
 }
 /* ---------- Pantins vus de loin (×1, ×2) : une image par pose, réutilisée ----------
@@ -293,7 +309,7 @@ function drawNpc(n,t,opts){
    dans une petite image recadrée, et on la recolle tant qu'ils ne bougent pas. Les mouvements du corps
    entier (rebond, inclinaison, tassement, demi-tour) sont appliqués au collage, exactement comme
    drawPerson les applique : ils ne créent pas de nouvelle image. Un seul dessin par passant et par image. */
-let SPR_ON=false,SPR_LEFT=0;     // SPR_LEFT : nouvelles poses qu'on peut encore préparer pendant cette image
+let SPR_ON=false,SPR_LEFT=0;   // SPR_ON : false, 'all' ou 'still' (voir drawNpc)     // SPR_LEFT : nouvelles poses qu'on peut encore préparer pendant cette image
 const SPRC=new Map();let SPR_BYTES=0,SPR_UID=0;
 const SPR_BUDGET=32*1048576;          // mémoire maximale des images de pantins (octets)
 const SPR_BOX=[-120,-166,105,16];     // encombrement maximal d'un pantin à l'échelle 1 (bras levés, objets, chapeau soulevé)

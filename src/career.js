@@ -7,7 +7,7 @@
    - Le cinquième dossier rouge clôt l'histoire (SAVE.fin) ; les contrats continuent ensuite.
    - Le grade règle aussi la difficulté des contrats ordinaires (voir careerLv et ses usages).
    ========================================================= */
-const VERSION='1.1.1';
+const VERSION='1.1.2';
 
 const GRADES=[
   {fr:'Recrue',en:'Recruit'},
@@ -133,6 +133,12 @@ function showEnding(then){
 
 /* ---------- notes de mise à jour ---------- */
 const NOTES=[
+  {v:'1.1.2',d:['19 octobre 2026','19 October 2026'],fr:[
+    '<b>Accessoires bien visibles.</b> Canne, parapluie, journal, bouquet et valise ont maintenant leur liseré blanc, comme le reste des passants, et sont un peu plus grands. La canne et le parapluie sont tenus légèrement en avant.',
+    'Lunette plus fluide sur téléphone : dessin des passants allégé, et si l\'appareil n\'arrive pas à suivre, la résolution baisse légèrement d\'elle-même.'],
+   en:[
+    '<b>Clearly visible accessories.</b> Walking sticks, umbrellas, newspapers, bouquets and suitcases now have the same white outline as the rest of the passers-by, and are a little larger. Sticks and umbrellas are held slightly forward.',
+    'Smoother scope on phones: lighter drawing of passers-by, and if the device cannot keep up, the resolution drops slightly on its own.']},
   {v:'1.1.1',d:['16 octobre 2026','16 October 2026'],fr:['Nouveau bouton « Recommencer » sur l\'écran titre pour effacer votre carrière et repartir de zéro (avec confirmation).'],en:['New “Start over” button on the title screen to erase your career and start from scratch (with confirmation).']},
   {v:'1.1',d:['14 octobre 2026','14 October 2026'],fr:[
     '<b>Carrière au Bureau.</b> Cinq grades, de Recrue à As du Bureau. Les cartes s\'ouvrent avec les promotions.',

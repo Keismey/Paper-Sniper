@@ -454,10 +454,15 @@ function renderEyes(){
   drawSceneWithHoles();ctx.restore();
   for(const n of S.crowd){if(n.state==='gone'||n.dead)continue;const sc=scaleAt(n.y);const sx=SW/2+(n.x-cx)*k,sy=g.bot+(n.y-160*sc-g.yb)*k;
     if(S.pins.has(n.id)){const c=PINC[S.pins.get(n.id)];ctx.save();ctx.translate(sx,sy);ctx.fillStyle='#2b2233';ctx.fillRect(-1,-2,2,9);ctx.beginPath();ctx.arc(0,-5,5.5,0,7);ctx.fillStyle=c;ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.fill();ctx.stroke();ctx.restore()}}
-  ctx.fillStyle=paperPattern();ctx.fillRect(0,0,SW,SH);
-  const vg=ctx.createRadialGradient(SW/2,SH*.55,SH*.3,SW/2,SH*.55,SH*.8);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.45)');ctx.fillStyle=vg;ctx.fillRect(0,0,SW,SH);
+  ctx.drawImage(ovCanvas('eyes',SW,SH,()=>{ctx.fillStyle=paperPattern();ctx.fillRect(0,0,SW,SH);
+    const vg=ctx.createRadialGradient(SW/2,SH*.55,SH*.3,SW/2,SH*.55,SH*.8);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.45)');ctx.fillStyle=vg;ctx.fillRect(0,0,SW,SH)}),0,0,SW,SH);
   if(S.flash>0){ctx.fillStyle=`rgba(255,250,230,${S.flash*.5})`;ctx.fillRect(0,0,SW,SH)}
 }
+/* ---------- calques fixes (grain de papier, vignettage, réticule) : préparés une fois, recollés à chaque image ---------- */
+const OVC={};
+function ovCanvas(key,w,h,draw){const id=key+'|'+w+'|'+h+'|'+DPR;const o=OVC[key];if(o&&o.id===id)return o.cv;
+  const c2=document.createElement('canvas');c2.width=Math.ceil(w*DPR);c2.height=Math.ceil(h*DPR);const x=c2.getContext('2d');x.scale(DPR,DPR);
+  const old=ctx;ctx=x;try{draw()}finally{ctx=old}OVC[key]={id,cv:c2};return c2}
 function renderSniper(){
   const sk=S.shake||0;if(sk>0){ctx.fillStyle='#0d0b12';ctx.fillRect(0,0,SW,SH);ctx.save();ctx.translate((Math.random()-.5)*18*sk,(Math.random()-.5)*14*sk-6*sk)}
   renderSniper2();if(sk>0)ctx.restore()}
@@ -475,24 +480,27 @@ function renderSniper2(){
   for(const n of S.crowd){if(n.state==='gone'||n.dead)continue;const s=scaleAt(n.y);const sx=g.cx+(n.x-a.x)*k,sy=g.cy+(n.y-160*s-a.y)*k;
     if(S.pins.has(n.id)){const c=PINC[S.pins.get(n.id)];ctx.save();ctx.translate(sx,sy-4);ctx.fillStyle='#2b2233';ctx.fillRect(-1.5,-2,3,14);ctx.beginPath();ctx.arc(0,-6,8,0,7);ctx.fillStyle=c;ctx.strokeStyle='#fff';ctx.lineWidth=2.5;ctx.fill();ctx.stroke();ctx.restore()}
     if(n.bang>0){ctx.save();ctx.translate(sx+14,sy-12);ctx.rotate(.15);ctx.fillStyle='#fbf6ea';ctx.strokeStyle='#2b2233';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,0,10,13,0,0,7);ctx.fill();ctx.stroke();ctx.fillStyle='#d4483b';ctx.font="700 17px 'Stardos Stencil', serif";ctx.textAlign='center';ctx.fillText('!',0,6);ctx.restore()}}
-  ctx.fillStyle=paperPattern();ctx.fillRect(g.cx-g.r,g.cy-g.r,g.r*2,g.r*2);
-  const vg=ctx.createRadialGradient(g.cx,g.cy,g.r*.62,g.cx,g.cy,g.r);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.55)');ctx.fillStyle=vg;ctx.fillRect(g.cx-g.r,g.cy-g.r,g.r*2,g.r*2);
+  const D=g.r*2;
+  ctx.drawImage(ovCanvas('scope',D,D,()=>{ctx.fillStyle=paperPattern();ctx.fillRect(0,0,D,D);
+    const vg=ctx.createRadialGradient(g.r,g.r,g.r*.62,g.r,g.r,g.r);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.55)');ctx.fillStyle=vg;ctx.fillRect(0,0,D,D)}),g.cx-g.r,g.cy-g.r,D,D);
   if(S.flash>0){ctx.fillStyle=`rgba(255,250,230,${S.flash*.7})`;ctx.fillRect(g.cx-g.r,g.cy-g.r,g.r*2,g.r*2)}
   ctx.restore();
   // réticule
-  ctx.save();ctx.translate(g.cx,g.cy);
+  const RB=g.r+12;
+  ctx.drawImage(ovCanvas('reticle',RB*2,RB*2,()=>{ctx.translate(RB,RB);
   const line=(x1,y1,x2,y2,w)=>{ctx.lineWidth=w+2.5;ctx.strokeStyle='rgba(255,255,255,.55)';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.lineWidth=w;ctx.strokeStyle='#1a1620';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke()};
   const gap=g.r*.08;line(-g.r,0,-gap,0,1.5);line(gap,0,g.r,0,1.5);line(0,-g.r,0,-gap,1.5);line(0,gap,0,g.r,1.5);
   line(-g.r,0,-g.r*.55,0,4);line(g.r*.55,0,g.r,0,4);line(0,g.r*.55,0,g.r,4);
   for(let i=1;i<=4;i++){const d=gap+i*g.r*.09;[[d,0],[-d,0],[0,d]].forEach(([x,y])=>{ctx.fillStyle='#1a1620';ctx.beginPath();ctx.arc(x,y,2,0,7);ctx.fill()})}
   ctx.fillStyle='#d4483b';ctx.beginPath();ctx.arc(0,0,2.6,0,7);ctx.fill();
-  ctx.lineWidth=10;ctx.strokeStyle='#1a1620';ctx.beginPath();ctx.arc(0,0,g.r+3,0,7);ctx.stroke();ctx.lineWidth=2;ctx.strokeStyle='#5d5470';ctx.beginPath();ctx.arc(0,0,g.r+8,0,7);ctx.stroke();
+  ctx.lineWidth=10;ctx.strokeStyle='#1a1620';ctx.beginPath();ctx.arc(0,0,g.r+3,0,7);ctx.stroke();ctx.lineWidth=2;ctx.strokeStyle='#5d5470';ctx.beginPath();ctx.arc(0,0,g.r+8,0,7);ctx.stroke()}),g.cx-RB,g.cy-RB,RB*2,RB*2);
+  ctx.save();ctx.translate(g.cx,g.cy);
   if(S.winded>0){ctx.fillStyle='#fbf6ea';ctx.font="600 13px 'IBM Plex Sans Condensed', sans-serif";ctx.textAlign='center';ctx.fillText(tr('Souffle court','Short of breath'),0,g.r-18)}
   ctx.restore();
 }
 function drawSceneWithHoles(){
   const opts=TEST&&SAVE.seeTarget?{mark:n=>n.isTarget}:{};
-  SPR_ON=S.Z[S.z].w>=700;SPR_LEFT=2;   // ×1 et ×2 : pantins mis en cache (voir sprDraw)
+  SPR_ON=S.Z[S.z].w>=700?'all':'still';SPR_LEFT=2;   // pantins mis en cache (voir sprDraw et drawNpc)
   bgDraw(S.t);
   for(const h of S.holes){ctx.fillStyle='#2b2233';ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.beginPath();for(let i=0;i<9;i++){const an=i/9*Math.PI*2,r2=h.r*(i%2?.6:1.2);ctx.lineTo(h.x+Math.cos(an)*r2,h.y+Math.sin(an)*r2)}ctx.closePath();ctx.stroke();ctx.fill()}
   const list=S.crowd.filter(n=>n.state!=='gone').sort((a,b)=>a.y-b.y);let i=0;
@@ -512,13 +520,16 @@ function renderAttract(dt){
   ctx.fillStyle=MODE==='title'?'rgba(15,10,20,.2)':'rgba(15,10,20,.45)';ctx.fillRect(0,0,SW,SH);
 }
 function frame(now){
-  const rdt=Math.min(.05,(now-last)/1000);last=now;T+=rdt;TNOW=T;
+  const raw=Math.min(1,(now-last)/1000),rdt=Math.min(.05,raw);last=now;T+=rdt;TNOW=T;
+  const w0=performance.now();
+  perfTick(raw,(MODE==='sniper'&&S&&!S.paused)||MODE==='mg'?MODE+(S?S.z:''):'');   // un changement de zoom compte comme une nouvelle scène
   ctx.setTransform(DPR,0,0,DPR,0,0);
   try{
     if(MODE==='sniper'&&S){upSniper(rdt);TNOW=S.t;renderSniper()}
     else if(MODE==='mg'&&MG){if(MG.id==='tic'){mgTicUpdate(rdt);if(MG)mgTicRender()}else{mgLieuUpdate(rdt);mgLieuRender()}}
     else if(MODE!=='desk')renderAttract(rdt);
   }catch(err){console.error(err)}
+  PERF.work+=((performance.now()-w0)-PERF.work)*.2;   // temps de calcul d'une image (hors attente de l'écran)
   requestAnimationFrame(frame);
 }
 useMap('tilleuls');

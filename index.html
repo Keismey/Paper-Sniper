@@ -278,9 +278,22 @@ const TEST=false; // mode test (panneau dans la planque) — à passer à false 
 const $=id=>document.getElementById(id);
 const cv=$('cv');let ctx=cv.getContext('2d');
 const UI=$('ui');
-let DPR=1,SW=360,SH=640;
-function resize(){const r=$('app').getBoundingClientRect();SW=r.width;SH=r.height;DPR=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(SW*DPR);cv.height=Math.round(SH*DPR)}
+let DPR=1,SW=360,SH=640,DPR_CAP=2;
+function resize(){const r=$('app').getBoundingClientRect();SW=r.width;SH=r.height;DPR=Math.min(DPR_CAP,window.devicePixelRatio||1);cv.width=Math.round(SW*DPR);cv.height=Math.round(SH*DPR)}
 addEventListener('resize',resize);resize();
+/* ---------- Résolution adaptative ----------
+   Si le téléphone n'arrive pas à suivre (images trop espacées pendant plus de 2 s, hors démarrage d'une scène),
+   la résolution du canevas baisse d'un palier (2 → 1,75 → 1,5 → 1,25 pixel par point), pour toute la session. */
+const PERF={ema:16,slow:0,warm:0,mode:'',work:0};
+function perfTick(rdt,mode){
+  if(mode!==PERF.mode){PERF.mode=mode;PERF.warm=1.5;PERF.slow=0;PERF.ema=16;return}   // nouvelle scène : préparation des images, on ne juge pas
+  if(!mode)return;   // menus et documents : rien à mesurer
+  if(PERF.warm>0){PERF.warm-=rdt;return}
+  PERF.ema+=(Math.min(rdt,.2)*1000-PERF.ema)*Math.min(.5,rdt*5);   // moyenne glissante sur ~0,2 s de temps réel
+  // trop lent = moins de 40 images/s ET (calcul d'une image lourd, ou moins de 25 images/s) :
+  // un écran bridé à 30 images/s (mode économie d'énergie) ne déclenche rien si le jeu calcule vite
+  if(PERF.ema>25&&(PERF.work>12||PERF.ema>40)){PERF.slow+=rdt;if(PERF.slow>2&&DPR>1.3){DPR_CAP=Math.max(1.25,DPR-.25);resize();PERF.slow=0;PERF.warm=1;PERF.ema=16}}
+  else PERF.slow=Math.max(0,PERF.slow-rdt*.5)}
 
 /* ---------- Hasard & maths ---------- */
 function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
@@ -555,7 +568,10 @@ function drawNpc(n,t,opts){
   const s=scaleAt(n.y);
   let rot=0,pop=1;if(n.dead){const k=ease(n.dead/.55);rot=-k*1.45*Math.sign(n.flip||1);pop=1-k*.15}
   if(opts.mark&&opts.mark(n)){ctx.save();ctx.fillStyle='rgba(227,180,74,.55)';ctx.beginPath();ctx.ellipse(n.x,n.y,34*s,9*s,0,0,7);ctx.fill();ctx.restore()}
-  if(!(SPR_ON&&!n.dead&&sprDraw(n,s)))drawPerson(ctx,n.look,n.x,n.y,s,n.dead?NEUTRAL:(n.po||NEUTRAL),n.flip,{rot,pop,mask:n.mask});
+  // SPR_ON : 'all' (×1, ×2) tous les passants passent par le cache ; 'still' (×4, ×6) seulement ceux qui ne bougent pas
+  // (à l'arrêt, sans tic en cours) : en gros plan, les passants en mouvement restent dessinés pièce par pièce
+  const still=(n.state==='dwell'||n.state==='halt')&&!(n.ticA>=0);
+  if(!(SPR_ON&&!n.dead&&(SPR_ON==='all'||still)&&sprDraw(n,s)))drawPerson(ctx,n.look,n.x,n.y,s,n.dead?NEUTRAL:(n.po||NEUTRAL),n.flip,{rot,pop,mask:n.mask});
   if(n.birds)for(const b of n.birds)drawBird(n.x+b.dx*s,n.y+b.dy*s,s*.9,t*7+b.ph,b.fl);
 }
 /* ---------- Pantins vus de loin (×1, ×2) : une image par pose, réutilisée ----------
@@ -564,7 +580,7 @@ function drawNpc(n,t,opts){
    dans une petite image recadrée, et on la recolle tant qu'ils ne bougent pas. Les mouvements du corps
    entier (rebond, inclinaison, tassement, demi-tour) sont appliqués au collage, exactement comme
    drawPerson les applique : ils ne créent pas de nouvelle image. Un seul dessin par passant et par image. */
-let SPR_ON=false,SPR_LEFT=0;     // SPR_LEFT : nouvelles poses qu'on peut encore préparer pendant cette image
+let SPR_ON=false,SPR_LEFT=0;   // SPR_ON : false, 'all' ou 'still' (voir drawNpc)     // SPR_LEFT : nouvelles poses qu'on peut encore préparer pendant cette image
 const SPRC=new Map();let SPR_BYTES=0,SPR_UID=0;
 const SPR_BUDGET=32*1048576;          // mémoire maximale des images de pantins (octets)
 const SPR_BOX=[-120,-166,105,16];     // encombrement maximal d'un pantin à l'échelle 1 (bras levés, objets, chapeau soulevé)
@@ -794,11 +810,13 @@ function mipDraw(c,src,x,y,w,h){
   const T=c.getTransform(),sc=Math.hypot(T.a,T.b)||1,tw=Math.abs(w*sc);
   let lv=MIPS.get(src);if(!lv){lv=[src];MIPS.set(src,lv)}
   let cur=src,i=0;const W0=src.naturalWidth||src.width;
-  while((cur.naturalWidth||cur.width)>tw*1.6&&(cur.naturalWidth||cur.width)>8){i++;
+  while((cur.naturalWidth||cur.width)>tw*1.4&&(cur.naturalWidth||cur.width)>8){i++;
     if(!lv[i]){const pw=cur.naturalWidth||cur.width,ph=cur.naturalHeight||cur.height,cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(pw/2));cv.height=Math.max(1,Math.round(ph/2));
       const x2=cv.getContext('2d');x2.imageSmoothingEnabled=true;x2.imageSmoothingQuality='high';x2.drawImage(cur,0,0,cv.width,cv.height);lv[i]=cv}
     cur=lv[i]}
-  c.imageSmoothingEnabled=true;c.imageSmoothingQuality='high';c.drawImage(cur,x,y,w,h)}
+  // les niveaux sont déjà pré-réduits en haute qualité (et choisis à moins de ×1,4 de la taille voulue) :
+  // un lissage simple suffit au dessin, bien moins coûteux sur téléphone que 'high' à chaque image
+  c.imageSmoothingEnabled=true;c.imageSmoothingQuality='low';c.drawImage(cur,x,y,w,h)}
 /* ---------- calques images : coiffures, chapeaux, objets ---------- */
 const GREYC=new Map();
 function tintGrey(key,col,ref){const id=key+'|'+col;let cv=GREYC.get(id);if(cv)return cv;const im=SPR.img[key];cv=document.createElement('canvas');cv.width=im.naturalWidth;cv.height=im.naturalHeight;
@@ -806,12 +824,13 @@ function tintGrey(key,col,ref){const id=key+'|'+col;let cv=GREYC.get(id);if(cv)r
   for(let i=0;i<q.length;i+=4){if(!q[i+3])continue;const L=(q[i]+q[i+1]+q[i+2])/3;if(L<42)continue;const f=L/ref,hi=f>1?(f-1)*90:0,w=Math.min(1,(L-42)/48);  // fondu vers l'encre : pas de mouchetis sur les rubans sombres
     for(let k=0;k<3;k++)q[i+k]=q[i+k]*(1-w)+Math.min(255,C[k]*f+hi)*w}
   x.putImageData(d,0,0);GREYC.set(id,cv);return cv}
-function silImg(key,col,pw){const id='s|'+key+'|'+col;let o=SILC.get(id);if(o)return o;const im=SPR.img[key],B=Math.max(2,Math.round(pw));const cv=document.createElement('canvas');cv.width=im.naturalWidth+2*B;cv.height=im.naturalHeight+2*B;const x=cv.getContext('2d');
+function silImg(key,col,pw){const B0=Math.max(2,Math.round(pw)),id='s|'+key+'|'+col+'|'+B0;/* l'épaisseur fait partie de la clé du cache */let o=SILC.get(id);if(o)return o;const im=SPR.img[key],B=Math.max(2,Math.round(pw));const cv=document.createElement('canvas');cv.width=im.naturalWidth+2*B;cv.height=im.naturalHeight+2*B;const x=cv.getContext('2d');
   for(let a=0;a<24;a++){const t=a/24*Math.PI*2;x.drawImage(im,B+Math.cos(t)*B,B+Math.sin(t)*B)}x.drawImage(im,B,B);x.globalCompositeOperation='source-in';x.fillStyle=col;x.fillRect(0,0,cv.width,cv.height);o={cv,B};SILC.set(id,o);return o}
 /* dessine une image dans un rectangle monde, en mode ombre / liseré / remplissage */
-function layImg(c,key,x,y,w,h,mode,fill){const im=SPR.img[key];if(!im)return;
+/* k : taille d'une unité locale en unités monde (objets tenus, dessinés réduits) : le liseré garde 2,3 unités monde comme le reste du pantin */
+function layImg(c,key,x,y,w,h,mode,fill,k){const im=SPR.img[key];if(!im)return;
   if(mode==='fill'){mipDraw(c,fill||im,x,y,w,h);return}
-  const ppw=im.naturalWidth/w,s=silImg(key,mode==='ol'?'#fff':'rgba(40,22,10,.17)',2.3*ppw),pad=s.B/ppw;mipDraw(c,s.cv,x-pad,y-pad,w+2*pad,h+2*pad)}
+  const ppw=im.naturalWidth/w,s=silImg(key,mode==='ol'?'#fff':'rgba(40,22,10,.17)',2.3*ppw/(k||1)),pad=s.B/ppw;mipDraw(c,s.cv,x-pad,y-pad,w+2*pad,h+2*pad)}
 /* cheveux sous un chapeau : on retire ce qui dépasse au-dessus du bord inférieur du chapeau
    (derrière le chapeau, la limite redescend doucement : les cheveux longs sortent de dessous),
    puis on encre la coupe pour qu'elle ait l'air d'un vrai bord. Calculé une fois par combinaison. */
@@ -876,11 +895,17 @@ function lowTail(x,im,nW,nH,pts,mg,bx){
   const dmax=mg/1.2*36;x.drawImage(rest,0,0);
   if(dy<=dmax)x.drawImage(tail,dx,dy);else{const f=(yb+dmax-top-dy)/(yb-top),a=top+dy-f*top;x.drawImage(tail,dx,a,nW,nH*f)}return dy}
 /* objets tenus : point de prise (px de l'image d'origine), échelle monde/px, suspendu ou non */
-const OBJ={parapluie:{gx:60,gy:105,s:.056,hang:1,back:1},canne:{gx:72,gy:24,s:.052,hang:1,back:1},valise:{gx:165,gy:18,s:.088,hang:1,back:1},
-  journal:{gx:95,gy:240,s:.074,rot:-.15,back:1},bouquet:{gx:115,gy:250,s:.09,rot:-.2,back:1},cigarette:{gx:12,gy:17,s:.026},montre:{gx:140,gy:150,s:.036},pigeon:{gx:220,gy:318,s:.055}};
+/* wx : élargissement horizontal (objets fins). ol : le liseré blanc de l'objet est posé juste sous lui, par-dessus le manteau
+   et les jambes (sans lui, une canne brune devant un pantalon sombre disparaît). Canne et parapluie inclinés vers l'avant. */
+const OBJ={parapluie:{gx:60,gy:105,s:.056,wx:1.9,olw:.7,hang:1,back:1,ol:1,rot:-.16},canne:{gx:72,gy:24,s:.052,wx:2.5,olw:.6,hang:1,back:1,ol:1,rot:-.24},valise:{gx:165,gy:18,s:.092,hang:1,back:1,ol:1},
+  journal:{gx:95,gy:240,s:.094,rot:-.15,back:1,ol:1},bouquet:{gx:115,gy:250,s:.115,rot:-.2,back:1,ol:1},cigarette:{gx:12,gy:17,s:.026},montre:{gx:140,gy:150,s:.036},pigeon:{gx:220,gy:318,s:.055}};
 const hasImg=k=>!!SPR.img[k];
 function drawObj(c,name,mode,armA){const O=OBJ[name],key='o_'+name,A=ASSETS[key];if(!A||!hasImg(key))return false;
-  c.save();if(O.hang)c.rotate(-armA);if(O.rot)c.rotate(O.rot);c.scale(O.s,O.s);layImg(c,key,-O.gx,-O.gy,A.w,A.h,mode);c.restore();return true}
+  c.save();if(O.hang)c.rotate(-armA);if(O.rot)c.rotate(O.rot);c.scale(O.s*(O.wx||1),O.s);
+  if(mode==='ol'&&O.ol){c.restore();return true}   // liseré posé avec l'objet, pendant la passe des couleurs
+  const k=O.s*(O.wx||1);   // liseré réglé sur la largeur : l'étirement horizontal ne l'épaissit pas sur les côtés
+  if(mode==='fill'&&O.ol)layImg(c,key,-O.gx,-O.gy,A.w,A.h,'ol',null,k/(O.olw||1));   // olw : liseré plus fin pour les objets fins
+  layImg(c,key,-O.gx,-O.gy,A.w,A.h,mode,null,k);c.restore();return true}
 /* pastille noire « ? » (parties inconnues de la cible) */
 const MASKC='#1b1820';
 function qmark(c,x,y,r,mode,flip){if(mode==='sh'){c.fillStyle='rgba(40,22,10,.17)';c.beginPath();c.arc(x,y,r,0,7);c.fill();return}
@@ -1829,10 +1854,15 @@ function renderEyes(){
   drawSceneWithHoles();ctx.restore();
   for(const n of S.crowd){if(n.state==='gone'||n.dead)continue;const sc=scaleAt(n.y);const sx=SW/2+(n.x-cx)*k,sy=g.bot+(n.y-160*sc-g.yb)*k;
     if(S.pins.has(n.id)){const c=PINC[S.pins.get(n.id)];ctx.save();ctx.translate(sx,sy);ctx.fillStyle='#2b2233';ctx.fillRect(-1,-2,2,9);ctx.beginPath();ctx.arc(0,-5,5.5,0,7);ctx.fillStyle=c;ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.fill();ctx.stroke();ctx.restore()}}
-  ctx.fillStyle=paperPattern();ctx.fillRect(0,0,SW,SH);
-  const vg=ctx.createRadialGradient(SW/2,SH*.55,SH*.3,SW/2,SH*.55,SH*.8);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.45)');ctx.fillStyle=vg;ctx.fillRect(0,0,SW,SH);
+  ctx.drawImage(ovCanvas('eyes',SW,SH,()=>{ctx.fillStyle=paperPattern();ctx.fillRect(0,0,SW,SH);
+    const vg=ctx.createRadialGradient(SW/2,SH*.55,SH*.3,SW/2,SH*.55,SH*.8);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.45)');ctx.fillStyle=vg;ctx.fillRect(0,0,SW,SH)}),0,0,SW,SH);
   if(S.flash>0){ctx.fillStyle=`rgba(255,250,230,${S.flash*.5})`;ctx.fillRect(0,0,SW,SH)}
 }
+/* ---------- calques fixes (grain de papier, vignettage, réticule) : préparés une fois, recollés à chaque image ---------- */
+const OVC={};
+function ovCanvas(key,w,h,draw){const id=key+'|'+w+'|'+h+'|'+DPR;const o=OVC[key];if(o&&o.id===id)return o.cv;
+  const c2=document.createElement('canvas');c2.width=Math.ceil(w*DPR);c2.height=Math.ceil(h*DPR);const x=c2.getContext('2d');x.scale(DPR,DPR);
+  const old=ctx;ctx=x;try{draw()}finally{ctx=old}OVC[key]={id,cv:c2};return c2}
 function renderSniper(){
   const sk=S.shake||0;if(sk>0){ctx.fillStyle='#0d0b12';ctx.fillRect(0,0,SW,SH);ctx.save();ctx.translate((Math.random()-.5)*18*sk,(Math.random()-.5)*14*sk-6*sk)}
   renderSniper2();if(sk>0)ctx.restore()}
@@ -1850,24 +1880,27 @@ function renderSniper2(){
   for(const n of S.crowd){if(n.state==='gone'||n.dead)continue;const s=scaleAt(n.y);const sx=g.cx+(n.x-a.x)*k,sy=g.cy+(n.y-160*s-a.y)*k;
     if(S.pins.has(n.id)){const c=PINC[S.pins.get(n.id)];ctx.save();ctx.translate(sx,sy-4);ctx.fillStyle='#2b2233';ctx.fillRect(-1.5,-2,3,14);ctx.beginPath();ctx.arc(0,-6,8,0,7);ctx.fillStyle=c;ctx.strokeStyle='#fff';ctx.lineWidth=2.5;ctx.fill();ctx.stroke();ctx.restore()}
     if(n.bang>0){ctx.save();ctx.translate(sx+14,sy-12);ctx.rotate(.15);ctx.fillStyle='#fbf6ea';ctx.strokeStyle='#2b2233';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(0,0,10,13,0,0,7);ctx.fill();ctx.stroke();ctx.fillStyle='#d4483b';ctx.font="700 17px 'Stardos Stencil', serif";ctx.textAlign='center';ctx.fillText('!',0,6);ctx.restore()}}
-  ctx.fillStyle=paperPattern();ctx.fillRect(g.cx-g.r,g.cy-g.r,g.r*2,g.r*2);
-  const vg=ctx.createRadialGradient(g.cx,g.cy,g.r*.62,g.cx,g.cy,g.r);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.55)');ctx.fillStyle=vg;ctx.fillRect(g.cx-g.r,g.cy-g.r,g.r*2,g.r*2);
+  const D=g.r*2;
+  ctx.drawImage(ovCanvas('scope',D,D,()=>{ctx.fillStyle=paperPattern();ctx.fillRect(0,0,D,D);
+    const vg=ctx.createRadialGradient(g.r,g.r,g.r*.62,g.r,g.r,g.r);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.55)');ctx.fillStyle=vg;ctx.fillRect(0,0,D,D)}),g.cx-g.r,g.cy-g.r,D,D);
   if(S.flash>0){ctx.fillStyle=`rgba(255,250,230,${S.flash*.7})`;ctx.fillRect(g.cx-g.r,g.cy-g.r,g.r*2,g.r*2)}
   ctx.restore();
   // réticule
-  ctx.save();ctx.translate(g.cx,g.cy);
+  const RB=g.r+12;
+  ctx.drawImage(ovCanvas('reticle',RB*2,RB*2,()=>{ctx.translate(RB,RB);
   const line=(x1,y1,x2,y2,w)=>{ctx.lineWidth=w+2.5;ctx.strokeStyle='rgba(255,255,255,.55)';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.lineWidth=w;ctx.strokeStyle='#1a1620';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke()};
   const gap=g.r*.08;line(-g.r,0,-gap,0,1.5);line(gap,0,g.r,0,1.5);line(0,-g.r,0,-gap,1.5);line(0,gap,0,g.r,1.5);
   line(-g.r,0,-g.r*.55,0,4);line(g.r*.55,0,g.r,0,4);line(0,g.r*.55,0,g.r,4);
   for(let i=1;i<=4;i++){const d=gap+i*g.r*.09;[[d,0],[-d,0],[0,d]].forEach(([x,y])=>{ctx.fillStyle='#1a1620';ctx.beginPath();ctx.arc(x,y,2,0,7);ctx.fill()})}
   ctx.fillStyle='#d4483b';ctx.beginPath();ctx.arc(0,0,2.6,0,7);ctx.fill();
-  ctx.lineWidth=10;ctx.strokeStyle='#1a1620';ctx.beginPath();ctx.arc(0,0,g.r+3,0,7);ctx.stroke();ctx.lineWidth=2;ctx.strokeStyle='#5d5470';ctx.beginPath();ctx.arc(0,0,g.r+8,0,7);ctx.stroke();
+  ctx.lineWidth=10;ctx.strokeStyle='#1a1620';ctx.beginPath();ctx.arc(0,0,g.r+3,0,7);ctx.stroke();ctx.lineWidth=2;ctx.strokeStyle='#5d5470';ctx.beginPath();ctx.arc(0,0,g.r+8,0,7);ctx.stroke()}),g.cx-RB,g.cy-RB,RB*2,RB*2);
+  ctx.save();ctx.translate(g.cx,g.cy);
   if(S.winded>0){ctx.fillStyle='#fbf6ea';ctx.font="600 13px 'IBM Plex Sans Condensed', sans-serif";ctx.textAlign='center';ctx.fillText(tr('Souffle court','Short of breath'),0,g.r-18)}
   ctx.restore();
 }
 function drawSceneWithHoles(){
   const opts=TEST&&SAVE.seeTarget?{mark:n=>n.isTarget}:{};
-  SPR_ON=S.Z[S.z].w>=700;SPR_LEFT=2;   // ×1 et ×2 : pantins mis en cache (voir sprDraw)
+  SPR_ON=S.Z[S.z].w>=700?'all':'still';SPR_LEFT=2;   // pantins mis en cache (voir sprDraw et drawNpc)
   bgDraw(S.t);
   for(const h of S.holes){ctx.fillStyle='#2b2233';ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.beginPath();for(let i=0;i<9;i++){const an=i/9*Math.PI*2,r2=h.r*(i%2?.6:1.2);ctx.lineTo(h.x+Math.cos(an)*r2,h.y+Math.sin(an)*r2)}ctx.closePath();ctx.stroke();ctx.fill()}
   const list=S.crowd.filter(n=>n.state!=='gone').sort((a,b)=>a.y-b.y);let i=0;
@@ -1887,13 +1920,16 @@ function renderAttract(dt){
   ctx.fillStyle=MODE==='title'?'rgba(15,10,20,.2)':'rgba(15,10,20,.45)';ctx.fillRect(0,0,SW,SH);
 }
 function frame(now){
-  const rdt=Math.min(.05,(now-last)/1000);last=now;T+=rdt;TNOW=T;
+  const raw=Math.min(1,(now-last)/1000),rdt=Math.min(.05,raw);last=now;T+=rdt;TNOW=T;
+  const w0=performance.now();
+  perfTick(raw,(MODE==='sniper'&&S&&!S.paused)||MODE==='mg'?MODE+(S?S.z:''):'');   // un changement de zoom compte comme une nouvelle scène
   ctx.setTransform(DPR,0,0,DPR,0,0);
   try{
     if(MODE==='sniper'&&S){upSniper(rdt);TNOW=S.t;renderSniper()}
     else if(MODE==='mg'&&MG){if(MG.id==='tic'){mgTicUpdate(rdt);if(MG)mgTicRender()}else{mgLieuUpdate(rdt);mgLieuRender()}}
     else if(MODE!=='desk')renderAttract(rdt);
   }catch(err){console.error(err)}
+  PERF.work+=((performance.now()-w0)-PERF.work)*.2;   // temps de calcul d'une image (hors attente de l'écran)
   requestAnimationFrame(frame);
 }
 useMap('tilleuls');
@@ -2198,7 +2234,7 @@ function showDebrief(){
    - Le cinquième dossier rouge clôt l'histoire (SAVE.fin) ; les contrats continuent ensuite.
    - Le grade règle aussi la difficulté des contrats ordinaires (voir careerLv et ses usages).
    ========================================================= */
-const VERSION='1.1.1';
+const VERSION='1.1.2';
 
 const GRADES=[
   {fr:'Recrue',en:'Recruit'},
@@ -2324,6 +2360,12 @@ function showEnding(then){
 
 /* ---------- notes de mise à jour ---------- */
 const NOTES=[
+  {v:'1.1.2',d:['19 octobre 2026','19 October 2026'],fr:[
+    '<b>Accessoires bien visibles.</b> Canne, parapluie, journal, bouquet et valise ont maintenant leur liseré blanc, comme le reste des passants, et sont un peu plus grands. La canne et le parapluie sont tenus légèrement en avant.',
+    'Lunette plus fluide sur téléphone : dessin des passants allégé, et si l\'appareil n\'arrive pas à suivre, la résolution baisse légèrement d\'elle-même.'],
+   en:[
+    '<b>Clearly visible accessories.</b> Walking sticks, umbrellas, newspapers, bouquets and suitcases now have the same white outline as the rest of the passers-by, and are a little larger. Sticks and umbrellas are held slightly forward.',
+    'Smoother scope on phones: lighter drawing of passers-by, and if the device cannot keep up, the resolution drops slightly on its own.']},
   {v:'1.1.1',d:['16 octobre 2026','16 October 2026'],fr:['Nouveau bouton « Recommencer » sur l\'écran titre pour effacer votre carrière et repartir de zéro (avec confirmation).'],en:['New “Start over” button on the title screen to erase your career and start from scratch (with confirmation).']},
   {v:'1.1',d:['14 octobre 2026','14 October 2026'],fr:[
     '<b>Carrière au Bureau.</b> Cinq grades, de Recrue à As du Bureau. Les cartes s\'ouvrent avec les promotions.',
