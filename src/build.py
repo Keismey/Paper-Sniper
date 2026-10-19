@@ -17,15 +17,26 @@ def read(name): return open(os.path.join(SRC, name), encoding='utf-8').read()
 
 PWA = """<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Identifier. Confirmer. Un seul tir. Un jeu d'enquête et de tir de précision en papier, par Keismey Studio.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Keismey Studio">
+<meta property="og:title" content="Paper Sniper">
+<meta property="og:description" content="Identifie ta cible dans une ville en papier, démasque ses sosies et n’aie droit qu’à un seul tir depuis les toits. Gratuit, sans pub, dans le navigateur.">
+<meta property="og:url" content="https://keismey.github.io/Paper-Sniper/">
+<meta property="og:image" content="https://keismey.github.io/Paper-Sniper/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Paper Sniper · Keismey Studio">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:locale:alternate" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Paper Sniper">
+<meta name="twitter:description" content="Identifie ta cible dans une ville en papier, démasque ses sosies et n’aie droit qu’à un seul tir depuis les toits. Gratuit, sans pub, dans le navigateur.">
+<meta name="twitter:image" content="https://keismey.github.io/Paper-Sniper/og.jpg">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Paper Sniper">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Paper Sniper">
-<meta property="og:description" content="Identifier. Confirmer. Un seul tir.">
-<meta property="og:image" content="https://keismey.github.io/Paper-Sniper/icons/icon-512.png">"""
+<meta name="apple-mobile-web-app-title" content="Paper Sniper">"""
 
 def page(test, site):
     js = ''.join(read(f) + '\n' for f in JS_FILES)
