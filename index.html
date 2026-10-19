@@ -328,8 +328,12 @@ ul.notes b{color:var(--ink)}
     try { history.replaceState(mark(0), ''); } catch (e) {}
   })();
 
-  function topUp() {
+  function topUp(e) {
     if (!cfg || leaving || resetting) return;
+    // seulement un vrai geste du joueur : un clic simulé par le jeu (button.click()) créerait des
+    // entrées sans action du joueur, que Chrome saute ensuite au retour… et le joueur sortirait du jeu.
+    if (e && e.isTrusted === false) return;
+    try { if (navigator.userActivation && !navigator.userActivation.isActive) return; } catch (err) {}
     idx = depth(state());
     try { while (idx < N) { idx++; history.pushState(mark(idx), ''); } } catch (e) {}
   }
@@ -2489,7 +2493,7 @@ function showEnding(then){
 
 /* ---------- notes de mise à jour ---------- */
 const NOTES=[
-  {v:'1.1.3',d:['19 octobre 2026','19 October 2026'],fr:['Le bouton retour du téléphone revient au menu précédent au lieu de quitter le jeu : il ferme les fenêtres, met le tir en pause, demande confirmation avant d\'abandonner une enquête ou de revenir à l\'écran titre. Depuis l\'écran titre, il ramène au hub Keismey Studio.'],en:['The phone\'s back button now returns to the previous menu instead of leaving the game: it closes windows, pauses the shot, and asks before abandoning an investigation or going back to the title screen. From the title screen, it takes you to the Keismey Studio hub.']},
+  {v:'1.1.3',d:['19 octobre 2026','19 October 2026'],fr:['Le bouton retour du téléphone revient au menu précédent au lieu de quitter le jeu : il ferme les fenêtres, met le tir en pause, demande confirmation avant d\'abandonner une enquête ou de revenir à l\'écran titre. Depuis l\'écran titre, il propose d\'aller au hub Keismey Studio.'],en:['The phone\'s back button now returns to the previous menu instead of leaving the game: it closes windows, pauses the shot, and asks before abandoning an investigation or going back to the title screen. From the title screen, it offers to go to the Keismey Studio hub.']},
   {v:'1.1.2',d:['19 octobre 2026','19 October 2026'],fr:[
     '<b>Accessoires bien visibles.</b> Canne, parapluie, journal, bouquet et valise ont maintenant leur liseré blanc, comme le reste des passants, et sont un peu plus grands. La canne et le parapluie sont tenus légèrement en avant.',
     'Lunette plus fluide sur téléphone : dessin des passants allégé, et si l\'appareil n\'arrive pas à suivre, la résolution baisse légèrement d\'elle-même.'],
@@ -2520,7 +2524,7 @@ function showNotes(then){
 
 /* ---------- bouton retour du téléphone (voir ks-back.js) ----------
    fenêtre ouverte → fermée ; enquête → abandon confirmé ; toit → fiche de tir (pause) ;
-   Bureau → retour à l'écran titre confirmé ; écran titre → hub. Épreuve en cours : ignoré. */
+   Bureau → retour à l'écran titre confirmé ; écran titre → hub confirmé. Épreuve en cours : ignoré. */
 function backAsk(title,text,yes,fn,no){
   const v=modal(`${dh(tr('Bureau','Bureau'),tr('Confirmation','Confirmation'))}<h2>${title}</h2>${text?`<p>${text}</p>`:''}
     <div class="btns"><button class="pb big wide" id="kNo">${tr('Annuler','Cancel')}</button><button class="pb red big wide" id="kYes">${yes}</button></div>`);
@@ -2540,7 +2544,7 @@ function onBack(){
     if(top.querySelector('#bGo,#bNx,#bFi,#bRoof'))return askQuit();// entre deux épreuves, synthèse, fiche de tir
     return;                                                     // note de service, épilogue : il faut lire
   }
-  if(MODE==='title')return'hub';
+  if(MODE==='title')return backAsk(tr('Quitter Paper Sniper ?','Leave Paper Sniper?'),tr('Votre carrière est enregistrée. Vous retrouverez les autres jeux de Keismey Studio sur le hub.','Your career is saved. You will find the other Keismey Studio games on the hub.'),tr('Aller au hub','Go to the hub'),()=>KSBack.toHub());
   if(MODE==='hq')return backAsk(tr("Retour à l'écran titre ?",'Back to the title screen?'),'',tr('Écran titre','Title screen'),showTitle);
   if(MODE==='sniper'&&S&&!S.end&&!S.paused){SFX.page();S.paused=true;S.hold=false;showFiche(false);return}
 }
