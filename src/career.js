@@ -7,7 +7,7 @@
    - Le cinquième dossier rouge clôt l'histoire (SAVE.fin) ; les contrats continuent ensuite.
    - Le grade règle aussi la difficulté des contrats ordinaires (voir careerLv et ses usages).
    ========================================================= */
-const VERSION='1.1.5';
+const VERSION='1.1.6';
 
 const GRADES=[
   {fr:'Recrue',en:'Recruit'},
@@ -133,6 +133,7 @@ function showEnding(then){
 
 /* ---------- notes de mise à jour ---------- */
 const NOTES=[
+  {v:'1.1.6',d:['26 octobre 2026','26 October 2026'],fr:['<b>Options</b> : crédits du jeu.'],en:['<b>Options</b>: game credits.']},
   {v:'1.1.5',d:['19 octobre 2026','19 October 2026'],fr:['Menus épurés : la langue, les notes de mise à jour et le retour à l’écran titre se trouvent seulement dans les <b>Options</b> (plus de boutons en double sur l’écran titre et au Bureau).'],en:['Tidier menus: language, release notes and going back to the title screen now live only in <b>Options</b> (no more duplicate buttons on the title screen and in the Office).']},
   {v:'1.1.4',d:['19 octobre 2026','19 October 2026'],fr:['<b>Options</b> (écran titre et Bureau) : volume de la musique et des bruitages, vibrations, langue, notes de mise à jour, sauvegarde à exporter ou importer, signaler un bug, soutenir le studio.','Le jeu te tutoie désormais, comme tous les jeux de Keismey Studio.'],en:['<b>Options</b> (title screen and Bureau): music and sound effects volume, vibration, language, release notes, save export and import, bug report, support the studio.']},
   {v:'1.1.3',d:['19 octobre 2026','19 October 2026'],fr:['Le bouton retour du téléphone revient au menu précédent au lieu de quitter le jeu : il ferme les fenêtres, met le tir en pause, demande confirmation avant d\'abandonner une enquête ou de revenir à l\'écran titre. Depuis l\'écran titre, il propose d\'aller au hub Keismey Studio.'],en:['The phone\'s back button now returns to the previous menu instead of leaving the game: it closes windows, pauses the shot, and asks before abandoning an investigation or going back to the title screen. From the title screen, it offers to go to the Keismey Studio hub.']},
@@ -158,7 +159,7 @@ const NOTES=[
   {v:'1.0',d:['10 octobre 2026','10 October 2026'],fr:['Première version jouable : trois cartes, trois épreuves d\'enquête, l\'armurerie.'],en:['First playable version: three maps, three investigation trials, the armoury.']},
 ];
 function showNotes(then){
-  const v=modal(`${dh(tr('Notes de mise à jour','Release notes'),'v'+VERSION)}<h2>${tr('Quoi de neuf','What\'s new')}</h2>
+  const v=modal(`${dh(tr('Notes de mise à jour','Patch notes'),'v'+VERSION)}<h2>${tr('Quoi de neuf','What\'s new')}</h2>
     ${NOTES.map(n=>`<h3>${tr('Version','Version')} ${n.v} · ${tr(n.d[0],n.d[1])}</h3><ul class="notes">${tr(n.fr,n.en).map(l=>`<li>${l}</li>`).join('')}</ul>`).join('')}
     <div class="btns"><button class="pb red big wide" id="bNotes">${tr('Fermer','Close')}</button></div>`);
   $('bNotes').onclick=()=>{SFX.page();v.remove();SAVE.seenV=VERSION;persist();then&&then()};
@@ -206,13 +207,13 @@ function showOptions(){
     <div class="btns col">
     <button class="pb sm" id="oVib">${tr('Vibrations','Vibration')} : ${onoff(SAVE.vib!==0)}</button>
     <button class="pb sm" id="oLang">${tr('Play in English','Jouer en français')}</button>
-    <button class="pb sm" id="oNotes">${tr('Notes de mise à jour','Release notes')}</button>
+    <button class="pb sm" id="oNotes">${tr('Notes de mise à jour','Patch notes')}</button>
     <button class="pb sm" id="oSave">${tr('Sauvegarde : exporter, importer','Save: export, import')}</button>
     <button class="pb sm" id="oBug">${tr('Signaler un bug','Report a bug')}</button>
     <button class="pb sm" id="oSup">${tr('Soutenir le studio','Support the studio')}</button>
     ${fromHQ?`<button class="pb sm" id="oTitle">${tr('Écran titre','Title screen')}</button>`:''}
     <button class="pb red big wide" id="oX">${tr('Fermer','Close')}</button></div>
-    <p class="vline">v${VERSION} · Keismey Studio</p>`);
+    <p class="vline">v${VERSION} · Keismey Studio<br>${tr('Conception et direction : Keismey · Développé avec l’aide d’outils IA','Design and direction: Keismey · Developed with the help of AI tools')}</p>`);
   const vol=(id,k)=>{const r=v.querySelector('#'+id);r.oninput=()=>setVol(k,r.value/100);r.onchange=()=>{if(k==='sv')SFX.tap()}};
   vol('oMv','mv');vol('oSv','sv');
   $('oVib').onclick=()=>{SAVE.vib=SAVE.vib===0?1:0;persist();$('oVib').textContent=tr('Vibrations','Vibration')+' : '+onoff(SAVE.vib);if(SAVE.vib&&navigator.vibrate)try{navigator.vibrate(40)}catch(e){}};
