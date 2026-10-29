@@ -2882,7 +2882,7 @@ function showDebrief(){
    - Le cinquième dossier rouge clôt l'histoire (SAVE.fin) ; les contrats continuent ensuite.
    - Le grade règle aussi la difficulté des contrats ordinaires (voir careerLv et ses usages).
    ========================================================= */
-const VERSION='1.1.6';
+const VERSION='1.1.7';
 
 const GRADES=[
   {fr:'Recrue',en:'Recruit'},
@@ -3008,6 +3008,7 @@ function showEnding(then){
 
 /* ---------- notes de mise à jour ---------- */
 const NOTES=[
+  {v:'1.1.7',d:['29 octobre 2026','29 October 2026'],fr:['<b>Options</b> : bouton « Retour au hub », et le même ordre que dans les autres jeux du studio.'],en:['<b>Options</b>: a “Back to the hub” button, in the same order as the studio’s other games.']},
   {v:'1.1.6',d:['26 octobre 2026','26 October 2026'],fr:['<b>Options</b> : crédits du jeu.'],en:['<b>Options</b>: game credits.']},
   {v:'1.1.5',d:['19 octobre 2026','19 October 2026'],fr:['Menus épurés : la langue, les notes de mise à jour et le retour à l’écran titre se trouvent seulement dans les <b>Options</b> (plus de boutons en double sur l’écran titre et au Bureau).'],en:['Tidier menus: language, release notes and going back to the title screen now live only in <b>Options</b> (no more duplicate buttons on the title screen and in the Office).']},
   {v:'1.1.4',d:['19 octobre 2026','19 October 2026'],fr:['<b>Options</b> (écran titre et Bureau) : volume de la musique et des bruitages, vibrations, langue, notes de mise à jour, sauvegarde à exporter ou importer, signaler un bug, soutenir le studio.','Le jeu te tutoie désormais, comme tous les jeux de Keismey Studio.'],en:['<b>Options</b> (title screen and Bureau): music and sound effects volume, vibration, language, release notes, save export and import, bug report, support the studio.']},
@@ -3082,11 +3083,12 @@ function showOptions(){
     <div class="btns col">
     <button class="pb sm" id="oVib">${tr('Vibrations','Vibration')} : ${onoff(SAVE.vib!==0)}</button>
     <button class="pb sm" id="oLang">${tr('Play in English','Jouer en français')}</button>
-    <button class="pb sm" id="oNotes">${tr('Notes de mise à jour','Patch notes')}</button>
     <button class="pb sm" id="oSave">${tr('Sauvegarde : exporter, importer','Save: export, import')}</button>
+    <button class="pb sm" id="oNotes">${tr('Notes de mise à jour','Patch notes')}</button>
+    ${fromHQ?`<button class="pb sm" id="oTitle">${tr('Écran titre','Title screen')}</button>`:''}
     <button class="pb sm" id="oBug">${tr('Signaler un bug','Report a bug')}</button>
     <button class="pb sm" id="oSup">${tr('Soutenir le studio','Support the studio')}</button>
-    ${fromHQ?`<button class="pb sm" id="oTitle">${tr('Écran titre','Title screen')}</button>`:''}
+    <button class="pb sm" id="oHub">${tr('Retour au hub','Back to the hub')}</button>
     <button class="pb red big wide" id="oX">${tr('Fermer','Close')}</button></div>
     <p class="vline">v${VERSION} · Keismey Studio<br>${tr('Conception et direction : Keismey · Développé avec l’aide d’outils IA','Design and direction: Keismey · Developed with the help of AI tools')}</p>`);
   const vol=(id,k)=>{const r=v.querySelector('#'+id);r.oninput=()=>setVol(k,r.value/100);r.onchange=()=>{if(k==='sv')SFX.tap()}};
@@ -3097,6 +3099,7 @@ function showOptions(){
   $('oSave').onclick=()=>{SFX.page();KS.saveDialog({lang:SAVE.lang,keys:[SKEY],save:persist,file:'paper-sniper',accent:'#c9372c'})};
   $('oBug').onclick=()=>KS.bug('Paper Sniper',SAVE.lang);
   $('oSup').onclick=()=>KS.support();
+  $('oHub').onclick=()=>{persist();KSBack.toHub()};
   if(fromHQ)$('oTitle').onclick=()=>{SFX.page();v.remove();showTitle()};
   $('oX').onclick=()=>{SFX.page();v.remove()};
 }
