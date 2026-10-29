@@ -196,7 +196,7 @@ function askQuit(){
     tr("Le dossier reste au tableau, mais l'argent donné aux indicateurs est perdu.",'The file stays on the board, but the money paid to informants is lost.'),
     tr('Abandonner','Abandon'),()=>{C=null;S=null;MG=null;showHQ()});
 }
-KSBack.init({back:onBack,lang:()=>SAVE.lang==='en'?'en':'fr'});
+KSBack.init({back:onBack,lang:()=>SAVE.lang==='en'?'en':'fr',title:()=>MODE==='title'&&!UI.querySelector('.veil'),hubCorner:'tr'});
 
 /* ---------- Options (socle commun des jeux Keismey Studio) ---------- */
 function showOptions(){

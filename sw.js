@@ -1,6 +1,6 @@
 // Paper Sniper — service worker (généré par src/build.py, ne pas modifier sw.js à la main).
 // Met le jeu en cache pour jouer hors ligne ; une nouvelle version propose « Mettre à jour ».
-const VERSION = 'paper-sniper-2df72689';
+const VERSION = 'paper-sniper-b0a8a3f0';
 const CORE = [
   "./",
   "./index.html",
