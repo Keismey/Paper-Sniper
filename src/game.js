@@ -210,7 +210,7 @@ function ficheHTML(){
 }
 function showFiche(first){
   const v=modal(`${dh(fileNo(C.of),tr('Fiche de tir','Target sheet'))}<h2>${q(aliasOf(C.of))}</h2>${ficheHTML()}
-    ${first?`<div class="btns"><button class="pb red big wide" id="bRoof">${tr('Prendre position','Take position')}</button></div>`:`<div class="btns col"><button class="pb big" id="bX">${tr('Reprendre la visée','Back to the scope')}</button><button class="lnk" id="bAb">${tr('Abandonner le contrat','Abandon the contract')}</button></div>`}`);
+    ${first?`<div class="btns"><button class="pb red big wide" id="bRoof">${tr('Prendre position','Take position')}</button></div>`:`${keysHTML()}<div class="btns col"><button class="pb big" id="bX">${tr('Reprendre la visée','Back to the scope')}</button><button class="lnk" id="bAb">${tr('Abandonner le contrat','Abandon the contract')}</button></div>`}`);
   const fp=v.querySelector('#fp');fp.replaceWith(portrait(C.T,70,90,C.mask||false));
   if(first)$('bRoof').onclick=()=>{SFX.bolt();closeModals();startSniper()};
   else{$('bX').onclick=()=>{SFX.page();v.remove();if(S)S.paused=false};$('bAb').onclick=()=>{SFX.page();v.remove();S.paused=false;S.end='abandon';S.endT=0}}
@@ -268,12 +268,14 @@ function buildHud2(){
     <button class="round" id="pinb">${tr('Marquer','Mark')}</button><button class="round" id="fire">${tr('Tirer','Fire')}</button></div></div>`);
   const mini=document.createElement('button');mini.id='tgtmini';mini.setAttribute('aria-label',tr('Fiche de tir (pause)','Target sheet (pause)'));mini.appendChild(portrait(C.T,40,52,C.mask||false));$('tm').replaceWith(mini);
   mini.onclick=()=>{if(!S||S.end)return;SFX.page();S.paused=true;S.hold=false;showFiche(false)};
-  document.querySelectorAll('#zoom [data-z]').forEach(b=>b.onclick=()=>{SFX.tap();setZoom(+b.dataset.z)});
+  document.querySelectorAll('#zoom [data-z]').forEach(b=>{b.onclick=()=>{SFX.tap();setZoom(+b.dataset.z)};b.onpointerdown=e=>e.preventDefault()});
+  mini.onpointerdown=e=>e.preventDefault();   // clic souris : pas de focus, Espace continue de tirer
   const br=$('breath');
   const on=e=>{e.preventDefault();if(S.winded>0||eyeMode())return;S.hold=true;br.classList.add('hold')},off=()=>{if(S)S.hold=false;br.classList.remove('hold')};
   br.addEventListener('pointerdown',on);['pointerup','pointercancel','pointerleave'].forEach(ev=>br.addEventListener(ev,off));
   $('fire').addEventListener('pointerdown',e=>{e.preventDefault();fire()});
   $('pinb').addEventListener('pointerdown',e=>{e.preventDefault();pinAt()});
+  $('fire').onclick=e=>{if(e.detail===0)fire()};$('pinb').onclick=e=>{if(e.detail===0)pinAt()};   // Entrée ou Espace sur le bouton (clavier)
   hudMode();
   if(!SAVE.tutoS){S.paused=true;
     const v=modal(`${dh(tr('Consignes de tir','Firing orders'),tr('À lire une fois','Read once'))}<h2>${tr('Sur le toit','On the roof')}</h2>
@@ -283,7 +285,7 @@ function buildHud2(){
         <li><span>${tr('<b>Stabiliser.</b> Maintiens Souffle : le réticule cesse de trembler, tant que ton souffle tient.','<b>Steady.</b> Hold Breath: the crosshair stops shaking for as long as your breath lasts.')}</span></li>
         <li><span>${tr('<b>Marquer.</b> Pose une épingle sur un suspect pour ne pas le perdre. Ta fiche, en haut à gauche, rappelle le signalement.','<b>Mark.</b> Pin a suspect so you do not lose them. Your sheet, top left, recalls the description.')}</span></li>
       </ol>
-      <p class="notice">${tr('Après son rendez-vous de midi, la cible quitte la zone. Un tir manqué disperse la foule.','After the noon meeting, the target leaves the area. A missed shot scatters the crowd.')}</p>
+      ${keysHTML()}<p class="notice">${tr('Après son rendez-vous de midi, la cible quitte la zone. Un tir manqué disperse la foule.','After the noon meeting, the target leaves the area. A missed shot scatters the crowd.')}</p>
       <div class="btns"><button class="pb red big wide" id="bPos">${tr('En position','In position')}</button></div>`);
     v.querySelector('#bPos').onclick=()=>{SFX.bolt();v.remove();SAVE.tutoS=1;persist();S.paused=false;S.hintT=5}}
 }
@@ -423,6 +425,24 @@ cv.addEventListener('pointermove',e=>{
   if(eyeMode()){S.cam.x-=dx/eyeGeo().k;clampCam();return}
   const g=scopeGeo(),k=g.r*2/S.Z[S.z].w;S.cam.x+=dx/k*.9;S.cam.y+=dy/k*.9;clampCam();
 });
+/* ---------- Clavier (PC) : Espace tirer, Maj souffle, M marquer, 1 à 4 zoom, flèches viser ; Échap = fiche (ks-back.js) ---------- */
+const hasMouse=()=>matchMedia('(hover:hover) and (pointer:fine)').matches;
+const keysHTML=()=>hasMouse()?`<p class="notice">${tr('<b>Clavier</b> : Espace tirer, Maj (maintenu) souffle, M marquer, 1 à 4 zoom, flèches viser, Échap fiche.','<b>Keyboard</b>: Space fire, Shift (hold) breath, M mark, 1 to 4 zoom, arrows aim, Esc sheet.')}</p>`:'';
+function breathOff(){if(S)S.hold=false;const b=$('breath');if(b)b.classList.remove('hold')}
+document.addEventListener('keydown',e=>{
+  if(MODE!=='sniper'||!S||S.end||S.paused||e.ctrlKey||e.metaKey||e.altKey||UI.querySelector('.veil'))return;
+  const k=e.code;
+  if((k==='Space'||k==='Enter')&&e.target.closest&&e.target.closest('button'))return;   // bouton choisi au clavier : comportement normal
+  if(k==='Space'){e.preventDefault();if(!e.repeat)fire();return}
+  if(k==='ShiftLeft'||k==='ShiftRight'){if(!e.repeat&&S.winded<=0&&!eyeMode()){S.hold=true;const b=$('breath');if(b)b.classList.add('hold')}return}
+  if(k==='KeyM'){if(!e.repeat)pinAt();return}
+  const z=/^(Digit|Numpad)([1-6])$/.exec(k);
+  if(z){const i=+z[2]-1;if(i<S.Z.length&&i!==S.z&&!e.repeat){SFX.tap();setZoom(i)}return}
+  const a={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[k];
+  if(a){e.preventDefault();const st=(eyeMode()?eyeGeo().w:S.Z[S.z].w)*.03;S.cam.x+=a[0]*st;if(!eyeMode())S.cam.y+=a[1]*st;clampCam()}
+});
+document.addEventListener('keyup',e=>{if(e.code==='ShiftLeft'||e.code==='ShiftRight')breathOff()});
+window.addEventListener('blur',breathOff);
 ['pointerup','pointercancel'].forEach(ev=>cv.addEventListener(ev,e=>{if(!S||!S.drag||S.drag.id!==e.pointerId)return;const d=S.drag;S.drag=null;
   // un simple toucher à l'œil nu : on épaule et on vise ce point
   if(ev==='pointerup'&&eyeMode()&&!S.end&&!S.paused&&Math.hypot(e.clientX-d.x0,e.clientY-d.y0)<12&&performance.now()-d.t0<450){
