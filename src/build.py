@@ -59,11 +59,15 @@ def site():
     head, body = html.split('<style>', 1)
     out = '<!doctype html>\n<html lang="fr"><head><meta charset="utf-8">\n' + head + '<style>' + body.replace('</style>', '</style>\n</head><body>', 1) + '\n' + CF_ANALYTICS + '\n</body></html>\n'
     open(os.path.join(ROOT, 'index.html'), 'w', encoding='utf-8').write(out)
-    h = hashlib.sha1(out.encode()).hexdigest()[:8]
+    h = hashlib.sha1((out + read('sw.template.js')).encode()).hexdigest()[:8]   # le modèle du SW compte aussi : un SW changé = un nouveau cache
     files = ['./', './index.html', './manifest.webmanifest']
-    for d in ['icons', 'music']:
-        files += ['./%s/%s' % (d, f) for f in sorted(os.listdir(os.path.join(ROOT, d)))]
-    sw = read('sw.template.js').replace('%VERSION%', h).replace('%CORE%', json.dumps(files, indent=2))
+    files += ['./icons/%s' % f for f in sorted(os.listdir(os.path.join(ROOT, 'icons')))]
+    # musiques : hors du pré-cache (cache à part, nommé d'après leur contenu, voir sw.template.js)
+    mp3 = ['./music/%s' % f for f in sorted(os.listdir(os.path.join(ROOT, 'music'))) if f.endswith('.mp3')]
+    mh = hashlib.sha1()
+    for f in mp3: mh.update(open(os.path.join(ROOT, f[2:]), 'rb').read())
+    sw = (read('sw.template.js').replace('%VERSION%', h).replace('%CORE%', json.dumps(files, indent=2))
+          .replace('%MEDIA%', mh.hexdigest()[:8]).replace('%MP3%', json.dumps(mp3)))
     open(os.path.join(ROOT, 'sw.js'), 'w', encoding='utf-8').write(sw)
     print('site : index.html (%d Ko), sw.js version %s' % (len(out) // 1024, h))
 
