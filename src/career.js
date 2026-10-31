@@ -133,7 +133,7 @@ function showEnding(then){
 
 /* ---------- notes de mise à jour ---------- */
 const NOTES=[
-  {v:'1.1.8',d:['31 octobre 2026','31 October 2026'],fr:['<b>Téléphone</b> : boutons plus faciles à toucher (Options, armurerie, portrait-robot, zoom de la lunette).'],en:['<b>Phone</b>: easier-to-tap buttons (Options, armoury, identikit, scope zoom).']},
+  {v:'1.1.8',d:['31 octobre 2026','31 October 2026'],fr:['<b>Téléphone</b> : boutons plus faciles à toucher (Options, armurerie, portrait-robot, zoom de la lunette).','<b>Accessibilité</b> : la fiche de tir (pause) et le zoom de la lunette sont annoncés au lecteur d’écran et utilisables au clavier.'],en:['<b>Phone</b>: easier-to-tap buttons (Options, armoury, identikit, scope zoom).','<b>Accessibility</b>: the target sheet (pause) and scope zoom are announced by screen readers and usable with the keyboard.']},
   {v:'1.1.7',d:['29 octobre 2026','29 October 2026'],fr:['<b>Options</b> : bouton « Retour au hub », et le même ordre que dans les autres jeux du studio.'],en:['<b>Options</b>: a “Back to the hub” button, in the same order as the studio’s other games.']},
   {v:'1.1.6',d:['26 octobre 2026','26 October 2026'],fr:['<b>Options</b> : crédits du jeu.'],en:['<b>Options</b>: game credits.']},
   {v:'1.1.5',d:['19 octobre 2026','19 October 2026'],fr:['Menus épurés : la langue, les notes de mise à jour et le retour à l’écran titre se trouvent seulement dans les <b>Options</b> (plus de boutons en double sur l’écran titre et au Bureau).'],en:['Tidier menus: language, release notes and going back to the title screen now live only in <b>Options</b> (no more duplicate buttons on the title screen and in the Office).']},
