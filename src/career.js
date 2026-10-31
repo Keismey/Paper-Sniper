@@ -7,7 +7,7 @@
    - Le cinquième dossier rouge clôt l'histoire (SAVE.fin) ; les contrats continuent ensuite.
    - Le grade règle aussi la difficulté des contrats ordinaires (voir careerLv et ses usages).
    ========================================================= */
-const VERSION='1.1.8';
+const VERSION='1.1.9';
 
 const GRADES=[
   {fr:'Recrue',en:'Recruit'},
@@ -133,6 +133,7 @@ function showEnding(then){
 
 /* ---------- notes de mise à jour ---------- */
 const NOTES=[
+  {v:'1.1.9',d:['31 octobre 2026','31 October 2026'],fr:['<b>Clavier sur ordinateur</b> : Espace pour tirer, Maj (maintenu) pour retenir son souffle, M pour marquer, 1 à 4 pour le zoom, flèches pour viser. Rappel dans la fiche de tir.'],en:['<b>Keyboard on computers</b>: Space to fire, Shift (hold) to hold your breath, M to mark, 1 to 4 to zoom, arrows to aim. Listed on the target sheet.']},
   {v:'1.1.8',d:['31 octobre 2026','31 October 2026'],fr:['<b>Téléphone</b> : boutons plus faciles à toucher (Options, armurerie, portrait-robot, zoom de la lunette).','<b>Accessibilité</b> : la fiche de tir (pause) et le zoom de la lunette sont annoncés au lecteur d’écran et utilisables au clavier.'],en:['<b>Phone</b>: easier-to-tap buttons (Options, armoury, identikit, scope zoom).','<b>Accessibility</b>: the target sheet (pause) and scope zoom are announced by screen readers and usable with the keyboard.']},
   {v:'1.1.7',d:['29 octobre 2026','29 October 2026'],fr:['<b>Options</b> : bouton « Retour au hub », et le même ordre que dans les autres jeux du studio.'],en:['<b>Options</b>: a “Back to the hub” button, in the same order as the studio’s other games.']},
   {v:'1.1.6',d:['26 octobre 2026','26 October 2026'],fr:['<b>Options</b> : crédits du jeu.'],en:['<b>Options</b>: game credits.']},
