@@ -262,11 +262,11 @@ function buildHud2(){
   const cl=C.clues,tic=TICS[C.tic];
   ui(`<div id="hud2"><div class="top"><span id="tm"></span><div class="clk" id="clk2">11:59:00</div><div id="chips">
       <span class="${cl.tic?'':'no'}">${cl.tic?tic.n:tr('Habitude inconnue','Habit unknown')}</span><span class="${cl.rdv?'':'no'}">${cl.rdv?tr('Midi : ','Noon: ')+M.locs[C.rdv].name:tr('Lieu inconnu','Place unknown')}</span></div></div>
-    <div id="zoom">${S.Z.map((z,i)=>`<button data-z="${i}" class="${i===S.z?'on':''}">${z.l}</button>`).join('')}</div>
+    <div id="zoom">${S.Z.map((z,i)=>`<button data-z="${i}" class="${i===S.z?'on':''}" aria-pressed="${i===S.z}" aria-label="${z.eye?tr('Œil nu','Naked eye'):tr('Lunette ','Scope ')+z.l}">${z.l}</button>`).join('')}</div>
     <div class="hint2" id="hint2"></div>
     <div class="bot"><button class="round" id="breath"><svg viewBox="0 0 92 92"><circle cx="46" cy="46" r="44" fill="none" stroke="#2b3570" stroke-width="5" stroke-dasharray="276.5" stroke-dashoffset="0" id="brc"/></svg>${tr('Souffle','Breath')}</button>
     <button class="round" id="pinb">${tr('Marquer','Mark')}</button><button class="round" id="fire">${tr('Tirer','Fire')}</button></div></div>`);
-  const mini=portrait(C.T,40,52,C.mask||false);mini.id='tgtmini';$('tm').replaceWith(mini);
+  const mini=document.createElement('button');mini.id='tgtmini';mini.setAttribute('aria-label',tr('Fiche de tir (pause)','Target sheet (pause)'));mini.appendChild(portrait(C.T,40,52,C.mask||false));$('tm').replaceWith(mini);
   mini.onclick=()=>{if(!S||S.end)return;SFX.page();S.paused=true;S.hold=false;showFiche(false)};
   document.querySelectorAll('#zoom [data-z]').forEach(b=>b.onclick=()=>{SFX.tap();setZoom(+b.dataset.z)});
   const br=$('breath');
@@ -292,7 +292,7 @@ const eyeMode=()=>S&&S.Z[S.z].eye;
 function hudMode(){const e=eyeMode(),f=$('fire'),pb=$('pinb'),br=$('breath'),h=$('hint2');if(!f)return;
   f.textContent=e?tr('Épauler','Raise'):tr('Tirer','Fire');f.classList.toggle('eye',!!e);pb.disabled=!!e;br.classList.toggle('off',!!e);
   if(h){h.innerHTML='<span>'+(e?tr('Touche un passant pour le viser.','Tap a passer-by to scope in.'):tr('Glisse pour viser.','Drag to aim.'))+'</span>';h.style.opacity=1;S.hintT=Math.max(S.hintT,3.5)}}
-function setZoom(z){const was=S.z;S.z=z;document.querySelectorAll('#zoom [data-z]').forEach(b=>b.classList.toggle('on',+b.dataset.z===z));if(was!==z&&(!S.Z[was].eye)!==(!S.Z[z].eye)){SFX.bolt();S.hold=false}clampCam();hudMode()}
+function setZoom(z){const was=S.z;S.z=z;document.querySelectorAll('#zoom [data-z]').forEach(b=>{b.classList.toggle('on',+b.dataset.z===z);b.setAttribute('aria-pressed',+b.dataset.z===z)});if(was!==z&&(!S.Z[was].eye)!==(!S.Z[z].eye)){SFX.bolt();S.hold=false}clampCam();hudMode()}
 /* vue à l'œil nu : toute la largeur de l'écran, le sol calé au-dessus des boutons */
 function eyeGeo(){const k=SW/1100,bot=SH-118;return{k,w:SW/k,bot,yb:955}}
 function eyeToWorld(sx,sy){const g=eyeGeo();return{x:S.cam.x+(sx-SW/2)/g.k,y:g.yb+(sy-g.bot)/g.k}}
